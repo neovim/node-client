@@ -25,15 +25,22 @@ function generateWrappers(Nvim, types, metadata) {
     // The type name is the word before the first dash capitalized. If the type
     // is Vim, then it a editor-global method which will be attached to the Nvim
     // class.
-    var Type = typeName !== 'Vim' ? types[typeName] : Nvim;
     var methodName = _.camelCase(parts.slice(1).join(('_')));
     var args = _.map(func.parameters, function(param) {
       return param[1];
     });
+    var Type, callArgs;
+    if (typeName === 'Vim') {
+      Type = Nvim;
+      callArgs = args.join(', ');
+    } else {
+      Type = types[typeName];
+      args = args.slice(1);
+      // This is a method of one of the ext types, prepend "this" to the call
+      // arguments.
+      callArgs = ['this'].concat(args).join(', ');
+    }
     var params = args.concat(['cb']).join(', ');
-    // If this is a method of one of the ext types, prepend "this" to the call
-    // arguments.
-    var callArgs = (typeName !== 'Vim' ? ['this'] : []).concat(args).join(', ');
     args = args.join(', ');
     var method = new Function(
       'return function ' + methodName + '(' + params + ') {' +

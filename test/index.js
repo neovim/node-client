@@ -78,11 +78,23 @@ describe('Nvim', function() {
         nvim.setCurrentWindow(windows[1], function(err, res) {
           nvim.getCurrentWindow(function(err, win) {
             equal(win.equals(windows[1]), true);
-            done();
+            nvim.getCurrentBuffer(function(err, buf) {
+              equal(buf instanceof nvim.Buffer, true);
+              buf.getLineSlice(0, -1, true, true, function(err, lines) {
+                deepEqual(lines, ['']);
+                buf.setLineSlice(0, -1, true, true, ['line1', 'line2'], function(err) {
+                  buf.getLineSlice(0, -1, true, true, function(err, lines) {
+                    deepEqual(lines, ['line1', 'line2']);
+                    done();
+                  });
+                });
+              });
+            });
           });
         });
       });
     });
+
   });
 
   it('emits "disconnect" after quit', function(done) {

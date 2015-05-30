@@ -29,7 +29,8 @@ attach(nvim_proc.stdin, nvim_proc.stdout, function(err, nvim) {
   nvim.on('request', function(method, args, resp) {
     // handle msgpack-rpc request
   });
-  nvim.on('notification', function(method, args, resp) {
+
+  nvim.on('notification', function(method, args) {
     // handle msgpack-rpc notification
   });
 
@@ -46,6 +47,23 @@ attach(nvim_proc.stdin, nvim_proc.stdout, function(err, nvim) {
             console.log("Nvim exited!");
           });
         });
+      });
+    });
+  });
+});
+```
+
+Methods are attached to buffers, windows and tabpages according to the
+msgpack-rpc name:
+
+```js
+nvim.getCurrentBuffer(function(err, buf) {
+  console.log(buf instanceof nvim.Buffer);  // true
+  buf.getLineSlice(0, -1, true, true, function(err, lines) {
+    console.log(lines);  // ['']
+    buf.setLineSlice(0, -1, true, true, ['line1', 'line2'], function(err) {
+      buf.getLineSlice(0, -1, true, true, function(err, lines) {
+        console.log(lines);  // ['line1', 'line2']
       });
     });
   });
