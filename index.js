@@ -63,6 +63,9 @@ function generateWrappers(Nvim, types, metadata) {
       parameterTypes: func.parameters.map(function(p) { return p[0]; }),
       canFail: func.can_fail,
     }
+    if (typeName !== 'Vim') {
+      method.metadata.parameterTypes.shift();
+    }
     Type.prototype[methodName] = method;
   }
 }

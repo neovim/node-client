@@ -41,44 +41,44 @@ declare module "neovim-client" {
     getApiInfo(cb: (err: Error, res: Array<any>) => void): void;
   }
   interface Buffer {
-    lineCount(cb: Buffer): void;
-    getLine(index: Buffer, cb: number): void;
-    setLine(index: Buffer, line: number, cb: string): void;
-    delLine(index: Buffer, cb: number): void;
-    getLineSlice(start: Buffer, end: number, include_start: number, include_end: boolean, cb: boolean): void;
-    setLineSlice(start: Buffer, end: number, include_start: number, include_end: boolean, replacement: boolean, cb: Array<string>): void;
-    getVar(name: Buffer, cb: string): void;
-    setVar(name: Buffer, value: string, cb: Object): void;
-    getOption(name: Buffer, cb: string): void;
-    setOption(name: Buffer, value: string, cb: Object): void;
-    getNumber(cb: Buffer): void;
-    getName(cb: Buffer): void;
-    setName(name: Buffer, cb: string): void;
-    isValid(cb: Buffer): void;
-    insert(lnum: Buffer, lines: number, cb: Array<string>): void;
-    getMark(name: Buffer, cb: string): void;
+    lineCount(cb: (err: Error, res: number) => void): void;
+    getLine(index: number, cb: (err: Error, res: string) => void): void;
+    setLine(index: number, line: string, cb: (err: Error) => void): void;
+    delLine(index: number, cb: (err: Error) => void): void;
+    getLineSlice(start: number, end: number, include_start: boolean, include_end: boolean, cb: (err: Error, res: Array<string>) => void): void;
+    setLineSlice(start: number, end: number, include_start: boolean, include_end: boolean, replacement: Array<string>, cb: (err: Error) => void): void;
+    getVar(name: string, cb: (err: Error, res: Object) => void): void;
+    setVar(name: string, value: Object, cb: (err: Error, res: Object) => void): void;
+    getOption(name: string, cb: (err: Error, res: Object) => void): void;
+    setOption(name: string, value: Object, cb: (err: Error) => void): void;
+    getNumber(cb: (err: Error, res: number) => void): void;
+    getName(cb: (err: Error, res: string) => void): void;
+    setName(name: string, cb: (err: Error) => void): void;
+    isValid(cb: (err: Error, res: boolean) => void): void;
+    insert(lnum: number, lines: Array<string>, cb: (err: Error) => void): void;
+    getMark(name: string, cb: (err: Error, res: Array<number>) => void): void;
   }
   interface Window {
-    getBuffer(cb: Window): void;
-    getCursor(cb: Window): void;
-    setCursor(pos: Window, cb: Array<number>): void;
-    getHeight(cb: Window): void;
-    setHeight(height: Window, cb: number): void;
-    getWidth(cb: Window): void;
-    setWidth(width: Window, cb: number): void;
-    getVar(name: Window, cb: string): void;
-    setVar(name: Window, value: string, cb: Object): void;
-    getOption(name: Window, cb: string): void;
-    setOption(name: Window, value: string, cb: Object): void;
-    getPosition(cb: Window): void;
-    getTabpage(cb: Window): void;
-    isValid(cb: Window): void;
+    getBuffer(cb: (err: Error, res: Buffer) => void): void;
+    getCursor(cb: (err: Error, res: Array<number>) => void): void;
+    setCursor(pos: Array<number>, cb: (err: Error) => void): void;
+    getHeight(cb: (err: Error, res: number) => void): void;
+    setHeight(height: number, cb: (err: Error) => void): void;
+    getWidth(cb: (err: Error, res: number) => void): void;
+    setWidth(width: number, cb: (err: Error) => void): void;
+    getVar(name: string, cb: (err: Error, res: Object) => void): void;
+    setVar(name: string, value: Object, cb: (err: Error, res: Object) => void): void;
+    getOption(name: string, cb: (err: Error, res: Object) => void): void;
+    setOption(name: string, value: Object, cb: (err: Error) => void): void;
+    getPosition(cb: (err: Error, res: Array<number>) => void): void;
+    getTabpage(cb: (err: Error, res: Tabpage) => void): void;
+    isValid(cb: (err: Error, res: boolean) => void): void;
   }
   interface Tabpage {
-    getWindows(cb: Tabpage): void;
-    getVar(name: Tabpage, cb: string): void;
-    setVar(name: Tabpage, value: string, cb: Object): void;
-    getWindow(cb: Tabpage): void;
-    isValid(cb: Tabpage): void;
+    getWindows(cb: (err: Error, res: Array<Window>) => void): void;
+    getVar(name: string, cb: (err: Error, res: Object) => void): void;
+    setVar(name: string, value: Object, cb: (err: Error, res: Object) => void): void;
+    getWindow(cb: (err: Error, res: Window) => void): void;
+    isValid(cb: (err: Error, res: boolean) => void): void;
   }
 }
