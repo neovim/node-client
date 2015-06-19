@@ -32,7 +32,8 @@
     "which": "^1.1.1"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "prepublish": "[ -r ~/.global.npmignore ] && cat ~/.global.npmignore > .npmignore || true"
   },
   "keywords": [
     "neovim",
