@@ -41,7 +41,6 @@ function generateWrappers(Nvim, types, metadata) {
       callArgs = ['this'].concat(args).join(', ');
     }
     var params = args.concat(['cb']).join(', ');
-    args = args.join(', ');
     var method = new Function(
       'return function ' + methodName + '(' + params + ') {' +
       '\n  if (!cb) {' +
@@ -56,6 +55,14 @@ function generateWrappers(Nvim, types, metadata) {
       '\n   });' +
       '\n};'
     )();
+    method.metadata = {
+      name: methodName,
+      deferred: func.deferred,
+      returnType: func.return_type,
+      parameters: args.concat(['cb']),
+      parameterTypes: func.parameters.map(function(p) { return p[0]; }),
+      canFail: func.can_fail,
+    }
     Type.prototype[methodName] = method;
   }
 }
