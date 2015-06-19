@@ -69,3 +69,9 @@ nvim.getCurrentBuffer(function(err, buf) {
   });
 });
 ```
+
+A [typescript declaration file](api.d.ts) is available as documentation of the
+API and also for typescript users that seek to use this library. Note that the
+interfaces are [automatically generated](generate-typescript-interfaces.js) at a
+certain point in time, and may not correspond exactly to the API of your
+installed Nvim.
