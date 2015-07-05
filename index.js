@@ -6,6 +6,12 @@ var traverse = require('traverse');
 var Session = require('msgpack5rpc');
 var _ = require('lodash');
 
+function Nvim(session, channel_id) {
+  this._session = session;
+  this._decode = decode;
+  this._channel_id = channel_id;
+}
+util.inherits(Nvim, EventEmitter);
 
 function decode(obj) {
   traverse(obj).forEach(function(item) {
@@ -102,7 +108,33 @@ function addExtraNvimMethods(Nvim) {
 
 module.exports = function attach(writer, reader, cb) {
   var session = new Session([]);
+  var initSession = session;
+  var nvim = new Nvim(session)
+  var pendingRPCs = [];
+  var calledCallback = false;
+
   session.attach(writer, reader);
+
+  // register initial RPC handlers to queue non-specs requests until api is generated
+  session.on('request', function(method, args, resp) {
+    if (method !== 'specs') {
+      pendingRPCs.push({ type: 'request', args: [].slice.call(arguments) });
+    } else {
+      cb(null, nvim) // the errback may be called later, but 'specs' must be handled
+      calledCallback = true;
+      nvim.emit('request', decode(method), decode(args), resp);
+    }
+  });
+
+  session.on('notification', function(method, args) {
+    pendingRPCs.push({ type: 'notification', args: [].slice.call( arguments ) });
+  });
+
+  session.on('detach', function() {
+    session.removeAllListeners('request');
+    session.removeAllListeners('notification');
+    nvim.emit('disconnect');
+  });
 
   session.request('vim_get_api_info', [], function(err, res) {
     if (err) {
@@ -110,13 +142,6 @@ module.exports = function attach(writer, reader, cb) {
     }
 
     var channel_id = res[0];
-
-    function Nvim(session) {
-      this._session = session;
-      this._channel_id = channel_id;
-      this._decode = decode;
-    }
-    util.inherits(Nvim, EventEmitter);
 
     var metadata = decode(res[1]);
     var extTypes = [];
@@ -154,12 +179,12 @@ module.exports = function attach(writer, reader, cb) {
 
     generateWrappers(Nvim, types, metadata);
     addExtraNvimMethods(Nvim);
-    session.detach();
     session = new Session(extTypes);
     session.attach(writer, reader);
 
-    var nvim = new Nvim(session);
+    nvim = new Nvim(session, channel_id);
 
+    // register the non-queueing handlers
     session.on('request', function(method, args, resp) {
       nvim.emit('request', decode(method), decode(args), resp);
     });
@@ -175,5 +200,11 @@ module.exports = function attach(writer, reader, cb) {
     });
 
     cb(null, nvim);
+
+    // dequeue any pending RPCs
+    pendingRPCs.forEach( function(pending) {
+      nvim.emit.apply(nvim, [].concat( pending.type, pending.args ));
+    })
+    initSession.detach();
   });
 };
