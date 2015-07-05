@@ -21,7 +21,7 @@ Examples:
 
 ```js
 var cp = require('child_process');
-var attach = require('nvim-client');
+var attach = require('neovim-client');
 
 var nvim_proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {});
 attach(nvim_proc.stdin, nvim_proc.stdout, function(err, nvim) {
