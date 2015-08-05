@@ -7,7 +7,7 @@
 ## Installation
 
 ```sh
-npm install --save neovim-client
+npm install --global neovim-client
 ```
 
 ## Usage
