@@ -1,5 +1,3 @@
-/// <reference path="../DefinitelyTyped/node/node.d.ts" />
-
 declare module "neovim-client" {
   export default attach;
   function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void);
@@ -11,6 +9,7 @@ declare module "neovim-client" {
     replaceTermcodes(str: string, from_part: boolean, do_lt: boolean, special: boolean, cb: (err: Error, res: string) => void): void;
     commandOutput(str: string, cb: (err: Error, res: string) => void): void;
     eval(str: string, cb: (err: Error, res: Object) => void): void;
+    callFunction(fname: string, args: Array<any>, cb: (err: Error, res: Object) => void): void;
     strwidth(str: string, cb: (err: Error, res: number) => void): void;
     listRuntimePaths(cb: (err: Error, res: Array<string>) => void): void;
     changeDirectory(dir: string, cb: (err: Error) => void): void;

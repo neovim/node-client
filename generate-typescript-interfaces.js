@@ -57,7 +57,6 @@ attach(proc.stdin, proc.stdout, function(err, nvim) {
   };
 
   // use a similar reference path to other definitely typed declarations
-  process.stdout.write('/// <reference path="../DefinitelyTyped/node/node.d.ts" />\n\n');
   process.stdout.write('declare module "neovim-client" {\n');
   process.stdout.write('  export default attach;\n');
   process.stdout.write('  function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void);\n\n');
