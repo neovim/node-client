@@ -1,29 +1,23 @@
 {
-  "name": "promised-neovim-client",
-  "description": "Promised Neovim client library for modern JavaScript",
-  "version": "0.1.8",
+  "name": "neovim-client",
+  "description": "Neovim client library",
+  "version": "2.0.0",
   "homepage": "https://github.com/neovim/node-client",
-  "authors": [
-    {
-      "name": "Thiago de Arruda",
-      "email": "tpadilha84@gmail.com"
-    },
-    {
-      "name": "rhysd",
-      "email": "lin90162@yahoo.co.jp"
-    }
-  ],
+  "author": {
+    "name": "Thiago de Arruda",
+    "email": "tpadilha84@gmail.com"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rhysd/promised-neovim-client"
+    "url": "https://github.com/neovim/node-client"
   },
   "bugs": {
-    "url": "https://github.com/rhysd/promised-neovim-client/issues"
+    "url": "https://github.com/neovim/node-client/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/rhysd/promised-neovim-client/blob/master/LICENSE-MIT"
+      "url": "https://github.com/neovim/node-client/blob/master/LICENSE-MIT"
     }
   ],
   "main": "./index",
