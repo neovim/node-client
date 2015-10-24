@@ -1,83 +1,83 @@
-declare module "neovim-client" {
-  export default attach;
-  function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void);
-
-  interface Nvim {
-    command(str: string, cb: (err: Error) => void): void;
-    feedkeys(keys: string, mode: string, escape_csi: boolean, cb: (err: Error) => void): void;
-    input(keys: string, cb: (err: Error, res: number) => void): void;
-    replaceTermcodes(str: string, from_part: boolean, do_lt: boolean, special: boolean, cb: (err: Error, res: string) => void): void;
-    commandOutput(str: string, cb: (err: Error, res: string) => void): void;
-    eval(str: string, cb: (err: Error, res: Object) => void): void;
-    callFunction(fname: string, args: Array<any>, cb: (err: Error, res: Object) => void): void;
-    strwidth(str: string, cb: (err: Error, res: number) => void): void;
-    listRuntimePaths(cb: (err: Error, res: Array<string>) => void): void;
-    changeDirectory(dir: string, cb: (err: Error) => void): void;
-    getCurrentLine(cb: (err: Error, res: string) => void): void;
-    setCurrentLine(line: string, cb: (err: Error) => void): void;
-    delCurrentLine(cb: (err: Error) => void): void;
-    getVar(name: string, cb: (err: Error, res: Object) => void): void;
-    setVar(name: string, value: Object, cb: (err: Error, res: Object) => void): void;
-    getVvar(name: string, cb: (err: Error, res: Object) => void): void;
-    getOption(name: string, cb: (err: Error, res: Object) => void): void;
-    setOption(name: string, value: Object, cb: (err: Error) => void): void;
-    outWrite(str: string, cb: (err: Error) => void): void;
-    errWrite(str: string, cb: (err: Error) => void): void;
-    reportError(str: string, cb: (err: Error) => void): void;
-    getBuffers(cb: (err: Error, res: Array<Buffer>) => void): void;
-    getCurrentBuffer(cb: (err: Error, res: Buffer) => void): void;
-    setCurrentBuffer(buffer: Buffer, cb: (err: Error) => void): void;
-    getWindows(cb: (err: Error, res: Array<Window>) => void): void;
-    getCurrentWindow(cb: (err: Error, res: Window) => void): void;
-    setCurrentWindow(window: Window, cb: (err: Error) => void): void;
-    getTabpages(cb: (err: Error, res: Array<Tabpage>) => void): void;
-    getCurrentTabpage(cb: (err: Error, res: Tabpage) => void): void;
-    setCurrentTabpage(tabpage: Tabpage, cb: (err: Error) => void): void;
-    subscribe(event: string, cb: (err: Error) => void): void;
-    unsubscribe(event: string, cb: (err: Error) => void): void;
-    nameToColor(name: string, cb: (err: Error, res: number) => void): void;
-    getColorMap(cb: (err: Error, res: {}) => void): void;
-    getApiInfo(cb: (err: Error, res: Array<any>) => void): void;
-  }
-  interface Buffer {
-    lineCount(cb: (err: Error, res: number) => void): void;
-    getLine(index: number, cb: (err: Error, res: string) => void): void;
-    setLine(index: number, line: string, cb: (err: Error) => void): void;
-    delLine(index: number, cb: (err: Error) => void): void;
-    getLineSlice(start: number, end: number, include_start: boolean, include_end: boolean, cb: (err: Error, res: Array<string>) => void): void;
-    setLineSlice(start: number, end: number, include_start: boolean, include_end: boolean, replacement: Array<string>, cb: (err: Error) => void): void;
-    getVar(name: string, cb: (err: Error, res: Object) => void): void;
-    setVar(name: string, value: Object, cb: (err: Error, res: Object) => void): void;
-    getOption(name: string, cb: (err: Error, res: Object) => void): void;
-    setOption(name: string, value: Object, cb: (err: Error) => void): void;
-    getNumber(cb: (err: Error, res: number) => void): void;
-    getName(cb: (err: Error, res: string) => void): void;
-    setName(name: string, cb: (err: Error) => void): void;
-    isValid(cb: (err: Error, res: boolean) => void): void;
-    insert(lnum: number, lines: Array<string>, cb: (err: Error) => void): void;
-    getMark(name: string, cb: (err: Error, res: Array<number>) => void): void;
-  }
-  interface Window {
-    getBuffer(cb: (err: Error, res: Buffer) => void): void;
-    getCursor(cb: (err: Error, res: Array<number>) => void): void;
-    setCursor(pos: Array<number>, cb: (err: Error) => void): void;
-    getHeight(cb: (err: Error, res: number) => void): void;
-    setHeight(height: number, cb: (err: Error) => void): void;
-    getWidth(cb: (err: Error, res: number) => void): void;
-    setWidth(width: number, cb: (err: Error) => void): void;
-    getVar(name: string, cb: (err: Error, res: Object) => void): void;
-    setVar(name: string, value: Object, cb: (err: Error, res: Object) => void): void;
-    getOption(name: string, cb: (err: Error, res: Object) => void): void;
-    setOption(name: string, value: Object, cb: (err: Error) => void): void;
-    getPosition(cb: (err: Error, res: Array<number>) => void): void;
-    getTabpage(cb: (err: Error, res: Tabpage) => void): void;
-    isValid(cb: (err: Error, res: boolean) => void): void;
-  }
-  interface Tabpage {
-    getWindows(cb: (err: Error, res: Array<Window>) => void): void;
-    getVar(name: string, cb: (err: Error, res: Object) => void): void;
-    setVar(name: string, value: Object, cb: (err: Error, res: Object) => void): void;
-    getWindow(cb: (err: Error, res: Window) => void): void;
-    isValid(cb: (err: Error, res: boolean) => void): void;
-  }
+export interface Nvim extends NodeJS.EventEmitter {
+  uiAttach(width: number, height: number, rgb: true, cb?: Function): void;
+  uiDetach(cb?: Function): void;
+  uiTryResize(width: number, height: number, cb?: Function): void;
+  command(str: string): Promise<void>;
+  feedkeys(keys: string, mode: string, escape_csi: boolean): Promise<void>;
+  input(keys: string): Promise<number>;
+  replaceTermcodes(str: string, from_part: boolean, do_lt: boolean, special: boolean): Promise<string>;
+  commandOutput(str: string): Promise<string>;
+  eval(str: string): Promise<Object>;
+  callFunction(fname: string, args: Array<any>): Promise<Object>;
+  strwidth(str: string): Promise<number>;
+  listRuntimePaths(): Promise<Array<string>>;
+  changeDirectory(dir: string): Promise<void>;
+  getCurrentLine(): Promise<string>;
+  setCurrentLine(line: string): Promise<void>;
+  delCurrentLine(): Promise<void>;
+  getVar(name: string): Promise<Object>;
+  setVar(name: string, value: Object): Promise<Object>;
+  getVvar(name: string): Promise<Object>;
+  getOption(name: string): Promise<Object>;
+  setOption(name: string, value: Object): Promise<void>;
+  outWrite(str: string): Promise<void>;
+  errWrite(str: string): Promise<void>;
+  reportError(str: string): Promise<void>;
+  getBuffers(): Promise<Array<Buffer>>;
+  getCurrentBuffer(): Promise<Buffer>;
+  setCurrentBuffer(buffer: Buffer): Promise<void>;
+  getWindows(): Promise<Array<Window>>;
+  getCurrentWindow(): Promise<Window>;
+  setCurrentWindow(window: Window): Promise<void>;
+  getTabpages(): Promise<Array<Tabpage>>;
+  getCurrentTabpage(): Promise<Tabpage>;
+  setCurrentTabpage(tabpage: Tabpage): Promise<void>;
+  subscribe(event: string): Promise<void>;
+  unsubscribe(event: string): Promise<void>;
+  nameToColor(name: string): Promise<number>;
+  getColorMap(): Promise<Object>;
+  getApiInfo(): Promise<Array<any>>;
 }
+export interface Buffer {
+  lineCount(): Promise<number>;
+  getLine(index: number): Promise<string>;
+  setLine(index: number, line: string): Promise<void>;
+  delLine(index: number): Promise<void>;
+  getLineSlice(start: number, end: number, include_start: boolean, include_end: boolean): Promise<Array<string>>;
+  setLineSlice(start: number, end: number, include_start: boolean, include_end: boolean, replacement: Array<string>): Promise<void>;
+  getVar(name: string): Promise<Object>;
+  setVar(name: string, value: Object): Promise<Object>;
+  getOption(name: string): Promise<Object>;
+  setOption(name: string, value: Object): Promise<void>;
+  getNumber(): Promise<number>;
+  getName(): Promise<string>;
+  setName(name: string): Promise<void>;
+  isValid(): Promise<boolean>;
+  insert(lnum: number, lines: Array<string>): Promise<void>;
+  getMark(name: string): Promise<Array<number>>;
+}
+export interface Window {
+  getBuffer(): Promise<Buffer>;
+  getCursor(): Promise<Array<number>>;
+  setCursor(pos: Array<number>): Promise<void>;
+  getHeight(): Promise<number>;
+  setHeight(height: number): Promise<void>;
+  getWidth(): Promise<number>;
+  setWidth(width: number): Promise<void>;
+  getVar(name: string): Promise<Object>;
+  setVar(name: string, value: Object): Promise<Object>;
+  getOption(name: string): Promise<Object>;
+  setOption(name: string, value: Object): Promise<void>;
+  getPosition(): Promise<Array<number>>;
+  getTabpage(): Promise<Tabpage>;
+  isValid(): Promise<boolean>;
+}
+export interface Tabpage {
+  getWindows(): Promise<Array<Window>>;
+  getVar(name: string): Promise<Object>;
+  setVar(name: string, value: Object): Promise<Object>;
+  getWindow(): Promise<Window>;
+  isValid(): Promise<boolean>;
+}
+export declare var attach: (writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream) => Promise<Nvim>;
+
