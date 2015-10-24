@@ -1,6 +1,6 @@
 var cp = require('child_process');
 
-var attach = require('./index');
+var attach = require('./index').attach;
 
 
 var proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {
@@ -12,7 +12,7 @@ var typeMap = {
   'Integer': 'number',
   'Boolean': 'boolean',
   'Array': 'Array<any>',
-  'Dictionary': '{}',
+  'Dictionary': 'Object',
 };
 
 function convertType(type) {
@@ -31,24 +31,12 @@ function convertType(type) {
 function metadataToSignature(method) {
   var params = [];
   for (var i = 0; i < method.parameters.length; i++) {
-    var type;
-    if (i < method.parameterTypes.length) {
-      type = convertType(method.parameterTypes[i]);
-    } else {
-      type = '(err: Error';
-      var rtype = convertType(method.returnType);
-      if (rtype === 'void') {
-        type += ') => void';
-      } else {
-        type += ', res: ' + rtype + ') => void';
-      }
-    }
-    params.push(method.parameters[i] + ': ' + type);
+    params.push(method.parameters[i] + ': ' + convertType(method.parameterTypes[i]));
   }
-  return '    ' + method.name + '(' + params.join(', ') + '): void;\n';
+  return '  ' + method.name + '(' + params.join(', ') + '): Promise<' + convertType(method.returnType) + '>;\n';
 }
 
-attach(proc.stdin, proc.stdout, function(err, nvim) {
+attach(proc.stdin, proc.stdout).then(function(nvim) {
   var interfaces = {
     Nvim: nvim.constructor,
     Buffer: nvim.Buffer,
@@ -57,21 +45,25 @@ attach(proc.stdin, proc.stdout, function(err, nvim) {
   };
 
   // use a similar reference path to other definitely typed declarations
-  process.stdout.write('declare module "neovim-client" {\n');
-  process.stdout.write('  export default attach;\n');
-  process.stdout.write('  function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void);\n\n');
-
   Object.keys(interfaces).forEach(function(key) {
-    process.stdout.write('  interface ' + key + ' {\n');
+    if (key === 'Nvim') {
+        process.stdout.write('export interface ' + key + ' extends NodeJS.EventEmitter {\n');
+        process.stdout.write('  uiAttach(width: number, height: number, rgb: true, cb?: Function): void;\n');
+        process.stdout.write('  uiDetach(cb?: Function): void;\n');
+        process.stdout.write('  uiTryResize(width: number, height: number, cb?: Function): void;\n');
+    } else {
+        process.stdout.write('export interface ' + key + ' {\n');
+    }
     Object.keys(interfaces[key].prototype).forEach(function(method) {
       method = interfaces[key].prototype[method];
       if (method.metadata) {
         process.stdout.write(metadataToSignature(method.metadata));
       }
     })
-    process.stdout.write('  }\n');
+    process.stdout.write('}\n');
   });
 
-  process.stdout.write('}\n');
+  process.stdout.write('export declare var attach: (writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream) => Promise<Nvim>;\n\n');
+
   proc.stdin.end();
-});
+}).catch(function(err){ console.error(err); });
