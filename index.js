@@ -120,7 +120,10 @@ module.exports = function attach(writer, reader, cb) {
   // register initial RPC handlers to queue non-specs requests until api is generated
   session.on('request', function(method, args, resp) {
     if (method !== 'specs') {
-      pendingRPCs.push({ type: 'request', args: [].slice.call(arguments) });
+      pendingRPCs.push({
+        type: 'request',
+        args: Array.prototype.slice.call(arguments)
+      });
     } else {
       cb(null, nvim) // the errback may be called later, but 'specs' must be handled
       calledCallback = true;
@@ -129,7 +132,10 @@ module.exports = function attach(writer, reader, cb) {
   });
 
   session.on('notification', function(method, args) {
-    pendingRPCs.push({ type: 'notification', args: [].slice.call( arguments ) });
+    pendingRPCs.push({
+      type: 'notification',
+      args: Array.prototype.slice.call(arguments)
+    });
   });
 
   session.on('detach', function() {
@@ -204,9 +210,14 @@ module.exports = function attach(writer, reader, cb) {
     cb(null, nvim);
 
     // dequeue any pending RPCs
-    pendingRPCs.forEach( function(pending) {
-      nvim.emit.apply(nvim, [].concat( pending.type, pending.args ));
-    })
     initSession.detach();
+    pendingRPCs.forEach(function(pending) {
+      if(pending.type === 'request') {
+        // there's no clean way to change the output channel using the current
+        // Session abstraction
+        pending.args[pending.args.length - 1]._encoder = session._encoder;
+      }
+      nvim.emit.apply(nvim, [].concat(pending.type, pending.args));
+    });
   });
 };
