@@ -1,7 +1,7 @@
 {
   "name": "neovim-client",
   "description": "Neovim client library",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "homepage": "https://github.com/neovim/node-client",
   "author": {
     "name": "Thiago de Arruda",
@@ -23,7 +23,7 @@
   "main": "./index",
   "dependencies": {
     "lodash": "^3.9.3",
-    "msgpack5rpc": "^1.0.1",
+    "msgpack5rpc": "^1.0.2",
     "traverse": "^0.6.6"
   },
   "devDependencies": {
