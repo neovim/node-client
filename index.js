@@ -38,7 +38,7 @@ function generateWrappers(Nvim, types, metadata) {
       return param[1];
     });
     var Type, callArgs;
-    if (typeName === 'Vim') {
+    if (typeName === 'Vim' || typeName === 'Ui') {
       Type = Nvim;
       callArgs = args.join(', ');
     } else {
@@ -79,29 +79,13 @@ function generateWrappers(Nvim, types, metadata) {
 }
 
 function addExtraNvimMethods(Nvim) {
-  Nvim.prototype.uiAttach = function uiAttach(width, height, rgb, cb) {
-    if (cb) {
-      this._session.request('ui_attach', [width, height, rgb], cb);
-    } else {
-      this._session.notify('ui_attach', [width, height, rgb]);
-    }
-  };
-
-  Nvim.prototype.uiDetach = function uiDetach(cb) {
-    if (cb) {
-      this._session.request('ui_detach', [], cb);
-    } else {
-      this._session.notify('ui_detach', []);
-    }
-  };
-
-  Nvim.prototype.uiTryResize = function uiTryResize(width, height, cb) {
-    if (cb) {
-      this._session.request('ui_try_resize', [width, height], cb);
-    } else {
-      this._session.notify('ui_try_resize', [width, height]);
-    }
-  };
+  // Alias the ui_* methods to keep backwards compatibility.
+  ['attach', 'detach', 'tryResize'].forEach(function(methodName) {
+    var camelCased = _.camelCase('ui_' + methodName);
+    var original = Nvim.prototype[methodName];
+    Nvim.prototype[camelCased] = new Function('return ' + original.toString())();
+    Nvim.prototype[camelCased].metadata = _.defaults({name: camelCased}, original.metadata);
+  });
 
   Nvim.prototype.quit = function quit() {
     this.command('qa!', []);

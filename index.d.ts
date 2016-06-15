@@ -3,6 +3,9 @@ declare module "neovim-client" {
   function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void);
 
   interface Nvim {
+    attach(width: number, height: boolean, enable_rgb: (err: Error) => void, cb: (err: Error) => void): void;
+    detach(cb: (err: Error) => void): void;
+    tryResize(width: number, height: (err: Error, res: Object) => void, cb: (err: Error, res: Object) => void): void;
     command(str: string, cb: (err: Error) => void): void;
     feedkeys(keys: string, mode: string, escape_csi: boolean, cb: (err: Error) => void): void;
     input(keys: string, cb: (err: Error, res: number) => void): void;
@@ -18,6 +21,7 @@ declare module "neovim-client" {
     delCurrentLine(cb: (err: Error) => void): void;
     getVar(name: string, cb: (err: Error, res: Object) => void): void;
     setVar(name: string, value: Object, cb: (err: Error, res: Object) => void): void;
+    delVar(name: string, cb: (err: Error, res: Object) => void): void;
     getVvar(name: string, cb: (err: Error, res: Object) => void): void;
     getOption(name: string, cb: (err: Error, res: Object) => void): void;
     setOption(name: string, value: Object, cb: (err: Error) => void): void;
@@ -38,6 +42,9 @@ declare module "neovim-client" {
     nameToColor(name: string, cb: (err: Error, res: number) => void): void;
     getColorMap(cb: (err: Error, res: {}) => void): void;
     getApiInfo(cb: (err: Error, res: Array<any>) => void): void;
+    uiAttach(width: number, height: boolean, enable_rgb: (err: Error) => void, cb: (err: Error) => void): void;
+    uiDetach(cb: (err: Error) => void): void;
+    uiTryResize(width: number, height: (err: Error, res: Object) => void, cb: (err: Error, res: Object) => void): void;
   }
   interface Buffer {
     lineCount(cb: (err: Error, res: number) => void): void;
@@ -45,9 +52,12 @@ declare module "neovim-client" {
     setLine(index: number, line: string, cb: (err: Error) => void): void;
     delLine(index: number, cb: (err: Error) => void): void;
     getLineSlice(start: number, end: number, include_start: boolean, include_end: boolean, cb: (err: Error, res: Array<string>) => void): void;
+    getLines(start: number, end: number, strict_indexing: boolean, cb: (err: Error, res: Array<string>) => void): void;
     setLineSlice(start: number, end: number, include_start: boolean, include_end: boolean, replacement: Array<string>, cb: (err: Error) => void): void;
+    setLines(start: number, end: number, strict_indexing: boolean, replacement: Array<string>, cb: (err: Error) => void): void;
     getVar(name: string, cb: (err: Error, res: Object) => void): void;
     setVar(name: string, value: Object, cb: (err: Error, res: Object) => void): void;
+    delVar(name: string, cb: (err: Error, res: Object) => void): void;
     getOption(name: string, cb: (err: Error, res: Object) => void): void;
     setOption(name: string, value: Object, cb: (err: Error) => void): void;
     getNumber(cb: (err: Error, res: number) => void): void;
@@ -56,6 +66,8 @@ declare module "neovim-client" {
     isValid(cb: (err: Error, res: boolean) => void): void;
     insert(lnum: number, lines: Array<string>, cb: (err: Error) => void): void;
     getMark(name: string, cb: (err: Error, res: Array<number>) => void): void;
+    addHighlight(src_id: number, hl_group: string, line: number, col_start: number, col_end: number, cb: (err: Error, res: number) => void): void;
+    clearHighlight(src_id: number, line_start: number, line_end: number, cb: (err: Error) => void): void;
   }
   interface Window {
     getBuffer(cb: (err: Error, res: Buffer) => void): void;
@@ -67,6 +79,7 @@ declare module "neovim-client" {
     setWidth(width: number, cb: (err: Error) => void): void;
     getVar(name: string, cb: (err: Error, res: Object) => void): void;
     setVar(name: string, value: Object, cb: (err: Error, res: Object) => void): void;
+    delVar(name: string, cb: (err: Error, res: Object) => void): void;
     getOption(name: string, cb: (err: Error, res: Object) => void): void;
     setOption(name: string, value: Object, cb: (err: Error) => void): void;
     getPosition(cb: (err: Error, res: Array<number>) => void): void;
@@ -77,6 +90,7 @@ declare module "neovim-client" {
     getWindows(cb: (err: Error, res: Array<Window>) => void): void;
     getVar(name: string, cb: (err: Error, res: Object) => void): void;
     setVar(name: string, value: Object, cb: (err: Error, res: Object) => void): void;
+    delVar(name: string, cb: (err: Error, res: Object) => void): void;
     getWindow(cb: (err: Error, res: Window) => void): void;
     isValid(cb: (err: Error, res: boolean) => void): void;
   }
