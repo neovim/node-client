@@ -33,7 +33,7 @@ function generateWrappers(Nvim, types, metadata) {
     // The type name is the word before the first dash capitalized. If the type
     // is Vim, then it a editor-global method which will be attached to the Nvim
     // class.
-    var methodName = _.camelCase(parts.slice(1).join(('_')));
+    var methodName = _.camelCase(parts.slice(typeName !== 'Ui').join('_'));
     var args = _.map(func.parameters, function(param) {
       return param[1];
     });
@@ -79,14 +79,6 @@ function generateWrappers(Nvim, types, metadata) {
 }
 
 function addExtraNvimMethods(Nvim) {
-  // Alias the ui_* methods to keep backwards compatibility.
-  ['attach', 'detach', 'tryResize'].forEach(function(methodName) {
-    var camelCased = _.camelCase('ui_' + methodName);
-    var original = Nvim.prototype[methodName];
-    Nvim.prototype[camelCased] = new Function('return ' + original.toString())();
-    Nvim.prototype[camelCased].metadata = _.defaults({name: camelCased}, original.metadata);
-  });
-
   Nvim.prototype.quit = function quit() {
     this.command('qa!', []);
   };

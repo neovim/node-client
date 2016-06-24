@@ -3,9 +3,9 @@ declare module "neovim-client" {
   function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void);
 
   interface Nvim {
-    attach(width: number, height: boolean, enable_rgb: (err: Error) => void, cb: (err: Error) => void): void;
-    detach(cb: (err: Error) => void): void;
-    tryResize(width: number, height: (err: Error, res: Object) => void, cb: (err: Error, res: Object) => void): void;
+    uiAttach(width: number, height: boolean, enable_rgb: (err: Error) => void, cb: (err: Error) => void): void;
+    uiDetach(cb: (err: Error) => void): void;
+    uiTryResize(width: number, height: (err: Error, res: Object) => void, cb: (err: Error, res: Object) => void): void;
     command(str: string, cb: (err: Error) => void): void;
     feedkeys(keys: string, mode: string, escape_csi: boolean, cb: (err: Error) => void): void;
     input(keys: string, cb: (err: Error, res: number) => void): void;
@@ -42,9 +42,6 @@ declare module "neovim-client" {
     nameToColor(name: string, cb: (err: Error, res: number) => void): void;
     getColorMap(cb: (err: Error, res: {}) => void): void;
     getApiInfo(cb: (err: Error, res: Array<any>) => void): void;
-    uiAttach(width: number, height: boolean, enable_rgb: (err: Error) => void, cb: (err: Error) => void): void;
-    uiDetach(cb: (err: Error) => void): void;
-    uiTryResize(width: number, height: (err: Error, res: Object) => void, cb: (err: Error, res: Object) => void): void;
   }
   interface Buffer {
     lineCount(cb: (err: Error, res: number) => void): void;
