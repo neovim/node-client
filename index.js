@@ -34,7 +34,7 @@ function generateWrappers(Nvim, types, metadata) {
     // is Vim, then it a editor-global method which will be attached to the Nvim
     // class.
     var methodName = _.camelCase(parts.slice(typeName !== 'Ui').join('_'));
-    var args = _.map(func.parameters, function(param) {
+    var args = func.parameters.map(function(param) {
       return param[1];
     });
     var Type, callArgs;
