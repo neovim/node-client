@@ -62,7 +62,7 @@ attach(proc.stdin, proc.stdout, function(err, nvim) {
   process.stdout.write('  function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void);\n\n');
 
   Object.keys(interfaces).forEach(function(key) {
-    process.stdout.write('  interface ' + key + ' {\n');
+    process.stdout.write('  export interface ' + key + ' {\n');
     Object.keys(interfaces[key].prototype).forEach(function(method) {
       method = interfaces[key].prototype[method];
       if (method.metadata) {

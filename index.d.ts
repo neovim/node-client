@@ -2,7 +2,7 @@ declare module "neovim-client" {
   export default attach;
   function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void);
 
-  interface Nvim {
+  export interface Nvim {
     uiAttach(width: number, height: boolean, enable_rgb: (err: Error) => void, cb: (err: Error) => void): void;
     uiDetach(cb: (err: Error) => void): void;
     uiTryResize(width: number, height: (err: Error, res: Object) => void, cb: (err: Error, res: Object) => void): void;
@@ -43,7 +43,7 @@ declare module "neovim-client" {
     getColorMap(cb: (err: Error, res: {}) => void): void;
     getApiInfo(cb: (err: Error, res: Array<any>) => void): void;
   }
-  interface Buffer {
+  export interface Buffer {
     lineCount(cb: (err: Error, res: number) => void): void;
     getLine(index: number, cb: (err: Error, res: string) => void): void;
     setLine(index: number, line: string, cb: (err: Error) => void): void;
@@ -66,7 +66,7 @@ declare module "neovim-client" {
     addHighlight(src_id: number, hl_group: string, line: number, col_start: number, col_end: number, cb: (err: Error, res: number) => void): void;
     clearHighlight(src_id: number, line_start: number, line_end: number, cb: (err: Error) => void): void;
   }
-  interface Window {
+  export interface Window {
     getBuffer(cb: (err: Error, res: Buffer) => void): void;
     getCursor(cb: (err: Error, res: Array<number>) => void): void;
     setCursor(pos: Array<number>, cb: (err: Error) => void): void;
@@ -83,7 +83,7 @@ declare module "neovim-client" {
     getTabpage(cb: (err: Error, res: Tabpage) => void): void;
     isValid(cb: (err: Error, res: boolean) => void): void;
   }
-  interface Tabpage {
+  export interface Tabpage {
     getWindows(cb: (err: Error, res: Array<Window>) => void): void;
     getVar(name: string, cb: (err: Error, res: Object) => void): void;
     setVar(name: string, value: Object, cb: (err: Error, res: Object) => void): void;
