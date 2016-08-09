@@ -1,11 +1,11 @@
 declare module "neovim-client" {
   export default attach;
-  function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void);
+  function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void): void;
 
   export interface Nvim {
-    uiAttach(width: number, height: boolean, enable_rgb: (err: Error) => void, cb: (err: Error) => void): void;
+    uiAttach(width: number, height: number, enable_rgb: boolean, cb: (err: Error) => void): void;
     uiDetach(cb: (err: Error) => void): void;
-    uiTryResize(width: number, height: (err: Error, res: Object) => void, cb: (err: Error, res: Object) => void): void;
+    uiTryResize(width: number, height: number, cb: (err: Error, res: Object) => void): void;
     command(str: string, cb: (err: Error) => void): void;
     feedkeys(keys: string, mode: string, escape_csi: boolean, cb: (err: Error) => void): void;
     input(keys: string, cb: (err: Error, res: number) => void): void;
