@@ -197,3 +197,6 @@ module.exports = function attach(writer, reader, cb) {
     });
   });
 };
+
+// 'default' export for ES2015 or TypeScript environment.
+module.exports.default = module.exports;
