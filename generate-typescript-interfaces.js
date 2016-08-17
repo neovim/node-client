@@ -45,7 +45,7 @@ function metadataToSignature(method) {
     }
     params.push(method.parameters[i] + ': ' + type);
   }
-  return '    ' + method.name + '(' + params.join(', ') + '): void;\n';
+  return '  ' + method.name + '(' + params.join(', ') + '): void;\n';
 }
 
 attach(proc.stdin, proc.stdout, function(err, nvim) {
@@ -57,20 +57,26 @@ attach(proc.stdin, proc.stdout, function(err, nvim) {
   };
 
   // use a similar reference path to other definitely typed declarations
-  process.stdout.write('declare module "neovim-client" {\n');
-  process.stdout.write('  export default function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void): void;\n\n');
+  process.stdout.write('export default function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void): void;\n\n');
 
   Object.keys(interfaces).forEach(function(key) {
-    process.stdout.write('  export interface ' + key + ' {\n');
+    var name = key;
+    if (key === 'Nvim') {
+      name += ' extends NodeJS.EventEmitter';
+    }
+    process.stdout.write('export interface ' + name + ' {\n');
+    if (key === 'Nvim') {
+      process.stdout.write('  quit(): void;\n');
+    }
     Object.keys(interfaces[key].prototype).forEach(function(method) {
       method = interfaces[key].prototype[method];
       if (method.metadata) {
         process.stdout.write(metadataToSignature(method.metadata));
       }
     })
-    process.stdout.write('  }\n');
+    process.stdout.write('  equals(rhs: ' + key + '): boolean;\n');
+    process.stdout.write('}\n');
   });
 
-  process.stdout.write('}\n');
   proc.stdin.end();
 });

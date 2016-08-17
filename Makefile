@@ -8,6 +8,8 @@ test:
 		else \
 		./node_modules/.bin/mocha $(TESTS); \
 		fi
+	@echo 'Check index.d.ts type definition.'
+	@./node_modules/.bin/tsc --target es5 --module commonjs --noImplicitAny --noEmit test/typescript-test.ts
 
 
 watch:
