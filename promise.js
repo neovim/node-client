@@ -17,6 +17,10 @@ module.exports = function attach(writer, reader) {
         Object.keys(interfaces).forEach(function(key) {
           Object.keys(interfaces[key].prototype).forEach(function(method) {
             const oldMethod = interfaces[key].prototype[method];
+            const metadata = oldMethod.metadata || { parameters: [] }
+            if(metadata.parameters[metadata.parameters.length-1] !== 'cb') {
+              return
+            }
             interfaces[key].prototype[method] = function() {
               const args = Array.prototype.slice.call(arguments);
               const context = this;
