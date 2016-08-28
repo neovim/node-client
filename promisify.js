@@ -1,4 +1,4 @@
-module.exports = function promisifyNvim(nvim) {
+module.exports = function promisifyNvim(nvim, opts) {
   //promisify APIs
   var interfaces = {
     Nvim: nvim.constructor,
@@ -7,6 +7,8 @@ module.exports = function promisifyNvim(nvim) {
     Tabpage: nvim.Tabpage,
   };
 
+  var options = opts || {};
+
   Object.keys(interfaces).forEach(function(key) {
     Object.keys(interfaces[key].prototype).forEach(function(method) {
       const oldMethod = interfaces[key].prototype[method];
@@ -14,7 +16,7 @@ module.exports = function promisifyNvim(nvim) {
       if(metadata.parameters[metadata.parameters.length-1] !== 'cb') {
         return
       }
-      interfaces[key].prototype[method] = function() {
+      interfaces[key].prototype[method + options.suffix] = function() {
         const args = Array.prototype.slice.call(arguments);
         const context = this;
         return new Promise(function(resolve, reject) {
