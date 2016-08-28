@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 var attachWithCallback = require('./index');
 
 module.exports = function attach(writer, reader) {
