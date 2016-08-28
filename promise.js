@@ -5,7 +5,7 @@ var EventEmitter = require('events').EventEmitter;
 var traverse = require('traverse');
 var Session = require('msgpack5rpc');
 var _ = require('lodash');
-var attachWithCallback = require('.');
+var attachWithCallback = require('./index');
 var promisify = require('./promisify');
 
 module.exports = function attach(writer, reader) {
