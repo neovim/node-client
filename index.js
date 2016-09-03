@@ -38,7 +38,7 @@ function generateWrappers(Nvim, types, metadata) {
       return param[1];
     });
     var Type, callArgs;
-    if (typeName === 'Vim' || typeName === 'Ui') {
+    if (typeName === 'Nvim' || typeName === 'Vim' || typeName === 'Ui') {
       Type = Nvim;
       callArgs = args.join(', ');
     } else {
@@ -71,7 +71,7 @@ function generateWrappers(Nvim, types, metadata) {
       parameterTypes: func.parameters.map(function(p) { return p[0]; }),
       canFail: func.can_fail,
     }
-    if (typeName !== 'Vim' && typeName !== 'Ui') {
+    if (Type == Nvim) {
       method.metadata.parameterTypes.shift();
     }
     Type.prototype[methodName] = method;
