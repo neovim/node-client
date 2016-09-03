@@ -1,7 +1,7 @@
 {
   "name": "neovim-client",
   "description": "Neovim client library",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "homepage": "https://github.com/neovim/node-client",
   "author": {
     "name": "Thiago de Arruda",
