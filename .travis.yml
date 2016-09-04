@@ -2,6 +2,7 @@ language: node_js
 
 before_install:
   - eval "$(curl -Ss https://raw.githubusercontent.com/neovim/bot-ci/master/scripts/travis-setup.sh) nightly-x64"
+  - nvim --version
 
 node_js:
   - 'stable'
