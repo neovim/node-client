@@ -1,7 +1,7 @@
 var cp = require('child_process');
 
 var attach = require('./index');
-
+var promiseApi = process.argv.indexOf('--promise') !== -1;
 
 var proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {
   cwd: __dirname
@@ -28,23 +28,29 @@ function convertType(type) {
   return type;
 }
 
-function metadataToSignature(method) {
+function metadataToSignature(method, returnPromise) {
   var params = [];
-  for (var i = 0; i < method.parameters.length; i++) {
+  for (var i = 0; i < method.parameters.length - 1; i++) {
     var type;
-    if (i < method.parameterTypes.length) {
-      type = convertType(method.parameterTypes[i]);
+    if (method.parameterTypes.length <= i) {
+      type = 'any';
     } else {
-      type = '(err: Error';
-      var rtype = convertType(method.returnType);
-      if (rtype === 'void') {
-        type += ') => void';
-      } else {
-        type += ', res: ' + rtype + ') => void';
-      }
+      type = convertType(method.parameterTypes[i]);
     }
     params.push(method.parameters[i] + ': ' + type);
   }
+  var rtype = convertType(method.returnType);
+  if (returnPromise) {
+    return '  ' + method.name + '(' + params.join(', ') + '): Promise<'+ rtype +'>;\n';
+  }
+  var type = '(err: Error';
+  if (rtype === 'void') {
+    type += ') => void';
+  } else {
+    type += ', res: ' + rtype + ') => void';
+  }
+  // Last parameter is callback
+  params.push(method.parameters[method.parameters.length - 1] + ': ' + type);
   return '  ' + method.name + '(' + params.join(', ') + '): void;\n';
 }
 
@@ -71,7 +77,7 @@ attach(proc.stdin, proc.stdout, function(err, nvim) {
     Object.keys(interfaces[key].prototype).forEach(function(method) {
       method = interfaces[key].prototype[method];
       if (method.metadata) {
-        process.stdout.write(metadataToSignature(method.metadata));
+        process.stdout.write(metadataToSignature(method.metadata, promiseApi));
       }
     })
     process.stdout.write('  equals(rhs: ' + key + '): boolean;\n');
