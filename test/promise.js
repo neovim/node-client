@@ -66,14 +66,14 @@ describe('Nvim Promise API', function() {
 
   it('can deal with custom types', function(done) {
     return nvim.command('vsp').then(function(res) {
-      nvim.getWindows().then(function(windows) {
+      nvim.listWins().then(function(windows) {
         equal(windows.length, 2);
         // equal(windows[0] instanceof nvim.Window, true);
         // equal(windows[1] instanceof nvim.Window, true);
-        nvim.setCurrentWindow(windows[1]).then(function(res) {
-          nvim.getCurrentWindow().then(function(win) {
+        nvim.setCurrentWin(windows[1]).then(function(res) {
+          nvim.getCurrentWin().then(function(win) {
             equal(win._data, windows[1]._data);
-            nvim.getCurrentBuffer().then(function(buf) {
+            nvim.getCurrentBuf().then(function(buf) {
               // equal(buf instanceof nvim.Buffer, true);
               buf.getLineSlice(0, -1, true, true).then(function(lines) {
                 deepEqual(lines, ['']);
