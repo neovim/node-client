@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "es3",
+    "module": "commonjs",
+    "lib": ["ES2015"]
+  },
+  "files": ["typings/index.d.ts", "index.ts", "test.ts"]
+}
