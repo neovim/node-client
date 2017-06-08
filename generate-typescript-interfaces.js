@@ -34,17 +34,11 @@ function metadataToSignature(method) {
     var type;
     if (i < method.parameterTypes.length) {
       type = convertType(method.parameterTypes[i]);
-    } else {
-      type = '(err: Error';
-      var rtype = convertType(method.returnType);
-      if (rtype === 'void') {
-        type += ') => void';
-      } else {
-        type += ', res: ' + rtype + ') => void';
-      }
     }
     params.push(method.parameters[i] + ': ' + type);
   }
+  var rtype = convertType(method.returnType);
+  return `  ${method.name}(${params.join(', ')}): ${rtype === 'void' ? rtype : `Promise<${rtype}>`};\n`;
   return '  ' + method.name + '(' + params.join(', ') + '): void;\n';
 }
 
