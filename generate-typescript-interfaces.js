@@ -1,12 +1,11 @@
-var cp = require('child_process');
+const cp = require('child_process');
+const attach = require('./index');
 
-var attach = require('./index');
-
-var proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {
+const proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {
   cwd: __dirname,
 });
 
-var typeMap = {
+const typeMap = {
   String: 'string',
   Integer: 'number',
   Boolean: 'boolean',
@@ -16,33 +15,32 @@ var typeMap = {
 
 function convertType(type) {
   if (typeMap[type]) return typeMap[type];
-  var genericMatch = /Of\((\w+)[^)]*\)/.exec(type);
+  const genericMatch = /Of\((\w+)[^)]*\)/.exec(type);
   if (genericMatch) {
-    var t = convertType(genericMatch[1]);
-    if (/^Array/.test(type)) return 'Array<' + t + '>';
-    else return '{ [key: string]: ' + t + '; }';
+    const t = convertType(genericMatch[1]);
+    if (/^Array/.test(type)) return `Array<${t}>`;
+    return `{ [key: string]: ${t}; }`;
   }
   return type;
 }
 
 function metadataToSignature(method) {
-  var params = [];
-  for (var i = 0; i < method.parameters.length; i++) {
-    var type;
+  const params = [];
+  method.parameters.forEach((param, i) => {
+    let type;
     if (i < method.parameterTypes.length) {
       type = convertType(method.parameterTypes[i]);
     }
-    params.push(method.parameters[i] + ': ' + type);
-  }
-  var rtype = convertType(method.returnType);
-  return `  ${method.name}(${params.join(', ')}): ${rtype === 'void'
-    ? rtype
-    : `Promise<${rtype}>`};\n`;
-  return '  ' + method.name + '(' + params.join(', ') + '): void;\n';
+    params.push(`${method.parameters[i]}: ${type}`);
+  });
+  const rtype = convertType(method.returnType);
+  // eslint-disable-next-line
+  const returnTypeString = rtype === 'void' ? rtype : `Promise<${rtype}>`;
+  return `  ${method.name}(${params.join(', ')}): ${returnTypeString};\n`;
 }
 
-attach(proc.stdin, proc.stdout, function(err, nvim) {
-  var interfaces = {
+attach(proc.stdin, proc.stdout, (err, nvim) => {
+  const interfaces = {
     Nvim: nvim.constructor,
     Buffer: nvim.Buffer,
     Window: nvim.Window,
@@ -54,22 +52,23 @@ attach(proc.stdin, proc.stdout, function(err, nvim) {
     'export default function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void): void;\n\n'
   );
 
-  Object.keys(interfaces).forEach(function(key) {
-    var name = key;
+  Object.keys(interfaces).forEach((key) => {
+    let name = key;
     if (key === 'Nvim') {
       name += ' extends NodeJS.EventEmitter';
     }
-    process.stdout.write('export interface ' + name + ' {\n');
+    process.stdout.write(`export interface ${name} {\n`);
     if (key === 'Nvim') {
       process.stdout.write('  quit(): void;\n');
     }
-    Object.keys(interfaces[key].prototype).forEach(function(method) {
+    Object.keys(interfaces[key].prototype).forEach((method) => {
+      // eslint-disable-next-line no-param-reassign
       method = interfaces[key].prototype[method];
       if (method.metadata) {
         process.stdout.write(metadataToSignature(method.metadata));
       }
     });
-    process.stdout.write('  equals(rhs: ' + key + '): boolean;\n');
+    process.stdout.write(`  equals(rhs: ${key}): boolean;\n`);
     process.stdout.write('}\n');
   });
 
