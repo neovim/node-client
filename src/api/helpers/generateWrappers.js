@@ -1,4 +1,4 @@
-const parseFunctionMetadata = require("./parseFunctionMetadata");
+const parseFunctionMetadata = require('./parseFunctionMetadata');
 
 const createApiMethod = function({ name, takesCallback }) {
   let newMethod;
@@ -24,7 +24,7 @@ const createApiMethod = function({ name, takesCallback }) {
     };
   }
 
-  Object.defineProperty(newMethod, "name", { value: name });
+  Object.defineProperty(newMethod, 'name', { value: name });
   return newMethod;
 };
 
@@ -35,21 +35,21 @@ function generateWrappers(cls, types, prefixMap, metadata) {
       parameters,
       return_type: returnType,
       deprecated_since: deprecatedSince,
-      method: isMethod
+      method: isMethod,
     } = func;
 
     // Don't parse deprecated APIs
-    if (deprecatedSince === "1") {
+    if (deprecatedSince === '1') {
       return;
     }
 
     const { typeName, methodName } = parseFunctionMetadata({
       prefixMap,
-      name
+      name,
     });
 
     const args = parameters.map(param => param[1]);
-    const hasReturn = returnType !== "void";
+    const hasReturn = returnType !== 'void';
 
     // Choose between a ExtType constructor or Neovim class
     const Type = isMethod ? types[typeName].constructor : cls;
@@ -61,7 +61,7 @@ function generateWrappers(cls, types, prefixMap, metadata) {
       name: methodName,
       returnType,
       parameters: args,
-      parameterTypes: parameters.map(p => p[0])
+      parameterTypes: parameters.map(p => p[0]),
     };
 
     // ExtType (i.e. Buffer) methods should be defined in respective class and not on
@@ -76,8 +76,8 @@ function generateWrappers(cls, types, prefixMap, metadata) {
       methodMetadata.parameterTypes.shift();
     }
 
-    Object.defineProperty(method, "metadata", {
-      value: methodMetadata
+    Object.defineProperty(method, 'metadata', {
+      value: methodMetadata,
     });
 
     // One potential issue is trying to call nvim apis before it has been generated,
@@ -86,8 +86,8 @@ function generateWrappers(cls, types, prefixMap, metadata) {
     Type.prototype[methodName] = function(...a) {
       return method.apply(this, a);
     };
-    Object.defineProperty(Type.prototype[methodName], "name", {
-      value: methodName
+    Object.defineProperty(Type.prototype[methodName], 'name', {
+      value: methodName,
     });
   });
 }

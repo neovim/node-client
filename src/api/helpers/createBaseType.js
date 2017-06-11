@@ -6,10 +6,10 @@ module.exports = function(name) {
     this._data = data;
 
     this.logger = logger;
-    Object.defineProperty(this, "metadata", { value: metadata });
+    Object.defineProperty(this, 'metadata', { value: metadata });
 
     if (metadata && metadata.prefix) {
-      Object.defineProperty(this, "prefix", { value: metadata.prefix });
+      Object.defineProperty(this, 'prefix', { value: metadata.prefix });
     }
   };
 
@@ -43,6 +43,6 @@ module.exports = function(name) {
     this._session.notify(name, args);
   };
 
-  Object.defineProperty(ExtTypeFactory, "name", { value: name });
+  Object.defineProperty(ExtTypeFactory, 'name', { value: name });
   return ExtTypeFactory;
 };

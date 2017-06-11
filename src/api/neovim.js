@@ -1,10 +1,10 @@
-const EventEmitter = require("events").EventEmitter;
+const EventEmitter = require('events').EventEmitter;
 
-const Session = require("msgpack5rpc");
+const Session = require('msgpack5rpc');
 
-const decode = require("../decode");
-const generateWrappers = require("./helpers/generateWrappers");
-const createBaseType = require("./helpers/createBaseType");
+const decode = require('../decode');
+const generateWrappers = require('./helpers/generateWrappers');
+const createBaseType = require('./helpers/createBaseType');
 
 class Neovim extends EventEmitter {
   constructor(options = {}) {
@@ -35,49 +35,49 @@ class Neovim extends EventEmitter {
   }
 
   handleRequest(method, args, resp, ...restArgs) {
-    this.logger.info("handleRequest: ", method);
+    this.logger.info('handleRequest: ', method);
     // If neovim API is not generated yet and we are not handle a 'specs' request
     // then queue up requests
     //
     // Otherwise emit as normal
-    if (!this.isApiReady() && method !== "specs") {
+    if (!this.isApiReady() && method !== 'specs') {
       this.requestQueue.push({
-        type: "request",
-        args: [method, args, resp, ...restArgs]
+        type: 'request',
+        args: [method, args, resp, ...restArgs],
       });
     } else {
-      this.emit("request", decode(method), decode(args), resp);
+      this.emit('request', decode(method), decode(args), resp);
     }
   }
 
   handleNotification(method, args, ...restArgs) {
-    this.logger.info("handleNotification: ", method);
+    this.logger.info('handleNotification: ', method);
     // If neovim API is not generated yet then queue up requests
     //
     // Otherwise emit as normal
     if (!this.isApiReady()) {
       this.requestQueue.push({
-        type: "notification",
-        args: [method, args, ...restArgs]
+        type: 'notification',
+        args: [method, args, ...restArgs],
       });
     } else {
-      this.emit("notification", decode(method), decode(args));
+      this.emit('notification', decode(method), decode(args));
     }
   }
 
   // Listen and setup handlers for session
   startSession() {
     if (!this._sessionAttached) {
-      throw new Error("Not attached to input/output");
+      throw new Error('Not attached to input/output');
     }
 
-    this._session.on("request", this.handleRequest);
-    this._session.on("notification", this.handleNotification);
-    this._session.on("detach", () => {
-      this.logger.debug("detached");
-      this._session.removeAllListeners("request");
-      this._session.removeAllListeners("notification");
-      this.emit("disconnect");
+    this._session.on('request', this.handleRequest);
+    this._session.on('notification', this.handleNotification);
+    this._session.on('detach', () => {
+      this.logger.debug('detached');
+      this._session.removeAllListeners('request');
+      this._session.removeAllListeners('notification');
+      this.emit('disconnect');
     });
 
     this.apiPromise = this.generateApi();
@@ -85,7 +85,7 @@ class Neovim extends EventEmitter {
 
   requestApi() {
     return new Promise((resolve, reject) => {
-      this._session.request("nvim_get_api_info", [], (err, res) => {
+      this._session.request('nvim_get_api_info', [], (err, res) => {
         if (err) {
           reject(err);
         } else {
@@ -102,7 +102,7 @@ class Neovim extends EventEmitter {
     try {
       results = await this.requestApi();
     } catch (err) {
-      this.logger.error("Could not get vim api results");
+      this.logger.error('Could not get vim api results');
       this.logger.error(err);
     }
 
@@ -132,25 +132,25 @@ class Neovim extends EventEmitter {
                 session: this._session,
                 data,
                 metadata: metaDataForType,
-                logger: this.logger
+                logger: this.logger,
               }),
-            encode: obj => obj._data
+            encode: obj => obj._data,
           });
 
           prefixMap[metaDataForType.prefix] = name;
           types[name] = {
             constructor: ExtType,
-            prefix: metaDataForType.prefix
+            prefix: metaDataForType.prefix,
           };
           Neovim.prototype[name] = ExtType;
         });
 
-        this.logger.debug("generate wrappers");
+        this.logger.debug('generate wrappers');
         generateWrappers(Neovim, types, prefixMap, metadata);
 
         this._channel_id = channelId;
         this._generatedApi = true;
-        this.logger.debug("add types");
+        this.logger.debug('add types');
         this._session.addTypes(extTypes);
 
         // register the non-queueing handlers
@@ -163,7 +163,7 @@ class Neovim extends EventEmitter {
         return true;
       } catch (err) {
         this.logger.error(`Could not dynamically generate neovim API: ${err}`, {
-          error: err
+          error: err,
         });
         this.logger.error(err.stack);
         return null;
@@ -175,7 +175,7 @@ class Neovim extends EventEmitter {
 
   // Extra API methods
   quit() {
-    this.command("qa!", []);
+    this.command('qa!', []);
   }
 }
 
