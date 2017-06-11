@@ -59,8 +59,8 @@
   },
   "lint-staged": {
     "*.js": [
-      "eslint --fix",
       "prettier --single-quote --trailing-comma es5 --write",
+      "eslint --fix",
       "npm run test-staged"
     ]
   },
