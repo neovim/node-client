@@ -69,10 +69,7 @@ async function main() {
     if (key === 'Neovim') {
       process.stdout.write('  quit(): void;\n');
       process.stdout.write('  isApiReady(): Boolean;\n');
-      // process.stdout.write('  attachSession({ reader, writer }: { reader: NodeJS.ReadableStream, writer: NodeJS.WritableStream }): void;\n');
-      // process.stdout.write('  startSession(): Promise<Boolean>;\n');
       process.stdout.write('  requestApi(): Promise<[integer, any]>;\n');
-      // process.stdout.write('  generateApi(): Promise<Boolean>;\n');
     }
     process.stdout.write(`  equals(rhs: ${key}): boolean;\n`);
 
