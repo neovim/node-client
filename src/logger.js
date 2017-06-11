@@ -15,8 +15,10 @@ if (process.env.NVIM_NODE_LOG_FILE) {
     ],
   });
 } else {
-  // Remove Console transport
-  winston.remove(winston.transports.Console);
+  if (!process.env.ALLOW_CONSOLE) {
+    // Remove Console transport
+    winston.remove(winston.transports.Console);
+  }
   logger = winston;
 }
 
