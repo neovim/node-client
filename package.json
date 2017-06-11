@@ -3,10 +3,20 @@
   "description": "Neovim client library",
   "version": "0.0.1",
   "homepage": "https://github.com/neovim/node-client",
-  "author": {
-    "name": "Billy Vong",
-    "email": "github@mmo.me"
-  },
+  "authors": [
+    {
+      "name": "Thiago de Arruda",
+      "email": "tpadilha84@gmail.com"
+    },
+    {
+      "name": "rhysd",
+      "email": "lin90162@yahoo.co.jp"
+    },
+    {
+      "name": "Billy Vong",
+      "email": "github@mmo.me"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/neovim/node-client"
