@@ -74,11 +74,8 @@ function generateWrappers(cls, types, prefixMap, metadata) {
     //   Buffer.lineCount = () => this.request('nvim_buf_line_count', this)
     if (isMethod) {
       methodMetadata.parameterTypes.shift();
+      methodMetadata.parameters.shift();
     }
-
-    Object.defineProperty(method, 'metadata', {
-      value: methodMetadata,
-    });
 
     // One potential issue is trying to call nvim apis before it has been generated,
     // In that case using a Proxy would be better so can we catch all undefined api calls
@@ -86,6 +83,11 @@ function generateWrappers(cls, types, prefixMap, metadata) {
     Type.prototype[methodName] = function(...a) {
       return method.apply(this, a);
     };
+
+    Object.defineProperty(Type.prototype[methodName], 'metadata', {
+      value: methodMetadata,
+    });
+
     Object.defineProperty(Type.prototype[methodName], 'name', {
       value: methodName,
     });
