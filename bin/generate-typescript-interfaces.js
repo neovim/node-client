@@ -1,5 +1,5 @@
 const cp = require('child_process');
-const attach = require('./index');
+const attach = require('./src/attach');
 
 const proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {
   cwd: __dirname,
@@ -39,7 +39,8 @@ function metadataToSignature(method) {
   return `  ${method.name}(${params.join(', ')}): ${returnTypeString};\n`;
 }
 
-attach(proc.stdin, proc.stdout, (err, nvim) => {
+async function main() {
+  const nvim = await attach({ proc });
   const interfaces = {
     Nvim: nvim.constructor,
     Buffer: nvim.Buffer,
@@ -52,7 +53,7 @@ attach(proc.stdin, proc.stdout, (err, nvim) => {
     'export default function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void): void;\n\n'
   );
 
-  Object.keys(interfaces).forEach((key) => {
+  Object.keys(interfaces).forEach(key => {
     let name = key;
     if (key === 'Nvim') {
       name += ' extends NodeJS.EventEmitter';
@@ -61,7 +62,7 @@ attach(proc.stdin, proc.stdout, (err, nvim) => {
     if (key === 'Nvim') {
       process.stdout.write('  quit(): void;\n');
     }
-    Object.keys(interfaces[key].prototype).forEach((method) => {
+    Object.keys(interfaces[key].prototype).forEach(method => {
       // eslint-disable-next-line no-param-reassign
       method = interfaces[key].prototype[method];
       if (method.metadata) {
@@ -73,4 +74,11 @@ attach(proc.stdin, proc.stdout, (err, nvim) => {
   });
 
   proc.stdin.end();
-});
+}
+
+try {
+  main();
+} catch (err) {
+  console.error(err);
+  process.exit(1);
+}
