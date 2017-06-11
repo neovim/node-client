@@ -1,5 +1,5 @@
 const cp = require('child_process');
-const attach = require('./src/attach');
+const attach = require('../src/attach');
 
 const proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {
   cwd: __dirname,
@@ -41,35 +41,47 @@ function metadataToSignature(method) {
 
 async function main() {
   const nvim = await attach({ proc });
+  await nvim.apiPromise;
   const interfaces = {
-    Nvim: nvim.constructor,
+    Neovim: nvim.constructor,
     Buffer: nvim.Buffer,
     Window: nvim.Window,
     Tabpage: nvim.Tabpage,
   };
 
   // use a similar reference path to other definitely typed declarations
+  process.stdout.write('interface AttachOptions {\n');
+  process.stdout.write('  writer?: NodeJS.WritableStream,\n');
+  process.stdout.write('  reader?: NodeJS.ReadableStream,\n');
+  process.stdout.write('  proc?: NodeJS.ChildProcess,\n');
+  process.stdout.write('  socket?: String,\n');
+  process.stdout.write('}\n');
   process.stdout.write(
-    'export default function attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, cb: (err: Error, nvim: Nvim) => void): void;\n\n'
+    'export default function attach(options: AttachOptions): Neovim;\n\n'
   );
 
   Object.keys(interfaces).forEach(key => {
     let name = key;
-    if (key === 'Nvim') {
+    if (key === 'Neovim') {
       name += ' extends NodeJS.EventEmitter';
     }
     process.stdout.write(`export interface ${name} {\n`);
-    if (key === 'Nvim') {
+    if (key === 'Neovim') {
       process.stdout.write('  quit(): void;\n');
+      process.stdout.write('  isApiReady(): Boolean;\n');
+      // process.stdout.write('  attachSession({ reader, writer }: { reader: NodeJS.ReadableStream, writer: NodeJS.WritableStream }): void;\n');
+      // process.stdout.write('  startSession(): Promise<Boolean>;\n');
+      process.stdout.write('  requestApi(): Promise<[integer, any]>;\n');
+      // process.stdout.write('  generateApi(): Promise<Boolean>;\n');
     }
-    Object.keys(interfaces[key].prototype).forEach(method => {
-      // eslint-disable-next-line no-param-reassign
-      method = interfaces[key].prototype[method];
+    process.stdout.write(`  equals(rhs: ${key}): boolean;\n`);
+
+    Object.keys(interfaces[key].prototype).forEach(methodName => {
+      const method = interfaces[key].prototype[methodName];
       if (method.metadata) {
         process.stdout.write(metadataToSignature(method.metadata));
       }
     });
-    process.stdout.write(`  equals(rhs: ${key}): boolean;\n`);
     process.stdout.write('}\n');
   });
 
