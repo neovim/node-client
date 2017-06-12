@@ -19,8 +19,12 @@ module.exports = function(name, options = {}) {
       }
     });
 
-    const nameWithPattern = `${name}${options.pattern ? `:${options.pattern}` : ''}`;
-    Object.defineProperty(f, NVIM_METHOD_NAME, { value: `autocmd:${nameWithPattern}` });
+    const nameWithPattern = `${name}${options.pattern
+      ? `:${options.pattern}`
+      : ''}`;
+    Object.defineProperty(f, NVIM_METHOD_NAME, {
+      value: `autocmd:${nameWithPattern}`,
+    });
     Object.defineProperty(f, NVIM_SYNC, { value: !!sync });
     Object.defineProperty(f, NVIM_SPEC, {
       value: {

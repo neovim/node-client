@@ -83,7 +83,9 @@ class Host {
       try {
         // TODO check if sync
         const plugResult = await this.handlePlugin(method, args);
-        res.send(!plugResult || typeof plugResult === 'undefined' ? null : plugResult);
+        res.send(
+          !plugResult || typeof plugResult === 'undefined' ? null : plugResult
+        );
       } catch (err) {
         res.send(err.toString(), true);
       }
