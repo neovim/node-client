@@ -30,9 +30,9 @@ describe('Plugin Factory (used by host)', () => {
         type: 'autocmd',
         name: 'BufEnter',
         sync: true,
-        opts: { pattern: '*.js', eval: 'expand("<afile>")' },
+        opts: { pattern: '*', eval: 'expand("<afile>")' },
       },
-      { type: 'function', name: 'Func', sync: false, opts: {} },
+      { type: 'function', name: 'Func', sync: true, opts: {} },
     ];
     expect(pluginObj.specs).toEqual(exSPECted);
   });
