@@ -52,7 +52,7 @@
     "which": "^1.1.1"
   },
   "scripts": {
-    "test": "jest --testPathPattern src/*",
+    "test": "jest --testPathPattern src",
     "test-staged": "jest --bail --findRelatedTests --testPathPattern src/*",
     "precommit": "lint-staged"
   },
@@ -61,6 +61,12 @@
       "prettier --single-quote --trailing-comma es5 --write",
       "eslint --fix",
       "npm run test-staged"
+    ]
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "node_modules",
+      "scripts"
     ]
   },
   "keywords": [
