@@ -2,7 +2,14 @@
 const path = require('path');
 const loadPlugin = require('./factory');
 
-const PLUGIN_PATH = path.join(__dirname, '../../__tests__', 'integration', 'rplugin', 'node', 'test');
+const PLUGIN_PATH = path.join(
+  __dirname,
+  '../../__tests__',
+  'integration',
+  'rplugin',
+  'node',
+  'test'
+);
 
 describe('Plugin Factory (used by host)', () => {
   let pluginObj;
@@ -40,20 +47,16 @@ describe('Plugin Factory (used by host)', () => {
     const sandbox = pluginObj.sandbox;
     expect(global.loaded).toBeUndefined();
     expect(sandbox.loaded).toEqual(true);
-    expect(Object.keys(sandbox.process)).not.toContain(
-      ['chdir', 'exit']
-    );
+    expect(Object.keys(sandbox.process)).not.toContain(['chdir', 'exit']);
   });
 
   it('should load files required by the plugin in a sandbox', () => {
     const required = pluginObj.sandbox.required;
-    expect(required).toEqual(
-      'you bet!',
-    );
+    expect(required).toEqual('you bet!');
     // expect(
-      // Object.keys(required.globals.process),
+    // Object.keys(required.globals.process),
     // ).not.toContain(
-      // ['chdir', 'exit'],
+    // ['chdir', 'exit'],
     // );
   });
 
@@ -65,7 +68,7 @@ describe('Plugin Factory (used by host)', () => {
   });
 
   it('does not cache loaded plugins by default', () => {
-    const samePlugin = loadPlugin(PLUGIN_PATH, null, { });
+    const samePlugin = loadPlugin(PLUGIN_PATH, null, {});
     expect(pluginObj.import).not.toEqual(samePlugin.import);
   });
 
