@@ -32,7 +32,7 @@ function generateWrappers(cls, types, prefixMap, metadata) {
     } = func;
 
     // Don't parse deprecated APIs
-    if (deprecatedSince === '1') {
+    if (deprecatedSince <= 2) {
       return;
     }
 
