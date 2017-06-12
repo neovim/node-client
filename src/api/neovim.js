@@ -123,6 +123,7 @@ class Neovim extends EventEmitter {
           const ExtType = createBaseType(name);
           const metaDataForType = metadata.types[name];
 
+          Object.defineProperty(ExtType, 'name', { value: name });
           // Collect the type information necessary for msgpack5 deserialization
           // when it encounters the corresponding ext code.
           extTypes.push({
