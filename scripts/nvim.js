@@ -16,10 +16,9 @@ module.exports = (async function() {
     socket = process.env.NVIM_LISTEN_ADDRESS;
   } else {
     proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {
-      cwd: __dirname
+      cwd: __dirname,
     });
   }
-
 
   const nvim = await attach({ proc, socket });
 
@@ -27,4 +26,3 @@ module.exports = (async function() {
 
   return nvim;
 }());
-

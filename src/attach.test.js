@@ -50,9 +50,7 @@ describe('Nvim Promise API', () => {
   it('can receive requests and send responses', async () => {
     const res = await nvim.eval('rpcrequest(1, "request", 1, 2, 3)');
     expect(res).toEqual('received request(1,2,3)');
-    expect(requests).toEqual(
-      [{ method: 'request', args: [1, 2, 3] }]
-    );
+    expect(requests).toEqual([{ method: 'request', args: [1, 2, 3] }]);
     expect(notifications).toEqual([]);
   });
 
@@ -60,10 +58,12 @@ describe('Nvim Promise API', () => {
     const res = await nvim.eval('rpcnotify(1, "notify", 1, 2, 3)');
     expect(res).toEqual(1);
     expect(requests).toEqual([]);
-    return new Promise((resolve) => setImmediate(() => {
-      expect(notifications).toEqual([{ method: 'notify', args: [1, 2, 3] }]);
-      resolve();
-    }));
+    return new Promise(resolve =>
+      setImmediate(() => {
+        expect(notifications).toEqual([{ method: 'notify', args: [1, 2, 3] }]);
+        resolve();
+      })
+    );
   });
 
   it('can deal with custom types', async () => {
