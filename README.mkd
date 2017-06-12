@@ -1,4 +1,4 @@
-# neovim-client [![Build Status](https://travis-ci.org/billyvg/node-client.png)](https://travis-ci.org/neovim/node-client)
+# neovim-client [![Build Status](https://travis-ci.org/billyvg/node-client.png)](https://travis-ci.org/billyvg/node-client)
 
 ## Installation
 
