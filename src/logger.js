@@ -23,4 +23,4 @@ if (process.env.NVIM_NODE_LOG_FILE) {
 }
 
 module.exports = logger;
-module.exports.default = module.exports;
+// module.exports.default = module.exports;
