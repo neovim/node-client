@@ -1,4 +1,4 @@
-# neovim-client [![Build Status](https://travis-ci.org/billyvg/node-client.png)](https://travis-ci.org/billyvg/node-client)
+# neovim-client [![Build Status](https://travis-ci.org/billyvg/node-client.svg?branch)](https://travis-ci.org/billyvg/node-client)
 WIP: Currently only works on node 8
 
 ## Installation
