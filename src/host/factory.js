@@ -13,7 +13,7 @@ const {
   NVIM_DEV_MODE,
   NVIM_SPEC,
   NVIM_METHOD_NAME,
-} = require('./properties');
+} = require('../plugin/properties');
 
 const BLACKLISTED_GLOBALS = [
   'reallyExit',

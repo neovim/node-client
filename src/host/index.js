@@ -2,7 +2,7 @@ const util = require('util');
 
 const attach = require('../attach');
 const logger = require('../logger');
-const loadPlugin = require('../plugin/factory');
+const loadPlugin = require('./factory');
 
 class Host {
   constructor() {
