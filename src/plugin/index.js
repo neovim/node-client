@@ -3,6 +3,6 @@
 module.exports = {
   Plugin: require('./plugin'),
   Function: require('./function'),
-  AutoCmd: require('./autocmd'),
+  Autocmd: require('./autocmd'),
   Command: require('./command'),
 };

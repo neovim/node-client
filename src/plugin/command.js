@@ -11,7 +11,7 @@ module.exports = function(name, options = {}) {
 
     const f = cls[methodName];
     const opts = {};
-    const sync = false;
+    const sync = !!options.sync;
 
     ['range', 'nargs'].forEach(option => {
       if (typeof options[option] !== 'undefined') {

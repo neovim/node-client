@@ -114,7 +114,9 @@ function createPlugin(filename, nvim, options) {
   const handlers = {};
 
   // Clear module from cache
-  delete Module._cache[require.resolve(filename)];
+  if (!options.cache) {
+    delete Module._cache[require.resolve(filename)];
+  }
 
   // attempt to import plugin
   try {
@@ -141,6 +143,7 @@ function createPlugin(filename, nvim, options) {
         sandbox,
         specs,
         handlers,
+        import: defaultImport,
         module: !options.noCreateInstance ? new Wrapper(nvim) : null,
       };
     }
@@ -154,7 +157,7 @@ function createPlugin(filename, nvim, options) {
 }
 
 function loadPlugin(filename, nvim, options = {}) {
-  logger.info('loadPlugin: ', filename);
+  logger.debug('loadPlugin: ', filename);
   try {
     return createPlugin(filename, nvim, options);
   } catch (err) {
