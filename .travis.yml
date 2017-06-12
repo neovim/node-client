@@ -8,6 +8,7 @@ before_install:
   - nvim --version
 
 install:
+  - npm link
   - npm install
   - npm run prep-integration-test
 
