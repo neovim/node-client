@@ -30,7 +30,7 @@ describe('Plugin Factory (used by host)', () => {
         type: 'autocmd',
         name: 'BufEnter',
         sync: true,
-        opts: { pattern: '*', eval: 'expand("<afile>")' },
+        opts: { pattern: '*.test', eval: 'expand("<afile>")' },
       },
       { type: 'function', name: 'Func', sync: true, opts: {} },
     ];

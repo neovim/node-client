@@ -25,7 +25,7 @@ class Test {
 
   @Autocmd('BufEnter', {
     sync: true,
-    pattern: '*',
+    pattern: '*.test',
     eval: 'expand("<afile>")',
   })
   onBufEnter(filename) {
