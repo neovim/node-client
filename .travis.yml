@@ -4,5 +4,12 @@ before_install:
   - eval "$(curl -Ss https://raw.githubusercontent.com/neovim/bot-ci/master/scripts/travis-setup.sh) nightly-x64"
   - nvim --version
 
+install:
+  - npm install
+  - npm run prep-integration-test
+
+cache: yarn
+
 node_js:
+  - '7'
   - '8'
