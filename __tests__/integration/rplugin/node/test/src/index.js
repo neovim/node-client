@@ -8,25 +8,29 @@ const { Plugin, Function, Autocmd, Command } = require('neovim2/plugin');
 @Plugin
 class Test {
   @Command('JSHostTestCmd', { sync: true, range: '', nargs: '*' })
-  hostTest(args, range, cb) {
-    this.nvim.setCurrentLine('A line, for your troubles');
+  hostTest(args, range) {
     if (args[0] === 'canhazresponse?') {
-      cb(new Error('no >:('));
+      throw new Error('no >:(');
     }
-    cb();
+
+    this.nvim.setCurrentLine('A line, for your troubles');
+
+    return true;
   }
 
   @Autocmd('BufEnter', {
     sync: true,
-    pattern: '*.js',
+    pattern: '*',
     eval: 'expand("<afile>")',
   })
-  onBufEnter(filename, cb) {
-    debug('This is an annoying function');
-    cb();
+  onBufEnter(filename) {
+    return new Promise((resolve, reject) => {
+      console.log('This is an annoying function ' + filename);
+      resolve(filename);
+    });
   }
 
-  @Function('Func')
+  @Function('Func', { sync: true })
   func(args) {
     return 'Funcy ' + args;
   }
