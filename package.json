@@ -52,8 +52,8 @@
     "which": "^1.1.1"
   },
   "scripts": {
-    "test": "jest --testPathPattern src",
-    "test-staged": "jest --bail --findRelatedTests --testPathPattern src/*",
+    "test": "jest",
+    "test-staged": "jest --bail --findRelatedTests",
     "precommit": "lint-staged"
   },
   "lint-staged": {
@@ -66,7 +66,8 @@
   "jest": {
     "testPathIgnorePatterns": [
       "node_modules",
-      "scripts"
+      "scripts",
+      "__tests__/integration/rplugin"
     ]
   },
   "keywords": [
