@@ -25,7 +25,7 @@ class Host {
 
   // Route incoming request to a plugin
   handlePlugin(method, args) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       logger.debug('host.handlePlugin: ', method);
 
       // Parse method name
@@ -48,11 +48,11 @@ class Host {
           reject(new Error(errMsg));
         } else {
           try {
-            resolve(plugin.module[handler](...args));
+            resolve(await plugin.module[handler](...args));
           } catch (err) {
             const msg = `Error in plugin for ${type}:${procName}: ${err.message}`;
             logger.error(`${msg} (file: ${filename}, stack: ${err.stack})`);
-            reject(new Error(msg));
+            reject(err);
           }
         }
       }
@@ -69,7 +69,7 @@ class Host {
     logger.debug(`specs: ${util.inspect(specs)}`);
   }
 
-  handler(method, args, res) {
+  async handler(method, args, res) {
     logger.debug('request received: ', method);
     // 'poll' and 'specs' are requests by neovim,
     // otherwise it will
@@ -80,13 +80,13 @@ class Host {
       // Return plugin specs
       this.handleRequestSpecs(method, args, res);
     } else {
-      this.handlePlugin(method, args, (err, plugRes) => {
-        if (err) {
-          res.send(err.toString(), true);
-        } else {
-          res.send(!plugRes || typeof plugRes === 'undefined' ? null : plugRes);
-        }
-      });
+      try {
+        // TODO check if sync
+        const plugResult = await this.handlePlugin(method, args);
+        res.send(!plugResult || typeof plugResult === 'undefined' ? null : plugResult);
+      } catch (err) {
+        res.send(err.toString(), true);
+      }
     }
   }
 
