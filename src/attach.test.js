@@ -1,99 +1,102 @@
-var assert = require('assert');
-var cp = require('child_process');
-var which = require('which');
-var attach = require('../promise');
-
-for (var k in assert) global[k] = assert[k];
+/* eslint-env jest */
+const cp = require('child_process');
+const which = require('which');
+const attach = require('./attach');
 
 try {
   which.sync('nvim');
 } catch (e) {
-  console.error('A Neovim installation is required to run the tests',
-                '(see https://github.com/neovim/neovim/wiki/Installing)');
+  console.error(
+    'A Neovim installation is required to run the tests',
+    '(see https://github.com/neovim/neovim/wiki/Installing)'
+  );
   process.exit(1);
 }
 
-describe('Nvim Promise API', function() {
-  var nvim, requests, notifications;
+describe('Nvim Promise API', () => {
+  let proc;
+  let nvim;
+  let requests;
+  let notifications;
 
-  before(function(done) {
-    nvim = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {
-      cwd: __dirname
+  beforeAll(async done => {
+    proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {
+      cwd: __dirname,
     });
 
-    attach(nvim.stdin, nvim.stdout).then(function(n) {
-      nvim = n;
-      nvim.on('request', function(method, args, resp) {
-        requests.push({method: method, args: args});
-        resp.send('received ' + method + '(' + args + ')');
-      });
-      nvim.on('notification', function(method, args) {
-        notifications.push({method: method, args: args});
-      });
-      done();
+    nvim = await attach({ proc });
+    nvim.on('request', (method, args, resp) => {
+      requests.push({ method, args });
+      resp.send(`received ${method}(${args})`);
     });
+    nvim.on('notification', (method, args) => {
+      notifications.push({ method, args });
+    });
+    await nvim.apiPromise;
+
+    done();
   });
 
-  beforeEach(function() {
+  beforeEach(() => {
     requests = [];
     notifications = [];
   });
 
-  it('can send requests and receive response', function() {
-    return nvim.eval('{"k1": "v1", "k2": 2}').then(function(res) {
-      deepEqual(res, {k1: 'v1', k2: 2});
-    });
+  it('can send requests and receive response', async () => {
+    const result = await nvim.eval('{"k1": "v1", "k2": 2}');
+    expect(result).toEqual({ k1: 'v1', k2: 2 });
   });
 
-  it('can receive requests and send responses', function() {
-    return nvim.eval('rpcrequest(1, "request", 1, 2, 3)').then(function(res) {
-      equal(res, 'received request(1,2,3)');
-      deepEqual(requests, [{method: 'request', args: [1, 2, 3]}]);
-      deepEqual(notifications, []);
-    });
+  it('can receive requests and send responses', async () => {
+    const res = await nvim.eval('rpcrequest(1, "request", 1, 2, 3)');
+    expect(res).toEqual('received request(1,2,3)');
+    expect(requests).toEqual(
+      [{ method: 'request', args: [1, 2, 3] }]
+    );
+    expect(notifications).toEqual([]);
   });
 
-  it('can receive notifications', function(done) {
-    return nvim.eval('rpcnotify(1, "notify", 1, 2, 3)').then(function(res) {
-      equal(res, 1);
-      deepEqual(requests, []);
-      setImmediate(function() {
-        deepEqual(notifications, [{method: 'notify', args: [1, 2, 3]}]);
-        done();
-      });
-    });
+  it('can receive notifications', async () => {
+    const res = await nvim.eval('rpcnotify(1, "notify", 1, 2, 3)');
+    expect(res).toEqual(1);
+    expect(requests).toEqual([]);
+    return new Promise((resolve) => setImmediate(() => {
+      expect(notifications).toEqual([{ method: 'notify', args: [1, 2, 3] }]);
+      resolve();
+    }));
   });
 
-  it('can deal with custom types', function(done) {
-    return nvim.command('vsp').then(function(res) {
-      nvim.getWindows().then(function(windows) {
-        equal(windows.length, 2);
-        // equal(windows[0] instanceof nvim.Window, true);
-        // equal(windows[1] instanceof nvim.Window, true);
-        nvim.setCurrentWindow(windows[1]).then(function(res) {
-          nvim.getCurrentWindow().then(function(win) {
-            equal(win._data, windows[1]._data);
-            nvim.getCurrentBuffer().then(function(buf) {
-              // equal(buf instanceof nvim.Buffer, true);
-              buf.getLineSlice(0, -1, true, true).then(function(lines) {
-                deepEqual(lines, ['']);
-                buf.setLineSlice(0, -1, true, true, ['line1', 'line2']).then(function() {
-                  buf.getLineSlice(0, -1, true, true).then(function(lines) {
-                    deepEqual(lines, ['line1', 'line2']);
-                    done();
-                  });
-                });
-              });
-            });
-          });
-        });
-      });
-    });
+  it('can deal with custom types', async () => {
+    await nvim.command('vsp');
+    await nvim.command('vsp');
+    await nvim.command('vsp');
+    const windows = await nvim.listWins();
 
+    expect(windows.length).toEqual(4);
+    expect(windows[0] instanceof nvim.Window).toEqual(true);
+    expect(windows[1] instanceof nvim.Window).toEqual(true);
+
+    await nvim.setCurrentWin(windows[2]);
+    const win = await nvim.getCurrentWin();
+
+    expect(win).not.toEqual(windows[0]);
+    expect(win).toEqual(windows[2]);
+
+    const buf = await nvim.getCurrentBuf();
+    expect(buf instanceof nvim.Buffer).toEqual(true);
+
+    const lines = await buf.getLines(0, -1, true);
+    expect(lines).toEqual(['']);
+
+    await buf.setLines(0, -1, true, ['line1', 'line2']);
+    const newLines = await buf.getLines(0, -1, true);
+    expect(newLines).toEqual(['line1', 'line2']);
   });
 
-  it('emits "disconnect" after quit', function(done) {
+  it('emits "disconnect" after quit', done => {
     nvim.on('disconnect', done);
     nvim.quit();
+    // Event doesn't actually emit when we quit nvim, but when the child process is killed
+    proc.kill();
   });
 });
