@@ -11,5 +11,4 @@ install:
 cache: yarn
 
 node_js:
-  - '7'
   - '8'
