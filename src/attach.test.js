@@ -39,6 +39,12 @@ describe('Nvim Promise API', () => {
     done();
   });
 
+  afterAll(() => {
+    if (proc) {
+      proc.kill();
+    }
+  });
+
   beforeEach(() => {
     requests = [];
     notifications = [];
@@ -96,8 +102,15 @@ describe('Nvim Promise API', () => {
   });
 
   it('emits "disconnect" after quit', done => {
-    nvim.on('disconnect', done);
+    const disconnectMock = jest.fn();
+    nvim.on('disconnect', disconnectMock);
     nvim.quit();
+
+    proc.on('close', () => {
+      expect(disconnectMock.mock.calls.length).toBe(1);
+      done();
+    });
+
     // Event doesn't actually emit when we quit nvim, but when the child process is killed
     proc.kill();
   });
