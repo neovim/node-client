@@ -53,7 +53,7 @@
     "which": "^1.1.1"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "test-staged": "jest --bail --findRelatedTests",
     "prep-integration-test": "(cd __tests__/integration/rplugin/node/test && npm install)",
     "precommit": "lint-staged"

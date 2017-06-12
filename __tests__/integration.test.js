@@ -41,6 +41,7 @@ describe('Node host', () => {
 
   afterAll(() => {
     process.chdir(testdir);
+    proc.kill();
   });
 
   beforeEach(() => {});
