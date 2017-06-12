@@ -75,9 +75,10 @@ class Neovim extends EventEmitter {
     this._session.on('notification', this.handleNotification);
     this._session.on('detach', () => {
       this.logger.debug('detached');
+      this.emit('disconnect');
       this._session.removeAllListeners('request');
       this._session.removeAllListeners('notification');
-      this.emit('disconnect');
+      this._session.removeAllListeners('detach');
     });
 
     this.apiPromise = this.generateApi();
@@ -175,7 +176,7 @@ class Neovim extends EventEmitter {
 
   // Extra API methods
   quit() {
-    this.command('qa!', []);
+    this.command('qa!');
   }
 }
 
