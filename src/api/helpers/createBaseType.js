@@ -1,9 +1,13 @@
 /* eslint no-shadow:0 */
 // eslint-disable-next-line func-names
+//
+const decode = require('../../decode');
+
 module.exports = function(name) {
   const ExtTypeFactory = function({ session, data, logger, metadata }) {
     this._session = session;
     this._data = data;
+    this._decode = decode;
 
     this.logger = logger;
     Object.defineProperty(this, 'metadata', { value: metadata });
