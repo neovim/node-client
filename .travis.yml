@@ -1,7 +1,7 @@
 language: node_js
 
 env:
-  - ALLOW_CONSOLE=true NVIM_NODE_LOG_LEVEL=debug
+  - NVIM_NODE_LOG_LEVEL=debug
 
 before_install:
   - eval "$(curl -Ss https://raw.githubusercontent.com/neovim/bot-ci/master/scripts/travis-setup.sh) nightly-x64"
