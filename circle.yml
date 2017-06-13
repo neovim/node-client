@@ -3,7 +3,7 @@ machine:
     version: 8.1
 
   environment:
-    PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
+    PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin:${HOME}/_neovim/bin"
     ALLOW_CONSOLE: true
     NVIM_NODE_LOG_LEVEL: "debug"
     TRAVIS_BUILD_DIR: "/home/ubuntu"
