@@ -1,5 +1,5 @@
 # neovim-client [![Build Status](https://travis-ci.org/billyvg/node-client.svg?branch)](https://travis-ci.org/billyvg/node-client)
-WIP: Currently only works on node 8
+WIP: Currently only works on node >= 7
 
 ## Installation
 Install [node-host](https://github.com/billyvg/node-host) using your vim plugin manager. Then install the `neovim` package globally using `npm`.
