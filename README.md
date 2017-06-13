@@ -128,3 +128,7 @@ nvim.command('vsp');
 ```
 
 The tests and `scripts` can be consulted for more examples.
+
+## Contributors
+* @fritzy for transferring over the npm package repo `neovim`!
+* @rhysd, @tarruda, @nhynes on work for the original `node-client`
