@@ -12,5 +12,8 @@ install:
   - npm install
   - npm run prep-integration-test
 
+cache: yarn
+
 node_js:
-  - '8.0'
+  - '8'
+  - '7'
