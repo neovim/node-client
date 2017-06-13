@@ -7,6 +7,7 @@ machine:
     NVIM_NODE_LOG_LEVEL: "debug"
     TRAVIS_BUILD_DIR: "/home/ubuntu"
     TRAVIS_OS_NAME: "linux"
+    VIM: "${HOME}/_neovim/share/nvim/runtime"
 
 dependencies:
   cache_directories:
