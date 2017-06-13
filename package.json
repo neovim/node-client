@@ -1,28 +1,28 @@
 {
-  "name": "neovim2",
-  "description": "Neovim client library",
-  "version": "3.0.0",
-  "homepage": "https://github.com/neovim/node-client",
+  "name": "neovim",
+  "description": "Neovim client API and neovim remote plugin provider",
+  "version": "0.1.0",
+  "homepage": "https://github.com/billyvg/node-client",
   "authors": [
     {
-      "name": "Thiago de Arruda",
-      "email": "tpadilha84@gmail.com"
+      "name": "Billy Vong",
+      "email": "github@mmo.me"
     },
     {
       "name": "rhysd",
       "email": "lin90162@yahoo.co.jp"
     },
     {
-      "name": "Billy Vong",
-      "email": "github@mmo.me"
+      "name": "Thiago de Arruda",
+      "email": "tpadilha84@gmail.com"
     }
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/neovim/node-client"
+    "url": "https://github.com/billyvg/node-client"
   },
   "bugs": {
-    "url": "https://github.com/neovim/node-client/issues"
+    "url": "https://github.com/billyvg/node-client/issues"
   },
   "license": "MIT",
   "bin": {
@@ -75,6 +75,8 @@
   "keywords": [
     "neovim",
     "neovim-client",
+    "node-host",
+    "node-client",
     "nvim",
     "nvim-client",
     "vim"
