@@ -6,6 +6,8 @@ machine:
     PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
     ALLOW_CONSOLE: true
     NVIM_NODE_LOG_LEVEL: "debug"
+    TRAVIS_BUILD_DIR: "/home/ubuntu"
+    TRAVIS_OS_NAME: "linux"
 
 dependencies:
   cache_directories:
