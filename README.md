@@ -2,23 +2,26 @@
 WIP: Currently only works on node 8
 
 ## Installation
+Install [node-host](https://github.com/billyvg/node-host) using your vim plugin manager. Then install the `neovim` package globally using `npm`.
 
 ```sh
-npm install --global neovim2
+npm install -g neovim
 ```
-
 ## Usage
-
 This package exports a single `attach()` function which takes a pair of
-write/read streams and invokes a callback with a Nvim API object. This is
-similar to [node-msgpack5rpc](https://github.com/tarruda/node-msgpack5rpc), but
-it provides an automatically generated API.
+write/read streams and invokes a callback with a Nvim API object. Currently, it provides a dynamically generated API based on your current version of neovim. In the future there will be an API similar to `python-client`
 
-### Example `attach`:
+A [typescript declaration file](index.d.ts) is available as documentation of the
+API and also for typescript users that seek to use this library. Note that the
+interfaces are [automatically generated](generate-typescript-interfaces.js) at a
+certain point in time, and may not correspond exactly to the API of your
+installed Nvim.
+
+### `attach`
 
 ```js
 const cp = require('child_process');
-const attach = require('neovim2').attach;
+const attach = require('neovim').attach;
 
 const nvim_proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {});
 
@@ -54,11 +57,44 @@ nvim.quit();
 nvim_proc.kill();
 ```
 
-A [typescript declaration file](index.d.ts) is available as documentation of the
-API and also for typescript users that seek to use this library. Note that the
-interfaces are [automatically generated](generate-typescript-interfaces.js) at a
-certain point in time, and may not correspond exactly to the API of your
-installed Nvim.
+## Writing a Plugin
+A plugin can either be a file or folder in the `rplugin/node` directory. If the plugin is a folder, the `main` script from `package.json` will be loaded.
+
+### API (Work In Progress)
+If you are a plugin developer, I'd love to hear your feedback on the plugin API.
+
+The `neovim` package exports a few decorators, which means currently there's a dependency on `babel`.
+The plugin host creates an instance of the plugin and creates a mapping of the handling method.
+
+`console` has been replaced by a `winston` interface and `console.log` will call `winston.info`.
+
+```javascript
+import { Plugin, Function, AutoCommand, Command } from 'neovim/plugin';
+
+// If `Plugin` decorator can be called with options
+@Plugin({ dev: true })
+export default class JestPlugin {
+  /** nvim is set via host so below is unnecessary **/
+  
+  /*
+  constructor(nvim) {
+    this.nvim = nvim;
+  }
+  */
+
+  @Function('jestFunc', { sync: true })
+  init(args, done) {
+    console.log('jest load');
+    this.nvim.command('vsplit');
+  }
+
+  @Command('jestCommand')
+  longCommand(args) {
+    // Do a long command
+    console.log('jest_test2', args);
+  }
+}
+```
 
 ## Debugging / troubleshooting
 Here are a few env vars you can set while starting `neovim`, that can help debugging and configuring logging:
@@ -86,7 +122,7 @@ In another terminal, connect a node REPL to Nvim
 let nvim;
 // `scripts/nvim` will detect if `NVIM_LISTEN_ADDRESS` is set and use that unix socket
 // Otherwise will create an embedded `nvim` instance
-require('neovim2/scripts/nvim').then((n) => nvim = n);
+require('neovim/scripts/nvim').then((n) => nvim = n);
 
 nvim.command('vsp');
 ```
