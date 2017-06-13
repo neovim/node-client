@@ -2,12 +2,24 @@ machine:
   node:
     version: 8.1
 
+  environment:
+    PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
+    ALLOW_CONSOLE: true
+    NVIM_NODE_LOG_LEVEL: "debug"
+
 dependencies:
+  cache_directories:
+    - ~/.cache/yarn
+
   pre:
     - eval "$(curl -Ss https://raw.githubusercontent.com/neovim/bot-ci/master/scripts/travis-setup.sh) nightly-x64"
     - nvim --version
-  override:
-    - npm install
-    - npm link
-    - npm run prep-integration-test
 
+  override:
+    - yarn
+    - yarn link
+    - yarn run prep-integration-test
+
+test:
+  override:
+    - yarn test
