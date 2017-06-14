@@ -1,4 +1,5 @@
-# neovim-client [![Build Status](https://travis-ci.org/billyvg/node-client.svg?branch)](https://travis-ci.org/billyvg/node-client)
+# neovim-client [![Build Status](https://circleci.com/gh/billyvg/node-client/tree/master.svg?style=shield)](https://circleci.com/gh/billyvg/node-client) [![codecov](https://codecov.io/gh/billyvg/node-client/branch/master/graph/badge.svg)](https://codecov.io/gh/billyvg/node-client)
+
 WIP: Currently only works on node >= 7
 
 ## Installation
