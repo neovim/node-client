@@ -66,6 +66,7 @@
     ]
   },
   "jest": {
+    "coverageDirectory": "./coverage/",
     "testPathIgnorePatterns": [
       "node_modules",
       "scripts",

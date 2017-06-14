@@ -17,6 +17,7 @@ dependencies:
     - eval "$(curl -Ss https://raw.githubusercontent.com/neovim/bot-ci/master/scripts/travis-setup.sh) nightly-x64"
     - echo $PATH
     - nvim --version
+    - yarn add -g codecov
 
   override:
     - yarn
@@ -25,4 +26,6 @@ dependencies:
 
 test:
   override:
-    - yarn test
+    - yarn test -- --coverage
+  post:
+    codecov
