@@ -28,4 +28,4 @@ test:
   override:
     - yarn test -- --coverage
   post:
-    codecov
+    - codecov
