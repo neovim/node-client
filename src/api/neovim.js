@@ -12,6 +12,50 @@ const TYPES = {
   Buffer,
 };
 
+const createChainableApi = (name, requestPromise, chainCallPromise) => {
+  // re-use current promise if not resolved yet
+  if (
+    this[`${name}Promise`] &&
+    this[`${name}Promise`].status === 0 &&
+    this[`${name}Proxy`]
+  ) {
+    return this[`${name}Proxy`];
+  }
+
+  this[`${name}Promise`] = requestPromise();
+
+  const proxyHandler = {
+    get: (target, prop) => {
+      // XXX which takes priority?
+      // If buffer api object has property prop, then it means we are trying to chain promises
+      // return a new promise then resolves the chained api
+      if (
+        TYPES[name] &&
+        Object.prototype.hasOwnProperty.call(TYPES[name], prop)
+      ) {
+        // XXX: this promise can potentially be stale
+        // Check if resolved, else do a refresh request for current buffer?
+        return (
+          (chainCallPromise && chainCallPromise()) ||
+          this[`${name}Promise`].then(res => res[prop])
+        );
+      } else if (prop in target) {
+        if (typeof target[prop] === 'function') {
+          return target[prop].bind(target);
+        }
+        return target[prop];
+      }
+
+      return null;
+    },
+  };
+
+  // Proxy the promise so that we can check for chained API calls
+  this[`${name}Proxy`] = new Proxy(this[`${name}Promise`], proxyHandler);
+
+  return this[`${name}Proxy`];
+};
+
 class Neovim extends BaseApi {
   constructor(options = {}) {
     const session = options.session || new Session([]);
@@ -190,41 +234,9 @@ class Neovim extends BaseApi {
   }
 
   get buffer() {
-    // re-use current promise if not resolved yet
-    if (
-      this.bufferPromise &&
-      this.bufferPromise.status === 0 &&
-      this.bufferProxy
-    ) {
-      return this.bufferProxy;
-    }
-
-    this.bufferPromise = this.request('nvim_get_current_buf');
-
-    const proxyHandler = {
-      get: (target, name) => {
-        // XXX which takes priority?
-        // If buffer api object has property name, then it means we are trying to chain promises
-        // return a new promise then resolves the chained api
-        if (Object.prototype.hasOwnProperty.call(Buffer, name)) {
-          // XXX: this promise can potentially be stale
-          // Check if resolved, else do a refresh request for current buffer?
-          return this.bufferPromise.then(buffer => buffer[name]);
-        } else if (name in target) {
-          if (typeof target[name] === 'function') {
-            return target[name].bind(target);
-          }
-          return target[name];
-        }
-
-        return null;
-      },
-    };
-
-    // Proxy the promise so that we can check for chained API calls
-    this.bufferProxy = new Proxy(this.bufferPromise, proxyHandler);
-
-    return this.bufferProxy;
+    return createChainableApi('Buffer', () =>
+      this.request('nvim_get_current_buf')
+    );
   }
 
   // Extra API methods
