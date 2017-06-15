@@ -1,19 +1,28 @@
-const EventEmitter = require('events').EventEmitter;
-
 const Session = require('msgpack5rpc');
 
 const decode = require('../decode');
+
+const BaseApi = require('./Base');
 const generateWrappers = require('./helpers/generateWrappers');
 const createBaseType = require('./helpers/createBaseType');
 
-class Neovim extends EventEmitter {
+const Buffer = require('./Buffer');
+
+const TYPES = {
+  Buffer,
+};
+
+class Neovim extends BaseApi {
   constructor(options = {}) {
+    const session = options.session || new Session([]);
+
     super(options);
+
     const { logger } = options;
 
     // Required interface
-    this._session = new Session([]);
     this._decode = decode;
+    this._session = session;
 
     this.logger = logger;
     this.requestQueue = [];
@@ -118,12 +127,17 @@ class Neovim extends EventEmitter {
         // this.logger.debug(`$$$: ${metadata}`);
 
         Object.keys(metadata.types).forEach(name => {
-          // Generate a constructor function for each type in metadata.types
-          // eslint-disable-next-line no-new-func
-          const ExtType = createBaseType(name);
-          const metaDataForType = metadata.types[name];
+          let ExtType;
 
-          Object.defineProperty(ExtType, 'name', { value: name });
+          // Generate a constructor function for each type in metadata.types
+          if (typeof TYPES[name] === 'undefined') {
+            ExtType = createBaseType(name);
+            Object.defineProperty(ExtType, 'name', { value: name });
+          } else {
+            ExtType = TYPES[name];
+          }
+
+          const metaDataForType = metadata.types[name];
           // Collect the type information necessary for msgpack5 deserialization
           // when it encounters the corresponding ext code.
           extTypes.push({
@@ -173,6 +187,40 @@ class Neovim extends EventEmitter {
     }
 
     return null;
+  }
+
+  get buffer() {
+    // re-use current promise if not resolved yet
+    if (this.bufferPromise && this.bufferPromise.status === 0 && this.bufferProxy) {
+      return this.bufferProxy;
+    }
+
+    this.bufferPromise = this.request('nvim_get_current_buf');
+
+    const proxyHandler = {
+      get: (target, name) => {
+        // XXX which takes priority?
+        // If buffer api object has property name, then it means we are trying to chain promises
+        // return a new promise then resolves the chained api
+        if (Object.prototype.hasOwnProperty.call(Buffer, name)) {
+          // XXX: this promise can potentially be stale
+          // Check if resolved, else do a refresh request for current buffer?
+          return this.bufferPromise.then((buffer) => buffer[name]);
+        } else if (name in target) {
+          if (typeof target[name] === 'function') {
+            return target[name].bind(target);
+          }
+          return target[name];
+        }
+
+        return null;
+      },
+    };
+
+    // Proxy the promise so that we can check for chained API calls
+    this.bufferProxy = new Proxy(this.bufferPromise, proxyHandler);
+
+    return this.bufferProxy;
   }
 
   // Extra API methods
