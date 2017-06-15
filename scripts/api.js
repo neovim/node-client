@@ -8,17 +8,19 @@ async function main() {
   const results = await nvim.requestApi();
   const functions = results[1].functions;
   const lines = functions.filter(({ name }) => name.indexOf(search) > -1);
-  lines.forEach(metadata => {
-    const params = metadata.parameters.map(p => p[1]);
-    const paramTypes = metadata.parameters.map(p => p[0]);
-    console.log(
-      `${metadata.name}(${params
-        .map((p, i) => `${p}: ${paramTypes[i]}`)
-        .join(', ')}): ${metadata.return_type}`
-    );
-    console.log(`    ${inspect(metadata)}`);
-    console.log('');
-  });
+  lines
+    .filter(metadata => typeof metadata.deprecated_since === 'undefined')
+    .forEach(metadata => {
+      const params = metadata.parameters.map(p => p[1]);
+      const paramTypes = metadata.parameters.map(p => p[0]);
+      console.log(
+        `${metadata.name}(${params
+          .map((p, i) => `${p}: ${paramTypes[i]}`)
+          .join(', ')}): ${metadata.return_type}`
+      );
+      console.log(`    ${inspect(metadata)}`);
+      console.log('');
+    });
   process.exit(0);
 }
 
