@@ -191,7 +191,11 @@ class Neovim extends BaseApi {
 
   get buffer() {
     // re-use current promise if not resolved yet
-    if (this.bufferPromise && this.bufferPromise.status === 0 && this.bufferProxy) {
+    if (
+      this.bufferPromise &&
+      this.bufferPromise.status === 0 &&
+      this.bufferProxy
+    ) {
       return this.bufferProxy;
     }
 
@@ -205,7 +209,7 @@ class Neovim extends BaseApi {
         if (Object.prototype.hasOwnProperty.call(Buffer, name)) {
           // XXX: this promise can potentially be stale
           // Check if resolved, else do a refresh request for current buffer?
-          return this.bufferPromise.then((buffer) => buffer[name]);
+          return this.bufferPromise.then(buffer => buffer[name]);
         } else if (name in target) {
           if (typeof target[name] === 'function') {
             return target[name].bind(target);

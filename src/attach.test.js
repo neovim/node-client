@@ -22,9 +22,13 @@ describe('Nvim Promise API', () => {
   let notifications;
 
   beforeAll(async done => {
-    proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed', '-c', 'set noswapfile'], {
-      cwd: __dirname,
-    });
+    proc = cp.spawn(
+      'nvim',
+      ['-u', 'NONE', '-N', '--embed', '-c', 'set noswapfile'],
+      {
+        cwd: __dirname,
+      }
+    );
 
     nvim = await attach({ proc });
     nvim.on('request', (method, args, resp) => {
