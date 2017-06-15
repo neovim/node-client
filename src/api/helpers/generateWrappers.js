@@ -70,22 +70,25 @@ function generateWrappers(cls, types, prefixMap, metadata) {
       methodMetadata.parameters.shift();
     }
 
-    // One potential issue is trying to call nvim apis before it has been generated,
-    // In that case using a Proxy would be better so can we catch all undefined api calls
-    // But this is fine for now
-    Type.prototype[methodName] = function(...a) {
-      // eslint-disable-next-line no-shadow
-      const args = isMethod ? [this, ...a] : a;
-      return method.apply(this, args);
-    };
+    // Only define if it doesn't exist
+    if (!Object.prototype.hasOwnProperty.call(Type, methodName)) {
+      // One potential issue is trying to call nvim apis before it has been generated,
+      // In that case using a Proxy would be better so can we catch all undefined api calls
+      // But this is fine for now
+      Type.prototype[methodName] = function(...a) {
+        // eslint-disable-next-line no-shadow
+        const args = isMethod ? [this, ...a] : a;
+        return method.apply(this, args);
+      };
 
-    Object.defineProperty(Type.prototype[methodName], 'metadata', {
-      value: methodMetadata,
-    });
+      Object.defineProperty(Type.prototype[methodName], 'metadata', {
+        value: methodMetadata,
+      });
 
-    Object.defineProperty(Type.prototype[methodName], 'name', {
-      value: methodName,
-    });
+      Object.defineProperty(Type.prototype[methodName], 'name', {
+        value: methodName,
+      });
+    }
   });
 }
 
