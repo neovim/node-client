@@ -7,9 +7,11 @@ const generateWrappers = require('./helpers/generateWrappers');
 const createBaseType = require('./helpers/createBaseType');
 
 const Buffer = require('./Buffer');
+const Tabpage = require('./Tabpage');
 
 const TYPES = {
   Buffer,
+  Tabpage,
 };
 
 const createChainableApi = (name, requestPromise, chainCallPromise) => {
@@ -291,6 +293,20 @@ class Neovim extends BaseApi {
     return createChainableApi('Buffer', () =>
       this.request('nvim_get_current_buf')
     );
+  }
+
+  get tabpage() {
+    return createChainableApi('Tabpage', () =>
+      this.request('nvim_get_current_tabpage')
+    );
+  }
+
+  get tabpages() {
+    return this.request('nvim_list_tabpages');
+  }
+
+  set tabpage(tabpage) {
+    return this.request('nvim_set_current_tabpage', [tabpage]);
   }
 
   // Extra API methods
