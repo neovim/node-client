@@ -22,7 +22,19 @@ const createChainableApi = (name, requestPromise, chainCallPromise) => {
     return this[`${name}Proxy`];
   }
 
+  const TYPE = TYPES[name];
+
   this[`${name}Promise`] = requestPromise();
+
+  // TODO: Optimize this
+  // Define properties on the promise for devtools
+  Object.getOwnPropertyNames(TYPE.prototype).forEach(key => {
+    Object.defineProperty(this[`${name}Promise`], key, {
+      enumerable: true,
+      writable: true,
+      configurable: true,
+    });
+  });
 
   const proxyHandler = {
     get: (target, prop) => {
@@ -30,7 +42,6 @@ const createChainableApi = (name, requestPromise, chainCallPromise) => {
       // Check if property is property of an API object (Window, Buffer, Tabpage, etc)
       // If it is, then we return a promise of results of the call on that API object
       // i.e. await this.buffer.name will return a promise of buffer name
-      const TYPE = TYPES[name];
 
       const isOnPrototype = Object.prototype.hasOwnProperty.call(
         TYPE.prototype,
