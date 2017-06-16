@@ -71,7 +71,7 @@ function generateWrappers(cls, types, prefixMap, metadata) {
     }
 
     // Only define if it doesn't exist
-    if (!Object.prototype.hasOwnProperty.call(Type, methodName)) {
+    if (typeof Type.prototype[methodName] === 'undefined') {
       // One potential issue is trying to call nvim apis before it has been generated,
       // In that case using a Proxy would be better so can we catch all undefined api calls
       // But this is fine for now
