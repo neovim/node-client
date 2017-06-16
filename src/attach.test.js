@@ -97,23 +97,12 @@ describe('Nvim Promise API', () => {
     const buf = await nvim.getCurrentBuf();
     expect(buf instanceof nvim.Buffer).toEqual(true);
 
-    const lines = await buf.getLines(0, -1, true);
+    const lines = await buf.getLines({ start: 0, end: -1 });
     expect(lines).toEqual(['']);
 
-    await buf.setLines(0, -1, true, ['line1', 'line2']);
-    const newLines = await buf.getLines(0, -1, true);
+    buf.setLines(['line1', 'line2'], { start: 0, end: 1 });
+    const newLines = await buf.getLines({ start: 0, end: -1 });
     expect(newLines).toEqual(['line1', 'line2']);
-  });
-
-  it.only('uses new static API', async () => {
-    await nvim.command('edit test.js');
-    const buffer = await nvim.buffer;
-    expect(buffer).toBeInstanceOf(nvim.Buffer);
-
-    const name = await buffer.name;
-    expect(name).toMatch('test.js');
-
-    expect(await nvim.buffer.name).toMatch('test.js');
   });
 
   it('emits "disconnect" after quit', done => {
