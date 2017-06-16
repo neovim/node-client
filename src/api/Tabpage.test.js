@@ -15,7 +15,7 @@ try {
   process.exit(1);
 }
 
-describe.only('Tabpage API', () => {
+describe('Tabpage API', () => {
   let proc;
   let nvim;
 
