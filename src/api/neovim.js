@@ -27,19 +27,44 @@ const createChainableApi = (name, requestPromise, chainCallPromise) => {
   const proxyHandler = {
     get: (target, prop) => {
       // XXX which takes priority?
-      // If buffer api object has property prop, then it means we are trying to chain promises
-      // return a new promise then resolves the chained api
-      if (
-        TYPES[name] &&
-        Object.prototype.hasOwnProperty.call(TYPES[name], prop)
-      ) {
-        // XXX: this promise can potentially be stale
-        // Check if resolved, else do a refresh request for current buffer?
+      // Check if property is property of an API object (Window, Buffer, Tabpage, etc)
+      // If it is, then we return a promise of results of the call on that API object
+      // i.e. await this.buffer.name will return a promise of buffer name
+      const TYPE = TYPES[name];
+
+      const isOnPrototype = Object.prototype.hasOwnProperty.call(
+        TYPE.prototype,
+        prop
+      );
+
+      // Inspect the property descriptor to see if it is a getter or setter
+      // Otherwise when we check if property is a method, it will call the getter
+      const descriptor = Object.getOwnPropertyDescriptor(TYPE.prototype, prop);
+      const isGetter =
+        descriptor &&
+        (typeof descriptor.get !== 'undefined' ||
+          typeof descriptor.set !== 'undefined');
+
+      // XXX: the promise can potentially be stale
+      // Check if resolved, else do a refresh request for current buffer?
+      if (TYPE && isOnPrototype) {
+        if (
+          isOnPrototype &&
+          !isGetter &&
+          typeof TYPE.prototype[prop] === 'function'
+        ) {
+          // If property is a method on TYPE, we need to invoke it with captured args
+          return (...args) =>
+            this[`${name}Promise`].then(res => res[prop].call(res, ...args));
+        }
+
+        // Otherwise return the property requested after promise is resolved
         return (
           (chainCallPromise && chainCallPromise()) ||
           this[`${name}Promise`].then(res => res[prop])
         );
       } else if (prop in target) {
+        // Forward rest of requests to Promise
         if (typeof target[prop] === 'function') {
           return target[prop].bind(target);
         }
@@ -47,6 +72,24 @@ const createChainableApi = (name, requestPromise, chainCallPromise) => {
       }
 
       return null;
+    },
+
+    set: (target, prop, value, receiver) => {
+      // eslint-disable-next-line no-param-reassign
+      if (receiver && (receiver instanceof Promise || 'then' in receiver)) {
+        receiver.then(obj => {
+          if (prop in obj) {
+            // eslint-disable-next-line no-param-reassign
+            obj[prop] = value;
+          }
+        });
+      } else {
+        // eslint-disable-next-line no-param-reassign
+        target[prop] = value;
+      }
+
+      // Maintain default assignment behavior
+      return true;
     },
   };
 
