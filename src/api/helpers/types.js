@@ -10,4 +10,3 @@ const TYPES = {
 
 module.exports = TYPES;
 module.exports.default = module.exports;
-

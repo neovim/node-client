@@ -205,6 +205,21 @@ class Neovim extends BaseApi {
     return this.request('nvim_set_current_tabpage', [tabpage]);
   }
 
+  get window() {
+    return createChainableApi.call(this, 'Window', TYPES.Window, () =>
+      this.request('nvim_get_current_win')
+    );
+  }
+
+  get windows() {
+    return this.request('nvim_list_wins');
+  }
+
+  set window(win) {
+    // Throw error if win is not instance of Window?
+    return this.request('nvim_set_current_win', [win]);
+  }
+
   // Extra API methods
   quit() {
     this.command('qa!');
