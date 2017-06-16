@@ -35,7 +35,7 @@ describe('Tabpage API', () => {
   afterAll(() => {
     nvim.quit();
     if (proc) {
-      proc.kill();
+      proc.disconnect();
     }
   });
 

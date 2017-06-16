@@ -43,8 +43,9 @@ describe('Nvim Promise API', () => {
   });
 
   afterAll(() => {
+    nvim.quit();
     if (proc) {
-      proc.kill();
+      proc.disconnect();
     }
   });
 
@@ -115,6 +116,8 @@ describe('Nvim Promise API', () => {
     });
 
     // Event doesn't actually emit when we quit nvim, but when the child process is killed
-    proc.kill();
+    if (typeof proc.disconnect === 'function') {
+      proc.disconnect();
+    }
   });
 });

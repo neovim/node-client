@@ -40,7 +40,8 @@ describe('Node host', () => {
 
   afterAll(() => {
     process.chdir(testdir);
-    proc.kill();
+    nvim.quit();
+    proc.disconnect();
   });
 
   beforeEach(() => {});

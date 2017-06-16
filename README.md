@@ -54,7 +54,7 @@ const newLines = await buf.lines;
 // expect(newLines).toEqual(['line1', 'line2']);
 
 nvim.quit();
-nvim_proc.kill();
+nvim_proc.disconnect();
 ```
 
 ## Writing a Plugin

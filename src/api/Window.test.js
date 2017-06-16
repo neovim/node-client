@@ -29,13 +29,14 @@ describe('Window API', () => {
     );
 
     nvim = await attach({ proc });
+
     done();
   });
 
   afterAll(() => {
     nvim.quit();
     if (proc) {
-      proc.kill();
+      proc.disconnect();
     }
   });
 
