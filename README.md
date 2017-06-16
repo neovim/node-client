@@ -10,7 +10,7 @@ npm install -g neovim
 ```
 ## Usage
 This package exports a single `attach()` function which takes a pair of
-write/read streams and invokes a callback with a Nvim API object. Currently, it provides a dynamically generated API based on your current version of neovim. In the future there will be an API similar to `python-client`
+write/read streams and invokes a callback with a Nvim API object.
 
 A [typescript declaration file](index.d.ts) is available as documentation of the
 API and also for typescript users that seek to use this library. Note that the
@@ -27,30 +27,30 @@ const attach = require('neovim').attach;
 const nvim_proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {});
 
 // Attach to neovim process
-const nvim = await attach(nvim_proc.stdin, nvim_proc.stdout);
+const nvim = await attach({ proc: nvim_proc });
 nvim.command('vsp');
 nvim.command('vsp');
 nvim.command('vsp');
-const windows = await nvim.listWins();
+const windows = await nvim.windows;
 
 // expect(windows.length).toEqual(4);
 // expect(windows[0] instanceof nvim.Window).toEqual(true);
 // expect(windows[1] instanceof nvim.Window).toEqual(true);
 
-await nvim.setCurrentWin(windows[2]);
-const win = await nvim.getCurrentWin();
+nvim.window = windows[2];
+const win = await nvim.window;
 
 // expect(win).not.toEqual(windows[0]);
 // expect(win).toEqual(windows[2]);
 
-const buf = await nvim.getCurrentBuf();
+const buf = await nvim.buffer;
 // expect(buf instanceof nvim.Buffer).toEqual(true);
 
-const lines = await buf.getLines(0, -1, true);
+const lines = await buf.lines;
 // expect(lines).toEqual(['']);
 
-await buf.setLines(0, -1, true, ['line1', 'line2']);
-const newLines = await buf.getLines(0, -1, true);
+await buf.replace(['line1', 'line2'], 0);
+const newLines = await buf.lines;
 // expect(newLines).toEqual(['line1', 'line2']);
 
 nvim.quit();
@@ -73,25 +73,31 @@ import { Plugin, Function, AutoCommand, Command } from 'neovim/plugin';
 
 // If `Plugin` decorator can be called with options
 @Plugin({ dev: true })
-export default class JestPlugin {
+export default class TestPlugin {
   /** nvim is set via host so below is unnecessary **/
-  
   /*
   constructor(nvim) {
     this.nvim = nvim;
   }
   */
 
-  @Function('jestFunc', { sync: true })
-  init(args, done) {
-    console.log('jest load');
+  @Function('Vsplit', { sync: true })
+  splitMe(args, done) {
     this.nvim.command('vsplit');
   }
 
-  @Command('jestCommand')
-  longCommand(args) {
-    // Do a long command
-    console.log('jest_test2', args);
+  @Command('LongCommand')
+  async longCommand(args) {
+    console.log('Output will be routed to $NVIM_NODE_LOG_FILE');
+    const bufferName = await this.nvim.buffer.name;
+    return bufferName;
+  }
+
+  @Command('UsePromises')
+  promiseExample() {
+    return this.nvim.buffer.name.then((name) => {
+      console.log(`Current buffer name is ${name}`);
+    });
   }
 }
 ```
