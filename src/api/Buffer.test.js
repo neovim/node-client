@@ -29,9 +29,6 @@ describe.only('Buffer API', () => {
     );
 
     nvim = await attach({ proc });
-
-    await nvim.apiPromise;
-
     done();
   });
 

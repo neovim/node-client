@@ -29,9 +29,6 @@ describe('Tabpage API', () => {
     );
 
     nvim = await attach({ proc });
-
-    await nvim.apiPromise;
-
     done();
   });
 

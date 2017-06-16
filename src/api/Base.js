@@ -31,8 +31,12 @@ class BaseApi extends EventEmitter {
     }
   }
 
-  // TODO: Use this
-  request(name, args = []) {
+  async request(name, args = []) {
+    // `this._isReady` is undefined in ExtType classes (i.e. Buffer, Window, Tabpage)
+    // But this is just for Neovim API, since it's possible to call this method from Neovim class
+    // before session is ready.
+    // Not possible for ExtType classes since they are only created after session is ready
+    await this._isReady;
     this.logger.debug(`request -> neovim.api.${name}`);
     return new Promise((resolve, reject) => {
       // does args need this?
@@ -47,7 +51,8 @@ class BaseApi extends EventEmitter {
     });
   }
 
-  // TODO: Use this
+  // TODO: Is this necessary?
+  // `request` is basically the same except you can choose to wait forpromise to be resolved
   notify(name, args) {
     this.logger.debug(`notify -> neovim.api.${name}`);
     this._session.notify(name, args);

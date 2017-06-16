@@ -1,6 +1,6 @@
 const net = require('net');
 
-const Neovim = require('./api/neovim');
+const NeovimClient = require('./api/client');
 const logger = require('./logger');
 
 function attach({ reader: _reader, writer: _writer, proc, socket }) {
@@ -20,12 +20,11 @@ function attach({ reader: _reader, writer: _writer, proc, socket }) {
   }
 
   if (writer && reader) {
-    const neovim = new Neovim({ logger });
+    const neovim = new NeovimClient({ logger });
     neovim.attachSession({
       writer,
       reader,
     });
-    neovim.startSession();
     return neovim;
   }
 

@@ -38,7 +38,6 @@ describe('Nvim Promise API', () => {
     nvim.on('notification', (method, args) => {
       notifications.push({ method, args });
     });
-    await nvim.apiPromise;
 
     done();
   });

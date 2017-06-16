@@ -41,7 +41,6 @@ function metadataToSignature(method) {
 
 async function main() {
   const nvim = await attach({ proc });
-  await nvim.apiPromise;
   const interfaces = {
     Neovim: nvim.constructor,
     Buffer: nvim.Buffer,

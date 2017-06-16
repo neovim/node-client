@@ -21,8 +21,5 @@ module.exports = (async function() {
   }
 
   const nvim = await attach({ proc, socket });
-
-  await nvim.apiPromise;
-
   return nvim;
 }());
