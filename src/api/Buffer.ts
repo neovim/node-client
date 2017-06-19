@@ -1,19 +1,16 @@
 import { BaseApi } from './Base';
 
 export class Buffer extends BaseApi {
-  // @return Promise<Integer>
-  get length() {
+  get length(): Promise<number> {
     return this.request(`${this.prefix}line_count`, [this]);
   }
 
-  // @return Promise<Array<string>>
-  get lines() {
+  get lines(): Promise<Array<string>> {
     return this.getLines();
   }
 
   // Get lines
-  // @return Promise<Array<string>>
-  getLines({ start, end, strictIndexing } = { start: 0, end: -1, strictIndexing: true }) {
+  getLines({ start, end, strictIndexing } = { start: 0, end: -1, strictIndexing: true }): Promise<Array<string>> {
     const indexing = typeof strictIndexing === 'undefined'
       ? true
       : strictIndexing;
@@ -25,7 +22,7 @@ export class Buffer extends BaseApi {
     ]);
   }
 
-  setLines(_lines,{ start: _start, end: _end, strictIndexing } = { strictIndexing: true }) {
+  setLines(_lines, { start: _start, end: _end, strictIndexing } = { strictIndexing: true }) {
     // TODO: Error checking
     // if (typeof start === 'undefined' || typeof end === 'undefined') {
     // }
@@ -69,23 +66,22 @@ export class Buffer extends BaseApi {
   }
 
   // Buffer name
-  // @return Promise<string>
-  get name() {
+  get name(): Promise<string> {
     return this.request(`${this.prefix}get_name`, [this]);
   }
 
   set name(value) {
-this.request(`${this.prefix}set_name`, [this, value]);
+    this.request(`${this.prefix}set_name`, [this, value]);
   }
 
   // Is current buffer valid
   // @return Promise<boolean>
-  get valid() {
+  get valid(): Promise<boolean> {
     return this.request(`${this.prefix}is_valid`, [this]);
   }
 
   // @return Promise<[rol, col]>
-  mark(name) {
+  mark(name): Promise<[number, number]> {
     return this.request(`${this.prefix}get_mark`, name);
   }
 
@@ -103,13 +99,14 @@ this.request(`${this.prefix}set_name`, [this, value]);
   ) {
     const isAsync = _isAsync || typeof srcId !== 'undefined';
     return this.request(
-      `${this.prefix}add_highlight`,
-      srcId,
-      hlGroup,
-      line,
-      colStart,
-      colEnd,
-      isAsync
+      `${this.prefix}add_highlight`, [
+        srcId,
+        hlGroup,
+        line,
+        colStart,
+        colEnd,
+        isAsync
+      ]
     );
   }
 
@@ -121,11 +118,12 @@ this.request(`${this.prefix}set_name`, [this, value]);
     }
   ) {
     return this.request(
-      `${this.prefix}clear_highlight`,
-      srcId,
-      lineStart,
-      lineEnd,
-      async
+      `${this.prefix}clear_highlight`, [
+        srcId,
+        lineStart,
+        lineEnd,
+        async
+      ]
     );
   }
 }

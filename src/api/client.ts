@@ -12,14 +12,12 @@ export class NeovimClient extends Neovim {
   requestQueue: Array<any>;
   _sessionAttached: boolean;
   _channel_id;
-  _isReady;
-  constructor(options = {}) {
+  constructor(options: { session?, logger? } = {}) {
     const session = options.session || new Session([]);
     const { logger } = options;
 
     // Neovim has no `data` or `metadata`
     super({
-      decode,
       logger,
       session,
     });
@@ -41,7 +39,7 @@ export class NeovimClient extends Neovim {
   }
 
   handleRequest(method, args, resp, ...restArgs) {
-    // this.logger.info('handleRequest: ', method);
+    this.logger.info('handleRequest: ', method);
     // If neovim API is not generated yet and we are not handle a 'specs' request
     // then queue up requests
     //
@@ -57,7 +55,7 @@ export class NeovimClient extends Neovim {
   }
 
   handleNotification(method, args, ...restArgs) {
-    // this.logger.info('handleNotification: ', method);
+    this.logger.info('handleNotification: ', method);
     // If neovim API is not generated yet then queue up requests
     //
     // Otherwise emit as normal
@@ -109,8 +107,8 @@ export class NeovimClient extends Neovim {
     try {
       results = await this.requestApi();
     } catch (err) {
-      // this.logger.error('Could not get vim api results');
-      // this.logger.error(err);
+      this.logger.error('Could not get vim api results');
+      this.logger.error(err);
     }
 
     if (results) {
@@ -145,7 +143,7 @@ export class NeovimClient extends Neovim {
                 session: this._session,
                 data,
                 metadata: metaDataForType,
-                // logger: this.logger,
+                logger: this.logger,
               }),
             encode: obj => obj._data,
           });

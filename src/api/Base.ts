@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-// import * as loggerModule from '../logger';
+import { logger as loggerModule } from '../utils/logger';
 import { decode } from '../utils/decode';
 
 // Instead of dealing with multiple inheritance (or lackof), just extend EE
@@ -8,16 +8,18 @@ export class BaseApi extends EventEmitter {
   _session;
   _data;
   _decode;
-  // logger;
+  protected _isReady;
+  prefix: string;
+  public logger;
 
-  constructor(session?, data?, logger?, metadata?) {
+  constructor({ session, data, logger, metadata }: { session, logger?, data?, metadata? }) {
     super();
 
     this._session = session;
     this._data = data;
     this._decode = decode;
 
-    // this.logger = logger || loggerModule;
+    this.logger = logger || loggerModule;
 
     if (metadata) {
       Object.defineProperty(this, 'metadata', { value: metadata });
@@ -41,11 +43,11 @@ export class BaseApi extends EventEmitter {
     // before session is ready.
     // Not possible for ExtType classes since they are only created after session is ready
     await this._isReady;
-    // this.logger.debug(`request -> neovim.api.${name}`);
+    this.logger.debug(`request -> neovim.api.${name}`);
     return new Promise((resolve, reject) => {
       // does args need this?
       this._session.request(name, args, (err, res) => {
-        // this.logger.debug(`response -> neovim.api.${name}: ${res}`);
+        this.logger.debug(`response -> neovim.api.${name}: ${res}`);
         if (err) {
           reject(new Error(`${name}: ${err[1]}`));
         } else {
@@ -58,7 +60,7 @@ export class BaseApi extends EventEmitter {
   // TODO: Is this necessary?
   // `request` is basically the same except you can choose to wait forpromise to be resolved
   notify(name, args) {
-    // this.logger.debug(`notify -> neovim.api.${name}`);
+    this.logger.debug(`notify -> neovim.api.${name}`);
     this._session.notify(name, args);
   }
 }

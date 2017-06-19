@@ -1,8 +1,15 @@
 import { NeovimClient } from './../api/client';
 import { createConnection } from 'net';
-// const logger = require('./logger');
+import { logger } from '../utils/logger';
 
-export function attach(_reader?, _writer?, proc?, socket?) {
+export interface Attach {
+  reader?: NodeJS.ReadableStream;
+  writer?: NodeJS.WritableStream;
+  proc?: NodeJS.Process;
+  socket?: string;
+}
+
+export function attach({ reader: _reader, writer: _writer, proc, socket }: Attach) {
   let writer;
   let reader;
 
@@ -19,8 +26,7 @@ export function attach(_reader?, _writer?, proc?, socket?) {
   }
 
   if (writer && reader) {
-    const neovim = new NeovimClient();
-    // const neovim = new NeovimClient(logger);
+    const neovim = new NeovimClient({ logger });
     neovim.attachSession({
       writer,
       reader,

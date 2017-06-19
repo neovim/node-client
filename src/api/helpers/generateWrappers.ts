@@ -2,11 +2,11 @@ import { parseFunctionMetadata } from './parseFunctionMetadata';
 
 const createApiMethod = function ({ name }) {
   const newMethod = function (...args) {
-    // this.logger.debug(`request -> neovim.api.${name}`);
+    this.logger.debug(`request -> neovim.api.${name}`);
     return new Promise((resolve, reject) => {
       // does args need this?
       this._session.request(name, args, (err, res) => {
-        // this.logger.debug(`neovim.api.${name}.resp: ${res}`);
+        this.logger.debug(`neovim.api.${name}.resp: ${res}`);
         if (err) {
           reject(new Error(`${name}: ${err[1]}`));
         } else {
