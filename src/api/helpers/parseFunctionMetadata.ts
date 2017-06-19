@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 // Parses nvim api info and generates node client API names
 export function parseFunctionMetadata({ prefixMap, name }) {
   let typeName;
