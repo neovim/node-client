@@ -1,8 +1,8 @@
 /* eslint-env jest */
-const cp = require('child_process');
-// eslint-disable-next-line import/no-extraneous-dependencies
-const which = require('which');
-const attach = require('./attach');
+import * as cp from 'child_process';
+// // eslint-disable-next-line import/no-extraneous-dependencies
+import * as which from 'which';
+import { attach } from './attach';
 
 try {
   which.sync('nvim');
@@ -22,6 +22,7 @@ describe('Nvim Promise API', () => {
   let notifications;
 
   beforeAll(async done => {
+    try {
     proc = cp.spawn(
       'nvim',
       ['-u', 'NONE', '-N', '--embed', '-c', 'set noswapfile'],
@@ -29,6 +30,7 @@ describe('Nvim Promise API', () => {
         cwd: __dirname,
       }
     );
+
 
     nvim = await attach({ proc });
     nvim.on('request', (method, args, resp) => {
@@ -40,6 +42,7 @@ describe('Nvim Promise API', () => {
     });
 
     done();
+    } catch (err) { console.log(err); }
   });
 
   afterAll(() => {
