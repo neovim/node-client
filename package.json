@@ -68,8 +68,8 @@
     "watch": "tsc -p tsconfig.json --watch true"
   },
   "lint-staged": {
-    "*.js": [
-      "prettier --single-quote --trailing-comma es5 --write",
+    "*.{ts,js}": [
+      "prettier --parser typescript --single-quote --trailing-comma es5 --write",
       "eslint --fix",
       "npm run test-staged"
     ]
