@@ -1,7 +1,6 @@
-const BaseApi = require('./Base');
-const createChainableApi = require('./helpers/createChainableApi');
-
-class Tabpage extends BaseApi {
+import { BaseApi } from './Base';
+import { createChainableApi} from './helpers/createChainableApi';
+export class Tabpage extends BaseApi {
   // @return Promise<Array<Window>>
   get windows() {
     return this.request(`${this.prefix}list_wins`, [this]);
@@ -28,6 +27,3 @@ class Tabpage extends BaseApi {
     return this.request(`${this.prefix}get_number`, [this]);
   }
 }
-
-module.exports = Tabpage;
-module.exports.default = module.exports;

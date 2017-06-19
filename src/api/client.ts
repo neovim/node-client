@@ -1,17 +1,18 @@
 /**
  * Handles attaching session
  */
-const Session = require('msgpack5rpc');
+import * as Session from 'msgpack5rpc'
+import { decode } from '../utils/decode';
+import { generateWrappers } from './helpers/generateWrappers';
+import { createBaseType } from './helpers/createBaseType';
+import { TYPES } from './helpers/types';
+import { Neovim } from './Neovim';
 
-const decode = require('../decode');
-
-const generateWrappers = require('./helpers/generateWrappers');
-const createBaseType = require('./helpers/createBaseType');
-const TYPES = require('./helpers/types');
-
-const Neovim = require('./Neovim');
-
-class NeovimClient extends Neovim {
+export class NeovimClient extends Neovim {
+  requestQueue: Array<any>;
+  _sessionAttached: boolean;
+  _channel_id;
+  _isReady;
   constructor(options = {}) {
     const session = options.session || new Session([]);
     const { logger } = options;
@@ -24,7 +25,6 @@ class NeovimClient extends Neovim {
     });
 
     this.requestQueue = [];
-
     this._sessionAttached = false;
     this.handleRequest = this.handleRequest.bind(this);
     this.handleNotification = this.handleNotification.bind(this);
@@ -41,7 +41,7 @@ class NeovimClient extends Neovim {
   }
 
   handleRequest(method, args, resp, ...restArgs) {
-    this.logger.info('handleRequest: ', method);
+    // this.logger.info('handleRequest: ', method);
     // If neovim API is not generated yet and we are not handle a 'specs' request
     // then queue up requests
     //
@@ -57,7 +57,7 @@ class NeovimClient extends Neovim {
   }
 
   handleNotification(method, args, ...restArgs) {
-    this.logger.info('handleNotification: ', method);
+    // this.logger.info('handleNotification: ', method);
     // If neovim API is not generated yet then queue up requests
     //
     // Otherwise emit as normal
@@ -80,7 +80,7 @@ class NeovimClient extends Neovim {
     this._session.on('request', this.handleRequest);
     this._session.on('notification', this.handleNotification);
     this._session.on('detach', () => {
-      this.logger.debug('detached');
+      // this.logger.debug('detached');
       this.emit('disconnect');
       this._session.removeAllListeners('request');
       this._session.removeAllListeners('notification');
@@ -109,8 +109,8 @@ class NeovimClient extends Neovim {
     try {
       results = await this.requestApi();
     } catch (err) {
-      this.logger.error('Could not get vim api results');
-      this.logger.error(err);
+      // this.logger.error('Could not get vim api results');
+      // this.logger.error(err);
     }
 
     if (results) {
@@ -145,7 +145,7 @@ class NeovimClient extends Neovim {
                 session: this._session,
                 data,
                 metadata: metaDataForType,
-                logger: this.logger,
+                // logger: this.logger,
               }),
             encode: obj => obj._data,
           });
@@ -172,6 +172,7 @@ class NeovimClient extends Neovim {
 
         return true;
       } catch (err) {
+
         this.logger.error(`Could not dynamically generate neovim API: ${err}`, {
           error: err,
         });
@@ -183,6 +184,3 @@ class NeovimClient extends Neovim {
     return null;
   }
 }
-
-module.exports = NeovimClient;
-module.exports.default = module.exports;

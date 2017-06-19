@@ -1,7 +1,6 @@
-const BaseApi = require('./Base');
-const createChainableApi = require('./helpers/createChainableApi');
-
-class Window extends BaseApi {
+import { BaseApi } from './Base';
+import { createChainableApi } from './helpers/createChainableApi';
+export class Window extends BaseApi {
   // @return Promise<Buffer>
   get buffer() {
     // Circular dependencies
@@ -30,7 +29,7 @@ class Window extends BaseApi {
 
   // pos = tuple of [row, col]
   set cursor(pos) {
-    return this.request(`${this.prefix}set_cursor`, [this, pos]);
+    this.request(`${this.prefix}set_cursor`, [this, pos]);
   }
 
   // Return window height in rows
@@ -40,7 +39,7 @@ class Window extends BaseApi {
   }
 
   set height(height) {
-    return this.request(`${this.prefix}set_height`, [this, height]);
+    this.request(`${this.prefix}set_height`, [this, height]);
   }
 
   // Return window width in rows
@@ -50,7 +49,7 @@ class Window extends BaseApi {
   }
 
   set width(width) {
-    return this.request(`${this.prefix}set_width`, [this, width]);
+    this.request(`${this.prefix}set_width`, [this, width]);
   }
 
   get position() {
@@ -81,6 +80,3 @@ class Window extends BaseApi {
     return this.request(`${this.prefix}get_number`, [this]);
   }
 }
-
-module.exports = Window;
-module.exports.default = module.exports;

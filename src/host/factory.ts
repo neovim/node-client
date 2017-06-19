@@ -1,19 +1,18 @@
-const Module = require('module');
-const path = require('path');
-const util = require('util');
-const vm = require('vm');
+import * as Module from 'module';
+import * as path from 'path';
+import * as util from 'util';
+import * as vm from 'vm';
 
-const omit = require('lodash.omit');
-const defaults = require('lodash.defaults');
-
-const logger = require('../logger');
-const DevNull = require('../devnull');
-const {
+import omit from 'lodash.omit';
+import defaults from 'lodash.defaults';
+// import * as logger from '../logger'
+import { DevNull } from '../utils/devnull';
+import {
   NVIM_PLUGIN,
   NVIM_DEV_MODE,
   NVIM_SPEC,
   NVIM_METHOD_NAME,
-} = require('../plugin/properties');
+} from '../plugin/properties';
 
 const BLACKLISTED_GLOBALS = [
   'reallyExit',
@@ -45,7 +44,7 @@ function makeRequireFunction() {
 // @see node/lib/module.js
 function compileInSandbox(sandbox) {
   // eslint-disable-next-line
-  return function(content, filename) {
+  return function (content, filename) {
     const require = makeRequireFunction.call(this);
     const dirname = path.dirname(filename);
     // remove shebang
@@ -156,14 +155,12 @@ function createPlugin(filename, nvim, options) {
   return null;
 }
 
-function loadPlugin(filename, nvim, options = {}) {
-  logger.debug('loadPlugin: ', filename);
+export function loadPlugin(filename, nvim, options = {}) {
+  // logger.debug('loadPlugin: ', filename);
   try {
     return createPlugin(filename, nvim, options);
   } catch (err) {
-    logger.error(`Could not load plugin "${filename}":`, err, err.stack);
+    // logger.error(`Could not load plugin "${filename}":`, err, err.stack);
     return null;
   }
 }
-
-module.exports = loadPlugin;

@@ -1,6 +1,6 @@
-const BaseApi = require('./Base');
+import { BaseApi } from './Base';
 
-class Buffer extends BaseApi {
+export class Buffer extends BaseApi {
   // @return Promise<Integer>
   get length() {
     return this.request(`${this.prefix}line_count`, [this]);
@@ -13,9 +13,7 @@ class Buffer extends BaseApi {
 
   // Get lines
   // @return Promise<Array<string>>
-  getLines(
-    { start, end, strictIndexing } = { start: 0, end: -1, strictIndexing: true }
-  ) {
+  getLines({ start, end, strictIndexing } = { start: 0, end: -1, strictIndexing: true }) {
     const indexing = typeof strictIndexing === 'undefined'
       ? true
       : strictIndexing;
@@ -27,10 +25,7 @@ class Buffer extends BaseApi {
     ]);
   }
 
-  setLines(
-    _lines,
-    { start: _start, end: _end, strictIndexing } = { strictIndexing: true }
-  ) {
+  setLines(_lines,{ start: _start, end: _end, strictIndexing } = { strictIndexing: true }) {
     // TODO: Error checking
     // if (typeof start === 'undefined' || typeof end === 'undefined') {
     // }
@@ -80,7 +75,7 @@ class Buffer extends BaseApi {
   }
 
   set name(value) {
-    return this.request(`${this.prefix}set_name`, [this, value]);
+this.request(`${this.prefix}set_name`, [this, value]);
   }
 
   // Is current buffer valid
@@ -135,4 +130,3 @@ class Buffer extends BaseApi {
   }
 }
 
-module.exports = Buffer;

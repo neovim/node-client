@@ -1,12 +1,12 @@
-const parseFunctionMetadata = require('./parseFunctionMetadata');
+import { parseFunctionMetadata } from './parseFunctionMetadata';
 
-const createApiMethod = function({ name }) {
-  const newMethod = function(...args) {
-    this.logger.debug(`request -> neovim.api.${name}`);
+const createApiMethod = function ({ name }) {
+  const newMethod = function (...args) {
+    // this.logger.debug(`request -> neovim.api.${name}`);
     return new Promise((resolve, reject) => {
       // does args need this?
       this._session.request(name, args, (err, res) => {
-        this.logger.debug(`neovim.api.${name}.resp: ${res}`);
+        // this.logger.debug(`neovim.api.${name}.resp: ${res}`);
         if (err) {
           reject(new Error(`${name}: ${err[1]}`));
         } else {
@@ -21,7 +21,7 @@ const createApiMethod = function({ name }) {
   return newMethod;
 };
 
-function generateWrappers(cls, types, prefixMap, metadata) {
+export function generateWrappers(cls, types, prefixMap, metadata) {
   metadata.functions.forEach(func => {
     const {
       name,
@@ -35,7 +35,6 @@ function generateWrappers(cls, types, prefixMap, metadata) {
     if (deprecatedSince <= 2) {
       return;
     }
-
     const { typeName, methodName } = parseFunctionMetadata({
       prefixMap,
       name,
@@ -75,7 +74,7 @@ function generateWrappers(cls, types, prefixMap, metadata) {
       // One potential issue is trying to call nvim apis before it has been generated,
       // In that case using a Proxy would be better so can we catch all undefined api calls
       // But this is fine for now
-      Type.prototype[methodName] = function(...a) {
+      Type.prototype[methodName] = function (...a) {
         // eslint-disable-next-line no-shadow
         const args = isMethod ? [this, ...a] : a;
         return method.apply(this, args);
@@ -92,5 +91,3 @@ function generateWrappers(cls, types, prefixMap, metadata) {
   });
 }
 
-module.exports = generateWrappers;
-module.exports.default = module.exports;

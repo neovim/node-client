@@ -1,11 +1,10 @@
+import { BaseApi } from './Base';
+import { createChainableApi} from './helpers/createChainableApi';
+import { TYPES } from './helpers/types';
 /**
  * Neovim API
  */
-const BaseApi = require('./Base');
-const createChainableApi = require('./helpers/createChainableApi');
-const TYPES = require('./helpers/types');
-
-class Neovim extends BaseApi {
+export class Neovim extends BaseApi {
   get buffer() {
     return createChainableApi.call(this, 'Buffer', TYPES.Buffer, () =>
       this.request('nvim_get_current_buf')
@@ -23,7 +22,7 @@ class Neovim extends BaseApi {
   }
 
   set tabpage(tabpage) {
-    return this.request('nvim_set_current_tabpage', [tabpage]);
+    this.request('nvim_set_current_tabpage', [tabpage]);
   }
 
   get window() {
@@ -38,7 +37,7 @@ class Neovim extends BaseApi {
 
   set window(win) {
     // Throw error if win is not instance of Window?
-    return this.request('nvim_set_current_win', [win]);
+    this.request('nvim_set_current_win', [win]);
   }
 
   eval(arg) {
@@ -58,6 +57,3 @@ class Neovim extends BaseApi {
     this.command('qa!');
   }
 }
-
-module.exports = Neovim;
-module.exports.default = module.exports;

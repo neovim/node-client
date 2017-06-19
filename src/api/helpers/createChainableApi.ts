@@ -1,4 +1,4 @@
-function createChainableApi(name, Type, requestPromise, chainCallPromise) {
+export function createChainableApi(name, Type, requestPromise, chainCallPromise) {
   // re-use current promise if not resolved yet
   if (
     this[`${name}Promise`] &&
@@ -93,6 +93,3 @@ function createChainableApi(name, Type, requestPromise, chainCallPromise) {
 
   return this[`${name}Proxy`];
 }
-
-module.exports = createChainableApi;
-// module.exports.default = module.exports;

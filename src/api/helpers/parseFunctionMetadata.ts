@@ -1,7 +1,6 @@
-const _ = require('lodash');
-
+import _ from 'lodash';
 // Parses nvim api info and generates node client API names
-function parseFunctionMetadata({ prefixMap, name }) {
+export function parseFunctionMetadata({ prefixMap, name }) {
   let typeName;
   let methodName;
 
@@ -27,6 +26,3 @@ function parseFunctionMetadata({ prefixMap, name }) {
     methodName,
   };
 }
-
-module.exports = parseFunctionMetadata;
-module.exports.default = module.exports;

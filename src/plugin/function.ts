@@ -1,6 +1,6 @@
-const { NVIM_SYNC, NVIM_SPEC, NVIM_METHOD_NAME } = require('./properties');
+import { NVIM_SYNC, NVIM_SPEC, NVIM_METHOD_NAME } from './properties';
 
-module.exports = function(name, options = {}) {
+export function nvimFunction(name, options = {}) {
   return function(cls, methodName) {
     // const {
     // sync,
