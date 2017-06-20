@@ -4,8 +4,7 @@ import { Tabpage } from './Tabpage';
 import { Buffer } from './Buffer';
 
 export class Window extends BaseApi {
-  // @return Promise<Buffer>
-  get buffer() {
+  get buffer(): Promise<Buffer> {
     // Circular dependencies
     return createChainableApi.call(this, 'Buffer', Buffer, () =>
       this.request(`${this.prefix}get_buf`, [this])
@@ -13,69 +12,62 @@ export class Window extends BaseApi {
   }
 
   // Get the `Tabpage` that contains the window.
-  // @return Promise<Tabpage>
-  get tabpage() {
+  get tabpage(): Promise<Tabpage> {
     // Circular dependencies
     return createChainableApi.call(this, 'Tabpage', Tabpage, () =>
       this.request(`${this.prefix}get_tabpage`, [this])
     );
   }
 
-  // @return Promise<[Integer, Integer]>
-  get cursor() {
+  get cursor(): Promise<[number, number]> {
     return this.request(`${this.prefix}get_cursor`, [this]);
   }
 
-  // pos = tuple of [row, col]
-  set cursor(pos) {
+  set cursor(pos: [number, number]): void {
     this.request(`${this.prefix}set_cursor`, [this, pos]);
   }
 
   // Return window height in rows
-  // @return Promise<Integer>
-  get height() {
+  get height(): Promise<number> {
     return this.request(`${this.prefix}get_height`, [this]);
   }
 
-  set height(height) {
+  set height(height: number): void {
     this.request(`${this.prefix}set_height`, [this, height]);
   }
 
   // Return window width in rows
-  // @return Promise<Integer>
-  get width() {
+  get width(): Promise<number> {
     return this.request(`${this.prefix}get_width`, [this]);
   }
 
-  set width(width) {
+  set width(width: number): void {
     this.request(`${this.prefix}set_width`, [this, width]);
   }
 
-  get position() {
+  get position(): Promise<[number, number]> {
     return this.request(`${this.prefix}get_position`, [this]);
   }
 
   // 0-indexed, on-screen window position(row) in display cells.
-  get row() {
+  get row(): Promise<number> {
     return this.request(`${this.prefix}get_position`, [this]).then(
       position => position[0]
     );
   }
 
   // 0-indexed, on-screen window position(col) in display cells.
-  get col() {
+  get col(): Promise<number> {
     return this.request(`${this.prefix}get_position`, [this]).then(
       position => position[1]
     );
   }
 
-  // @return Promise<Boolean>
-  get valid() {
+  get valid(): Promise<boolean> {
     return this.request(`${this.prefix}is_valid`, [this]);
   }
 
-  // @return Promise<Integer>
-  get number() {
+  get number(): Promise<number> {
     return this.request(`${this.prefix}get_number`, [this]);
   }
 }
