@@ -1,10 +1,9 @@
 import * as util from 'util';
 import { attach } from '../attach';
-// import * as logger from '../logger';
+import { logger } from '../utils/logger';
 import { loadPlugin } from './factory';
 
 export class Host {
-
   loaded;
   nvim;
   constructor() {
@@ -14,7 +13,7 @@ export class Host {
     this.handlePlugin = this.handlePlugin.bind(this);
   }
 
-  getPlugin(filename, options=null) {
+  getPlugin(filename, options = null) {
     const plugin =
       this.loaded[filename] || loadPlugin(filename, this.nvim, options);
 
@@ -98,7 +97,7 @@ export class Host {
     // stdio is reversed since it's from the perspective of Neovim
     // logger.debug('host.start');
     // const nvim = attach({reader: proc.stdin, writer: proc.stdout})
-    const nvim = attach(proc.stdin, proc.stdout)
+    const nvim = attach(proc.stdin, proc.stdout);
     this.nvim = nvim;
 
     if (nvim) {

@@ -3,9 +3,9 @@ import * as path from 'path';
 import * as util from 'util';
 import * as vm from 'vm';
 
-import omit from 'lodash.omit';
-import defaults from 'lodash.defaults';
-// import * as logger from '../logger'
+import * as _omit from 'lodash.omit';
+import * as _defaults from 'lodash.defaults';
+import { logger } from '../utils/logger';
 import { DevNull } from '../utils/devnull';
 import {
   NVIM_PLUGIN,
@@ -44,7 +44,7 @@ function makeRequireFunction() {
 // @see node/lib/module.js
 function compileInSandbox(sandbox) {
   // eslint-disable-next-line
-  return function (content, filename) {
+  return function(content, filename) {
     const require = makeRequireFunction.call(this);
     const dirname = path.dirname(filename);
     // remove shebang
@@ -74,7 +74,7 @@ function createSandbox(filename) {
     console: {},
   });
 
-  defaults(sandbox, global);
+  _defaults(sandbox, global);
 
   // Redirect console calls into logger
   Object.keys(console).forEach(k => {
@@ -95,7 +95,7 @@ function createSandbox(filename) {
 
   // patch `require` in sandbox to run loaded module in sandbox context
   // if you need any of these, it might be worth discussing spawning separate processes
-  sandbox.process = omit(global.process, BLACKLISTED_GLOBALS);
+  sandbox.process = _omit(global.process, BLACKLISTED_GLOBALS);
 
   const devNull = new DevNull();
   sandbox.process.stdin = devNull;
@@ -108,17 +108,18 @@ function createSandbox(filename) {
 // inspiration drawn from Module
 function createPlugin(filename, nvim, options) {
   const debug = createDebugFunction(filename);
-  const sandbox = createSandbox(filename);
-  const specs = [];
-  const handlers = {};
 
-  // Clear module from cache
-  if (!options.cache) {
-    delete Module._cache[require.resolve(filename)];
-  }
-
-  // attempt to import plugin
   try {
+    const sandbox = createSandbox(filename);
+    const specs = [];
+    const handlers = {};
+
+    // Clear module from cache
+    if (!options.cache) {
+      delete Module._cache[require.resolve(filename)];
+    }
+
+    // attempt to import plugin
     // Require plugin to export a class
     const defaultImport = sandbox.require(filename);
     const Wrapper = (defaultImport && defaultImport.default) || defaultImport;
@@ -156,7 +157,6 @@ function createPlugin(filename, nvim, options) {
 }
 
 export function loadPlugin(filename, nvim, options = {}) {
-  // logger.debug('loadPlugin: ', filename);
   try {
     return createPlugin(filename, nvim, options);
   } catch (err) {

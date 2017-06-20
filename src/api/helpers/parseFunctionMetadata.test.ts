@@ -1,5 +1,5 @@
 /* eslint-env jest */
-const parseFunctionMetadata = require('./parseFunctionMetadata');
+import { parseFunctionMetadata } from './parseFunctionMetadata';
 
 const prefixMap = {
   nvim_buf_: 'Buffer',

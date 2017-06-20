@@ -1,6 +1,6 @@
 /* eslint-env jest */
-const path = require('path');
-const loadPlugin = require('./factory');
+import * as path from 'path';
+import { loadPlugin } from './factory';
 
 const PLUGIN_PATH = path.join(
   __dirname,

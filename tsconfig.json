@@ -11,7 +11,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": false,
-    "target": "es5",
+    "target": "es6",
     "outDir": "./lib"
   },
   "inclue":[

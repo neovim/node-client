@@ -1,13 +1,8 @@
-import { inherits } from 'util';
 import { Duplex } from 'stream';
 
-export function DevNull() {
-  Duplex.call(this);
+export class DevNull extends Duplex {
+  _read() {}
+  _write(chunk, enc, cb) {
+    cb();
+  }
 }
-inherits(DevNull, Duplex);
-
-DevNull.prototype._read = function () { };
-DevNull.prototype._write = function (chunk, enc, cb) {
-  cb();
-};
-

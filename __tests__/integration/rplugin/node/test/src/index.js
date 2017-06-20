@@ -8,7 +8,7 @@ const {
   Function,
   Autocmd,
   Command,
-} = require('../../../../../../plugin');
+} = require('../../../../../../lib/plugin');
 
 @Plugin
 class Test {

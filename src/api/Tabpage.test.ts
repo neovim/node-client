@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import * as child_process from 'child_process';
+import * as cp from 'child_process';
 // // eslint-disable-next-line import/no-extraneous-dependencies
 import * as which from 'which';
 import { attach } from '../attach';
@@ -20,7 +20,7 @@ describe('Tabpage API', () => {
   let nvim;
 
   beforeAll(async done => {
-    proc = child_process.spawn(
+    proc = cp.spawn(
       'nvim',
       ['-u', 'NONE', '-N', '--embed', '-c', 'set noswapfile', 'test.js'],
       {

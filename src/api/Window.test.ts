@@ -1,8 +1,8 @@
 /* eslint-env jest */
-const cp = require('child_process');
-// eslint-disable-next-line import/no-extraneous-dependencies
-const which = require('which');
-const attach = require('../attach');
+import * as cp from 'child_process';
+// // eslint-disable-next-line import/no-extraneous-dependencies
+import * as which from 'which';
+import { attach } from '../attach';
 
 try {
   which.sync('nvim');
