@@ -1,11 +1,12 @@
-import { BaseApi } from './Base';
 import { createChainableApi } from './helpers/createChainableApi';
+import { BaseApi } from './Base';
+import { Tabpage } from './Tabpage';
+import { Buffer } from './Buffer';
+
 export class Window extends BaseApi {
   // @return Promise<Buffer>
   get buffer() {
     // Circular dependencies
-    // eslint-disable-next-line global-require
-    const Buffer = require('./Buffer');
     return createChainableApi.call(this, 'Buffer', Buffer, () =>
       this.request(`${this.prefix}get_buf`, [this])
     );
@@ -15,8 +16,6 @@ export class Window extends BaseApi {
   // @return Promise<Tabpage>
   get tabpage() {
     // Circular dependencies
-    // eslint-disable-next-line global-require
-    const Tabpage = require('./Tabpage');
     return createChainableApi.call(this, 'Tabpage', Tabpage, () =>
       this.request(`${this.prefix}get_tabpage`, [this])
     );

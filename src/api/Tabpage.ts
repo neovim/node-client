@@ -1,29 +1,26 @@
 import { BaseApi } from './Base';
-import { createChainableApi} from './helpers/createChainableApi';
+import { createChainableApi } from './helpers/createChainableApi';
+import { Window } from './Window';
+
 export class Tabpage extends BaseApi {
-  // @return Promise<Array<Window>>
-  get windows() {
+  get windows(): Promise<Array<Window>> {
     return this.request(`${this.prefix}list_wins`, [this]);
   }
 
-  // @return Promise<Window>
-  get window() {
+  get window(): Promise<Window> {
     // Require is here otherwise we get circular refs
-    // eslint-disable-next-line global-require
-    const Window = require('./Window');
     return createChainableApi.call(this, 'Window', Window, () =>
       this.request(`${this.prefix}get_win`, [this])
     );
   }
 
   // Is current tabpage valid
-  // @return Promise<boolean>
-  get valid() {
+  get valid(): Promise<boolean> {
     return this.request(`${this.prefix}is_valid`, [this]);
   }
 
-  // @return Promise<Integer>
-  get number() {
+  // Tabpage number
+  get number(): Promise<number> {
     return this.request(`${this.prefix}get_number`, [this]);
   }
 }
