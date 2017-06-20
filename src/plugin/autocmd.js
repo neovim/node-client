@@ -9,8 +9,9 @@ module.exports = function(name, options = {}) {
     // ...opts,
     // } = options;
 
-    const sync = options.sync;
-    const f = cls[methodName];
+    const sync = !!options.sync;
+    const isMethod = typeof methodName === 'string';
+    const f = isMethod ? cls[methodName] : cls;
     const opts = {};
 
     ['pattern', 'eval'].forEach(option => {
@@ -34,8 +35,12 @@ module.exports = function(name, options = {}) {
         opts,
       },
     });
-    // eslint-disable-next-line no-param-reassign
-    cls[methodName] = f;
+
+    if (isMethod) {
+      // eslint-disable-next-line no-param-reassign
+      cls[methodName] = f;
+    }
+
     return cls;
   };
 };

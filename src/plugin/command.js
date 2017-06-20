@@ -9,9 +9,10 @@ module.exports = function(name, options = {}) {
     // ...opts,
     // } = options;
 
-    const f = cls[methodName];
-    const opts = {};
     const sync = !!options.sync;
+    const isMethod = typeof methodName === 'string';
+    const f = isMethod ? cls[methodName] : cls;
+    const opts = {};
 
     ['range', 'nargs'].forEach(option => {
       if (typeof options[option] !== 'undefined') {
@@ -29,8 +30,12 @@ module.exports = function(name, options = {}) {
         opts,
       },
     });
-    // eslint-disable-next-line no-param-reassign
-    cls[methodName] = f;
+
+    if (isMethod) {
+      // eslint-disable-next-line no-param-reassign
+      cls[methodName] = f;
+    }
+
     return cls;
   };
 };
