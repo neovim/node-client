@@ -48,4 +48,16 @@ describe('Plugin class decorator', () => {
       'autocmd:TestAutocmd:*.js'
     );
   });
+
+  it('initializes Plugin class with nvim API', () => {
+    const nvim = {};
+    class MyClass {}
+    const NewClass = Plugin(MyClass);
+    const instance = new NewClass(nvim);
+    expect(instance.nvim).toBe(nvim);
+
+    const nvim2 = {};
+    instance.setApi(nvim2);
+    expect(instance.nvim).toBe(nvim2);
+  });
 });
