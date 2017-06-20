@@ -1,7 +1,7 @@
 /* eslint no-shadow:0 */
 // eslint-disable-next-line func-names
 import { BaseApi } from '../Base';
-import { logger } from '../../util/logger';
+import { logger } from '../../utils/logger';
 
 export function createBaseType(name) {
   // Should avoid using this, instead create a static API wrapper
