@@ -1,8 +1,9 @@
 /* eslint-env jest */
-const attach = require('../index').attach;
-const cp = require('child_process');
-const fs = require('fs');
-const path = require('path');
+import * as cp from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
+
+import { attach } from '../src/index';
 
 // eslint-disable-next-line
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;

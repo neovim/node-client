@@ -53,12 +53,14 @@
     "eslint-config-airbnb-base": "^11.2.0",
     "eslint-config-prettier": "^2.1.1",
     "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-typescript": "^0.1.0",
     "husky": "^0.13.4",
     "jest": "^20.0.4",
     "lint-staged": "^3.6.1",
     "nodemon": "^1.3.7",
     "prettier": "^1.4.2",
     "typescript": "^2.0.0",
+    "typescript-eslint-parser": "^3.0.0",
     "which": "^1.2.14"
   },
   "scripts": {

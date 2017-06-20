@@ -1,7 +1,8 @@
 module.exports = {
   // extending prettier fucks up my vim...
   extends: ['airbnb-base'],
-  plugins: ['import'],
+  parser: 'typescript-eslint-parser',
+  plugins: ['typescript', 'import'],
   rules: {
     'class-methods-use-this': 0,
     'comma-dangle': [
@@ -21,5 +22,13 @@ module.exports = {
     // prettier things
     'arrow-parens': 0,
     'space-before-function-paren': 0,
+
+    'import/extensions': 0,
+  },
+
+  settings: {
+    'import/parsers': {
+      'typescript-eslint-parser': ['.ts', '.tsx'],
+    },
   },
 };
