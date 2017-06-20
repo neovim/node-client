@@ -1,6 +1,12 @@
 import { NVIM_SYNC, NVIM_SPEC, NVIM_METHOD_NAME } from './properties';
 
-export function nvimFunction(name, options = {}) {
+export interface NvimFunctionOptions {
+  sync?: boolean;
+  range?: [number, number];
+  eval?: string;
+}
+
+export function nvimFunction(name: string, options: NvimFunctionOptions) {
   return function(cls, methodName) {
     // const {
     // sync,
@@ -8,12 +14,12 @@ export function nvimFunction(name, options = {}) {
     // } = options;
     const sync = options.sync;
     const f = cls[methodName];
-    const opts = {};
+    const opts : NvimFunctionOptions = {};
 
-    if (options.range) {
+    if (options && options.range) {
       opts.range = options.range;
     }
-    if (options.eval) {
+    if (options && options.eval) {
       opts.eval = options.eval;
     }
 
@@ -31,4 +37,4 @@ export function nvimFunction(name, options = {}) {
     cls[methodName] = f;
     return cls;
   };
-};
+}

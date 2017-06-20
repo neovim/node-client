@@ -1,20 +1,28 @@
 import { NVIM_SYNC, NVIM_SPEC, NVIM_METHOD_NAME } from './properties';
 
+export interface AutocmdOptions {
+  pattern: string;
+  eval?: string;
+  sync?: boolean;
+}
+
 // Example
 // @autocmd('BufEnter', { pattern: '*.js', eval: 'expand("<afile>")', sync: true })
-export function autocmd(name, options = {}) {
-  return function (cls, methodName) {
+export function autocmd(name, options: AutocmdOptions) {
+  return function(cls, methodName) {
     // const {
     // sync,
     // ...opts,
     // } = options;
 
-    const sync = options.sync;
+    const sync = options && options.sync;
     const f = cls[methodName];
-    const opts = {};
+    const opts : AutocmdOptions = {
+      pattern: '',
+    };
 
     ['pattern', 'eval'].forEach(option => {
-      if (typeof options[option] !== 'undefined') {
+      if (options && typeof options[option] !== 'undefined') {
         opts[option] = options[option];
       }
     });
@@ -38,4 +46,4 @@ export function autocmd(name, options = {}) {
     cls[methodName] = f;
     return cls;
   };
-};
+}

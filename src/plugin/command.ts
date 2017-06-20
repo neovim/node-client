@@ -1,7 +1,14 @@
 import { NVIM_SYNC, NVIM_SPEC, NVIM_METHOD_NAME } from './properties';
+
+export interface CommandOptions {
+  sync?: boolean;
+  range?: string;
+  nargs?: string;
+}
+
 // Example
 // @command('BufEnter', { range: '', nargs: '*' })
-export function command(name, options = {}) {
+export function command(name: string, options: CommandOptions) {
   return function(cls, methodName) {
     // const {
     // sync,
@@ -9,11 +16,11 @@ export function command(name, options = {}) {
     // } = options;
 
     const f = cls[methodName];
-    const opts = {};
-    const sync = !!options.sync;
+    const opts : CommandOptions = {};
+    const sync = options && !!options.sync;
 
     ['range', 'nargs'].forEach(option => {
-      if (typeof options[option] !== 'undefined') {
+      if (options && typeof options[option] !== 'undefined') {
         opts[option] = options[option];
       }
     });
@@ -32,4 +39,4 @@ export function command(name, options = {}) {
     cls[methodName] = f;
     return cls;
   };
-};
+}
