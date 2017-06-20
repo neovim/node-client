@@ -106,7 +106,7 @@ function createSandbox(filename) {
 }
 
 // inspiration drawn from Module
-function createPlugin(filename, nvim, options) {
+function createPlugin(filename, nvim, options = {}) {
   const debug = createDebugFunction(filename);
 
   try {
@@ -115,7 +115,7 @@ function createPlugin(filename, nvim, options) {
     const handlers = {};
 
     // Clear module from cache
-    if (!options.cache) {
+    if (options && !options.cache) {
       delete Module._cache[require.resolve(filename)];
     }
 
@@ -144,7 +144,7 @@ function createPlugin(filename, nvim, options) {
         specs,
         handlers,
         import: defaultImport,
-        module: !options.noCreateInstance ? new Wrapper(nvim) : null,
+        module: !options || !options.noCreateInstance ? new Wrapper(nvim) : null,
       };
     }
   } catch (err) {

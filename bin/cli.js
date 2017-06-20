@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const Host = require('../src/host');
-const logger = require('../src/logger');
+const Host = require('../lib/host').Host;
+const logger = require('../lib/utils/logger').logger;
 
 // node <current script> <rest of args>
 const [, , ...args] = process.argv;
