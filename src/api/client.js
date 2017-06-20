@@ -6,7 +6,6 @@ const Session = require('msgpack5rpc');
 const decode = require('../decode');
 
 const generateWrappers = require('./helpers/generateWrappers');
-const createBaseType = require('./helpers/createBaseType');
 const TYPES = require('./helpers/types');
 
 const Neovim = require('./Neovim');
@@ -128,8 +127,7 @@ class NeovimClient extends Neovim {
 
           // Generate a constructor function for each type in metadata.types
           if (typeof TYPES[name] === 'undefined') {
-            ExtType = createBaseType(name);
-            Object.defineProperty(ExtType, 'name', { value: name });
+            this.logger.warn(`Class not found for ${name}`);
           } else {
             ExtType = TYPES[name];
           }
