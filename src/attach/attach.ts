@@ -1,5 +1,6 @@
-import { NeovimClient } from './../api/client';
 import { createConnection } from 'net';
+
+import { NeovimClient } from './../api/client';
 import { logger } from '../utils/logger';
 
 export interface Attach {
@@ -9,18 +10,25 @@ export interface Attach {
   socket?: string;
 }
 
-export function attach({ reader: _reader, writer: _writer, proc, socket }: Attach) {
+export function attach({
+  reader: _reader,
+  writer: _writer,
+  proc,
+  socket,
+}: Attach) {
   let writer;
   let reader;
 
+  logger.debug('proc');
+  logger.debug(proc);
   if (socket) {
-    const client = createConnection(socket)
+    const client = createConnection(socket);
     writer = client;
     reader = client;
   } else if (_reader && _writer) {
     writer = _writer;
     reader = _reader;
-  } else {
+  } else if (proc) {
     writer = proc.stdin;
     reader = proc.stdout;
   }

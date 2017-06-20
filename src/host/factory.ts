@@ -144,7 +144,9 @@ function createPlugin(filename, nvim, options = {}) {
         specs,
         handlers,
         import: defaultImport,
-        module: !options || !options.noCreateInstance ? new Wrapper(nvim) : null,
+        module: !options || !options.noCreateInstance
+          ? new Wrapper(nvim)
+          : null,
       };
     }
   } catch (err) {
