@@ -29,11 +29,16 @@ describe('Plugin class decorator', () => {
 
   it('decorates class methods', () => {
     class MyClass {}
-    MyClass.prototype.testF = FunctionDecorator('TestF')(() => {});
-    MyClass.prototype.testC = Command('TestCommand')(() => {});
-    MyClass.prototype.testA = Autocmd('TestAutocmd', {
+    MyClass.prototype.testF = () => {};
+    MyClass.prototype.testC = () => {};
+    MyClass.prototype.testA = () => {};
+
+    // This is how (closeish) babel applies decorators
+    FunctionDecorator('TestF')(MyClass.prototype, 'testF');
+    Command('TestCommand')(MyClass.prototype, 'testC');
+    Autocmd('TestAutocmd', {
       pattern: '*.js',
-    })(() => {});
+    })(MyClass.prototype, 'testA');
 
     expect(MyClass.prototype.testF[NVIM_METHOD_NAME]).toBe('function:TestF');
     expect(MyClass.prototype.testC[NVIM_METHOD_NAME]).toBe(
