@@ -24,9 +24,11 @@ module.exports = {
     'space-before-function-paren': 0,
 
     'import/extensions': 0,
+    'import/prefer-default-export': 0,
   },
 
   settings: {
+    'import/resolver': { node: { extensions: ['.js', '.jsx', '.ts'] } },
     'import/parsers': {
       'typescript-eslint-parser': ['.ts', '.tsx'],
     },
