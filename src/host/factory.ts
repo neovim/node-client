@@ -65,10 +65,20 @@ function createDebugFunction(filename) {
   };
 }
 
-function createSandbox(filename) {
+export interface ISandbox {
+  process: NodeJS.Process;
+  module: Module;
+  require: Module.require;
+  console: {
+    log: Function;
+  };
+}
+
+function createSandbox(filename): ISandbox {
   const module = new Module(filename);
   module.paths = Module._nodeModulePaths(filename);
 
+  // const sandbox = <ISandbox>vm.createContext({
   const sandbox: any = vm.createContext({
     module,
     console: {},
@@ -95,6 +105,7 @@ function createSandbox(filename) {
 
   // patch `require` in sandbox to run loaded module in sandbox context
   // if you need any of these, it might be worth discussing spawning separate processes
+  // sandbox.process = <NodeJS.Process>omit(global.process, BLACKLISTED_GLOBALS);
   sandbox.process = omit(global.process, BLACKLISTED_GLOBALS);
 
   const devNull = new DevNull();
@@ -106,7 +117,11 @@ function createSandbox(filename) {
 }
 
 // inspiration drawn from Module
-function createPlugin(filename, nvim, options: any = {}) {
+function createPlugin(
+  filename,
+  nvim,
+  options: { cache?: boolean; noCreateInstance?: boolean } = {}
+) {
   const debug = createDebugFunction(filename);
 
   try {

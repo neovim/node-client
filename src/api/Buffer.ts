@@ -127,7 +127,7 @@ export class Buffer extends BaseApi {
     colEnd,
     srcId,
     async: _isAsync,
-  }: BufferHighlight) {
+  }: BufferHighlight): Promise<number> {
     const colEnd = typeof _end !== 'undefined' ? _end : -1;
     const colStart = typeof _start !== 'undefined' ? _start : -0;
     const srcId = typeof _srcId !== 'undefined' ? _srcId : -1;
