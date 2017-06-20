@@ -78,4 +78,17 @@ describe('Plugin Factory (used by host)', () => {
     });
     expect(pluginObj.import).toEqual(samePlugin.import);
   });
+
+  it('loads plugin with instance of nvim API', () => {
+    const nvim = {};
+    const plugin = loadPlugin(PLUGIN_PATH, nvim, {});
+    expect(plugin.module.nvim).toBe(nvim);
+  });
+
+  it('sets new neovim API from plugin instance', () => {
+    const nvim = {};
+    expect(pluginObj.module.nvim).toBe(null);
+    pluginObj.module.setApi(nvim);
+    expect(pluginObj.module.nvim).toBe(nvim);
+  });
 });
