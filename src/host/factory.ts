@@ -3,8 +3,8 @@ import * as path from 'path';
 import * as util from 'util';
 import * as vm from 'vm';
 
-import * as _omit from 'lodash.omit';
-import * as _defaults from 'lodash.defaults';
+import omit from 'lodash.omit';
+import defaults from 'lodash.defaults';
 import { logger } from '../utils/logger';
 import { DevNull } from '../utils/devnull';
 import {
@@ -74,7 +74,7 @@ function createSandbox(filename) {
     console: {},
   });
 
-  _defaults(sandbox, global);
+  defaults(sandbox, global);
 
   // Redirect console calls into logger
   Object.keys(console).forEach(k => {
@@ -95,7 +95,7 @@ function createSandbox(filename) {
 
   // patch `require` in sandbox to run loaded module in sandbox context
   // if you need any of these, it might be worth discussing spawning separate processes
-  sandbox.process = _omit(global.process, BLACKLISTED_GLOBALS);
+  sandbox.process = omit(global.process, BLACKLISTED_GLOBALS);
 
   const devNull = new DevNull();
   sandbox.process.stdin = devNull;

@@ -1,6 +1,6 @@
 import { parseFunctionMetadata } from './parseFunctionMetadata';
 
-const createApiMethod = function ({ name }) {
+const createApiMethod = function ({ name, takesCallback }: {name: string, takesCallback?: any}) {
   const newMethod = function (...args) {
     this.logger.debug(`request -> neovim.api.${name}`);
     return new Promise((resolve, reject) => {

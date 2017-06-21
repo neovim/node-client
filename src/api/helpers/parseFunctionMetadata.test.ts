@@ -225,7 +225,7 @@ const apis = [
 
 describe('parseFunctionMetadata', () => {
   apis.forEach(([nvimApi, expected]) => {
-    it(nvimApi, () => {
+    it('nvimApi', () => {
       expect(parseFunctionMetadata({ prefixMap, name: nvimApi })).toEqual(
         expected
       );

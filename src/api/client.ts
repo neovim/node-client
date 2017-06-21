@@ -4,7 +4,6 @@
 import * as Session from 'msgpack5rpc'
 import { decode } from '../utils/decode';
 import { generateWrappers } from './helpers/generateWrappers';
-import { createBaseType } from './helpers/createBaseType';
 import { TYPES } from './helpers/types';
 import { Neovim } from './Neovim';
 
@@ -12,7 +11,7 @@ export class NeovimClient extends Neovim {
   requestQueue: Array<any>;
   _sessionAttached: boolean;
   _channel_id;
-  constructor(options: { session?, logger? } = {}) {
+  constructor(options: { session?, logger?} = {}) {
     const session = options.session || new Session([]);
     const { logger } = options;
 
@@ -126,8 +125,7 @@ export class NeovimClient extends Neovim {
 
           // Generate a constructor function for each type in metadata.types
           if (typeof TYPES[name] === 'undefined') {
-            ExtType = createBaseType(name);
-            Object.defineProperty(ExtType, 'name', { value: name });
+            this.logger.warn(`Class not found for ${name}`);
           } else {
             ExtType = TYPES[name];
           }

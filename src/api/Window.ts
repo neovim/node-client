@@ -19,29 +19,29 @@ export class Window extends BaseApi {
     );
   }
 
-  get cursor(): Promise<[number, number]> {
+  get cursor(): [number, number]| Promise<[number, number]> {
     return this.request(`${this.prefix}get_cursor`, [this]);
   }
 
-  set cursor(pos: [number, number]): void {
+  set cursor(pos: [number, number]| Promise<[number, number]>) {
     this.request(`${this.prefix}set_cursor`, [this, pos]);
   }
 
   // Return window height in rows
-  get height(): Promise<number> {
+  get height(): number | Promise<number> {
     return this.request(`${this.prefix}get_height`, [this]);
   }
 
-  set height(height: number): void {
+  set height(height: number | Promise<number>) {
     this.request(`${this.prefix}set_height`, [this, height]);
   }
 
   // Return window width in rows
-  get width(): Promise<number> {
+  get width(): number | Promise<number> {
     return this.request(`${this.prefix}get_width`, [this]);
   }
 
-  set width(width: number): void {
+  set width(width: number | Promise<number>) {
     this.request(`${this.prefix}set_width`, [this, width]);
   }
 
