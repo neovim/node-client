@@ -1,5 +1,5 @@
-import capitalize from  'lodash.capitalize';
-import camelcase from  'lodash.camelcase';
+import capitalize from 'lodash.capitalize';
+import camelcase from 'lodash.camelcase';
 // Parses nvim api info and generates node client API names
 export function parseFunctionMetadata({ prefixMap, name }) {
   let typeName;
@@ -10,7 +10,7 @@ export function parseFunctionMetadata({ prefixMap, name }) {
   );
   if (matchedPrefix) {
     typeName = prefixMap[matchedPrefix];
-    
+
     methodName = camelcase(name.replace(matchedPrefix, ''));
   } else {
     // The type name is the word before the first dash capitalized. If the type

@@ -10,13 +10,13 @@ export interface BufferHighlight {
   colStart?: number;
   colEnd?: number;
   srcId?: number;
-  async?: boolean
+  async?: boolean;
 }
 export interface BufferClearHighligh {
-  srcId?: number,
-  lineStart?: number
-  lineEnd?: number
-  async?: boolean
+  srcId?: number;
+  lineStart?: number;
+  lineEnd?: number;
+  async?: boolean;
 }
 export class Buffer extends BaseApi {
   get length(): Promise<number> {
@@ -28,7 +28,9 @@ export class Buffer extends BaseApi {
   }
 
   // Get lines
-  getLines({ start, end, strictIndexing } = { start: 0, end: -1, strictIndexing: true }): Promise<Array<string>> {
+  getLines(
+    { start, end, strictIndexing } = { start: 0, end: -1, strictIndexing: true }
+  ): Promise<Array<string>> {
     const indexing = typeof strictIndexing === 'undefined'
       ? true
       : strictIndexing;
@@ -40,7 +42,12 @@ export class Buffer extends BaseApi {
     ]);
   }
 
-  setLines(_lines: string | string[], { start: _start, end: _end, strictIndexing }: BufferSetLines = { strictIndexing: true }) {
+  setLines(
+    _lines: string | string[],
+    { start: _start, end: _end, strictIndexing }: BufferSetLines = {
+      strictIndexing: true,
+    }
+  ) {
     // TODO: Error checking
     // if (typeof start === 'undefined' || typeof end === 'undefined') {
     // }
@@ -109,23 +116,28 @@ export class Buffer extends BaseApi {
   // }
 
   addHighlight(
-    { hlGroup, line, colStart, colEnd, srcId, async: _isAsync }: BufferHighlight = {
+    {
+      hlGroup,
+      line,
+      colStart,
+      colEnd,
+      srcId,
+      async: _isAsync,
+    }: BufferHighlight = {
       colStart: 0,
       colEnd: -1,
       srcId: -1,
     }
   ) {
     const isAsync = _isAsync || typeof srcId !== 'undefined';
-    return this.request(
-      `${this.prefix}add_highlight`, [
-        srcId,
-        hlGroup,
-        line,
-        colStart,
-        colEnd,
-        isAsync
-      ]
-    );
+    return this.request(`${this.prefix}add_highlight`, [
+      srcId,
+      hlGroup,
+      line,
+      colStart,
+      colEnd,
+      isAsync,
+    ]);
   }
 
   clearHighlight(
@@ -135,14 +147,11 @@ export class Buffer extends BaseApi {
       async: true,
     }
   ) {
-    return this.request(
-      `${this.prefix}clear_highlight`, [
-        srcId,
-        lineStart,
-        lineEnd,
-        async
-      ]
-    );
+    return this.request(`${this.prefix}clear_highlight`, [
+      srcId,
+      lineStart,
+      lineEnd,
+      async,
+    ]);
   }
 }
-

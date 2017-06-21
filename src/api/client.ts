@@ -1,7 +1,7 @@
 /**
  * Handles attaching session
  */
-import * as Session from 'msgpack5rpc'
+import * as Session from 'msgpack5rpc';
 import { decode } from '../utils/decode';
 import { generateWrappers } from './helpers/generateWrappers';
 import { TYPES } from './helpers/types';
@@ -11,7 +11,7 @@ export class NeovimClient extends Neovim {
   requestQueue: Array<any>;
   _sessionAttached: boolean;
   _channel_id;
-  constructor(options: { session?, logger?} = {}) {
+  constructor(options: { session?; logger? } = {}) {
     const session = options.session || new Session([]);
     const { logger } = options;
 
@@ -168,7 +168,6 @@ export class NeovimClient extends Neovim {
 
         return true;
       } catch (err) {
-
         this.logger.error(`Could not dynamically generate neovim API: ${err}`, {
           error: err,
         });

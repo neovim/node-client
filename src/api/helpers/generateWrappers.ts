@@ -1,7 +1,13 @@
 import { parseFunctionMetadata } from './parseFunctionMetadata';
 
-const createApiMethod = function ({ name, takesCallback }: {name: string, takesCallback?: any}) {
-  const newMethod = function (...args) {
+const createApiMethod = function({
+  name,
+  takesCallback,
+}: {
+  name: string;
+  takesCallback?: any;
+}) {
+  const newMethod = function(...args) {
     this.logger.debug(`request -> neovim.api.${name}`);
     return new Promise((resolve, reject) => {
       // does args need this?
@@ -74,7 +80,7 @@ export function generateWrappers(cls, types, prefixMap, metadata) {
       // One potential issue is trying to call nvim apis before it has been generated,
       // In that case using a Proxy would be better so can we catch all undefined api calls
       // But this is fine for now
-      Type.prototype[methodName] = function (...a) {
+      Type.prototype[methodName] = function(...a) {
         // eslint-disable-next-line no-shadow
         const args = isMethod ? [this, ...a] : a;
         return method.apply(this, args);
@@ -90,4 +96,3 @@ export function generateWrappers(cls, types, prefixMap, metadata) {
     }
   });
 }
-

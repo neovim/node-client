@@ -19,11 +19,11 @@ export class Window extends BaseApi {
     );
   }
 
-  get cursor(): [number, number]| Promise<[number, number]> {
+  get cursor(): [number, number] | Promise<[number, number]> {
     return this.request(`${this.prefix}get_cursor`, [this]);
   }
 
-  set cursor(pos: [number, number]| Promise<[number, number]>) {
+  set cursor(pos: [number, number] | Promise<[number, number]>) {
     this.request(`${this.prefix}set_cursor`, [this, pos]);
   }
 
