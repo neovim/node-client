@@ -52,6 +52,18 @@ describe.only('Buffer API', () => {
       buffer = await nvim.buffer;
     });
 
+    it('gets changedtick of buffer', async () => {
+      const initial = await buffer.changedtick;
+
+      // insert a line
+      buffer.append('hi');
+      expect(await buffer.changedtick).toBe(initial + 1);
+
+      // clear buffer
+      buffer.remove(0, -1, false);
+      expect(await buffer.changedtick).toBe(initial + 2);
+    });
+
     it('gets the current buffer name', async () => {
       const name = await buffer.name;
       expect(name).toMatch('test.js');

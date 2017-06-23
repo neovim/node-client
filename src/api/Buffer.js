@@ -1,14 +1,21 @@
 const BaseApi = require('./Base');
 
 class Buffer extends BaseApi {
-  // @return Promise<Integer>
+  // @return Promise<number>
   get length() {
     return this.request(`${this.prefix}line_count`, [this]);
   }
 
+  // Returns all lines of buffer, use `getLines` to pass in parameters
   // @return Promise<Array<string>>
   get lines() {
     return this.getLines();
+  }
+
+  // Gets a changed tick of a buffer
+  // @return Promise<number>
+  get changedtick() {
+    return this.request(`${this.prefix}get_changedtick`, [this]);
   }
 
   // Get lines
