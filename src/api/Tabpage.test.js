@@ -93,6 +93,38 @@ describe('Tabpage API', () => {
       const newWindows = await tabpage.windows;
       expect(newWindows.length).toBe(2);
     });
+
+    it('logs an error when calling `getOption`', () => {
+      const spy = jest.spyOn(tabpage.logger, 'error');
+
+      tabpage.getOption('option');
+      expect(spy.mock.calls.length).toBe(1);
+
+      tabpage.setOption('option', 'value');
+      expect(spy.mock.calls.length).toBe(2);
+      spy.mockClear();
+    });
+
+    it('returns null if variable is not found', async () => {
+      const test = await tabpage.getVar('test');
+      expect(test).toBe(null);
+    });
+
+    it('can set a t: variable', async () => {
+      tabpage.setVar('test', 'testValue');
+
+      expect(await tabpage.getVar('test')).toBe('testValue');
+
+      expect(await nvim.eval('t:test')).toBe('testValue');
+    });
+
+    it('can delete a t: variable', async () => {
+      tabpage.deleteVar('test');
+
+      expect(await nvim.eval('exists("t:test")')).toBe(0);
+
+      expect(await tabpage.getVar('test')).toBe(null);
+    });
   });
 
   describe('Chainable API calls', () => {

@@ -147,6 +147,38 @@ describe('Window API', () => {
       expect((await win.row) > 0).toBe(true);
       expect((await win.col) > 0).toBe(true);
     });
+
+    it('changes window options', async () => {
+      const list = await win.getOption('list');
+      win.setOption('list', true);
+      expect(await win.getOption('list')).toBe(true);
+      win.setOption('list', false);
+      expect(await win.getOption('list')).toBe(false);
+      // Restore option
+      win.setOption('list', list);
+      expect(await win.getOption('list')).toBe(list);
+    });
+
+    it('returns null if variable is not found', async () => {
+      const test = await win.getVar('test');
+      expect(test).toBe(null);
+    });
+
+    it('can set a w: variable', async () => {
+      win.setVar('test', 'testValue');
+
+      expect(await win.getVar('test')).toBe('testValue');
+
+      expect(await nvim.eval('w:test')).toBe('testValue');
+    });
+
+    it('can delete a w: variable', async () => {
+      win.deleteVar('test');
+
+      expect(await nvim.eval('exists("w:test")')).toBe(0);
+
+      expect(await win.getVar('test')).toBe(null);
+    });
   });
 
   describe.skip('Chainable API calls', () => {

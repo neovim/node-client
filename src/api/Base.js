@@ -51,6 +51,53 @@ class BaseApi extends EventEmitter {
     });
   }
 
+  // static
+  _getArgsByPrefix(...args) {
+    const _args = [];
+
+    // Check if class is Neovim and if so, should not send `this` as first arg
+    if (this.prefix !== 'nvim_') {
+      _args.push(this);
+    }
+    return _args.concat(args);
+  }
+
+  // Retrieves a scoped variable depending on `this`
+  getVar(name) {
+    const args = this._getArgsByPrefix(name);
+
+    return this.request(`${this.prefix}get_var`, args).then(
+      res => res,
+      err => {
+        if (err && err.message && err.message.includes('Key not found')) {
+          return null;
+        }
+        throw err;
+      }
+    );
+  }
+
+  setVar(name, value) {
+    const args = this._getArgsByPrefix(name, value);
+    return this.request(`${this.prefix}set_var`, args);
+  }
+
+  deleteVar(name) {
+    const args = this._getArgsByPrefix(name);
+    return this.request(`${this.prefix}del_var`, args);
+  }
+
+  // Retrieves a scoped option depending on `this`
+  getOption(name) {
+    const args = this._getArgsByPrefix(name);
+    return this.request(`${this.prefix}get_option`, args);
+  }
+
+  setOption(name, value) {
+    const args = this._getArgsByPrefix(name, value);
+    return this.request(`${this.prefix}set_option`, args);
+  }
+
   // TODO: Is this necessary?
   // `request` is basically the same except you can choose to wait forpromise to be resolved
   notify(name, args) {

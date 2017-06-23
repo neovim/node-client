@@ -27,6 +27,13 @@ class Tabpage extends BaseApi {
   get number() {
     return this.request(`${this.prefix}get_number`, [this]);
   }
+
+  getOption() {
+    this.logger.error('Tabpage does not have `getOption`');
+  }
+  setOption() {
+    this.logger.error('Tabpage does not have `setOption`');
+  }
 }
 
 module.exports = Tabpage;

@@ -111,6 +111,39 @@ describe.only('Buffer API', () => {
       expect(await buffer.lines).toEqual(['']);
     });
 
+    it('changes buffer options', async () => {
+      const initial = await buffer.getOption('copyindent');
+      buffer.setOption('copyindent', true);
+      expect(await buffer.getOption('copyindent')).toBe(true);
+      buffer.setOption('copyindent', false);
+      expect(await buffer.getOption('copyindent')).toBe(false);
+
+      // Restore option
+      buffer.setOption('copyindent', initial);
+      expect(await buffer.getOption('copyindent')).toBe(initial);
+    });
+
+    it('returns null if variable is not found', async () => {
+      const test = await buffer.getVar('test');
+      expect(test).toBe(null);
+    });
+
+    it('can set a b: variable', async () => {
+      buffer.setVar('test', 'testValue');
+
+      expect(await buffer.getVar('test')).toBe('testValue');
+
+      expect(await nvim.eval('b:test')).toBe('testValue');
+    });
+
+    it('can delete a b: variable', async () => {
+      buffer.deleteVar('test');
+
+      expect(await nvim.eval('exists("b:test")')).toBe(0);
+
+      expect(await buffer.getVar('test')).toBe(null);
+    });
+
     // TODO: How do we run integration tests for add/clear highlights? and get mark
   });
 
