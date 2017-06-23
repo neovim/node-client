@@ -99,8 +99,8 @@ class Neovim extends BaseApi {
     return this.request(`${this.prefix}eval`, [arg]);
   }
 
-  call(arg) {
-    return this.request(`${this.prefix}call_function`, [arg]);
+  call(fname, args = []) {
+    return this.request(`${this.prefix}call_function`, [fname, args]);
   }
 
   // (calls: Array<string>): [Array<any>, boolean]
