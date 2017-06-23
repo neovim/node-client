@@ -79,11 +79,11 @@ class Neovim extends BaseApi {
   }
 
   get mode() {
-    return this.request(`${this.prefix}mode`);
+    return this.request(`${this.prefix}get_mode`);
   }
 
   get colorMap() {
-    return this.request(`${this.prefix}color_map`);
+    return this.request(`${this.prefix}get_color_map`);
   }
 
   // (name: string): number
