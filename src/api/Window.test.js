@@ -54,8 +54,6 @@ describe('Window API', () => {
       win = await nvim.window;
     });
 
-    afterAll(() => nvim.command('tabclose'));
-
     it('gets the current win number', async () => {
       expect(await win.number).toBe(1);
     });
@@ -181,44 +179,22 @@ describe('Window API', () => {
     });
   });
 
-  describe.skip('Chainable API calls', () => {
-    it('gets the current tabpage number', async () => {
-      expect(await nvim.tabpage.number).toBe(1);
+  describe('Chainable API calls', () => {
+    it('gets the current tabpage', async () => {
+      expect(await nvim.window.tabpage).toBeInstanceOf(nvim.Tabpage);
     });
 
-    it('is a valid tabpage', async () => {
-      expect(await nvim.tabpage.valid).toBe(true);
+    it('is a valid window', async () => {
+      expect(await nvim.window.valid).toBe(true);
     });
 
-    it('adds a tabpage and switches to it', async () => {
-      nvim.command('tabnew');
-
-      // Switch to new tabpage
-      const tabpages = await nvim.tabpages;
-      // TODO
-      expect((await nvim.tabpages).length).toBe(2);
-
-      nvim.tabpage = tabpages[tabpages.length - 1];
-
-      expect(await nvim.tabpage.number).toBe(2);
+    it('gets the current buffer', async () => {
+      expect(await nvim.window.buffer).toBeInstanceOf(nvim.Buffer);
     });
 
-    it('gets current window in tabpage', async () => {
-      const window = await nvim.tabpage.window;
-
-      expect(window).toBeInstanceOf(nvim.Window);
-    });
-
-    it('gets list of windows in tabpage', async () => {
-      const windows = await nvim.tabpage.windows;
-
-      expect(windows.length).toBe(1);
-
-      // Add a new window
-      nvim.command('vsplit');
-
-      // TODO
-      expect((await nvim.tabpage.windows).length).toBe(2);
+    it.skip('gets current lines in buffer', async () => {
+      console.log(nvim.window.buffer.append);
+      expect(await nvim.window.buffer.lines).toEqual(['test']);
     });
   });
 });
