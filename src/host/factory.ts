@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as util from 'util';
 import * as vm from 'vm';
 
-import {omit, defaults} from 'lodash';
+import { omit, defaults } from 'lodash';
 import { logger } from '../utils/logger';
 import { DevNull } from '../utils/devnull';
 import {
@@ -32,7 +32,7 @@ const BLACKLISTED_GLOBALS = [
 
 // @see node/lib/internal/module.js
 function makeRequireFunction() {
-  const require: any = (p:any) => this.require(p);
+  const require: any = (p: any) => this.require(p);
   require.resolve = request => Module._resolveFilename(request, this);
   require.main = process.mainModule;
   // Enable support to add extra extension types
@@ -106,7 +106,7 @@ function createSandbox(filename) {
 }
 
 // inspiration drawn from Module
-function createPlugin(filename, nvim, options:any = {}) {
+function createPlugin(filename, nvim, options: any = {}) {
   const debug = createDebugFunction(filename);
 
   try {
