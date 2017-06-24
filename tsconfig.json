@@ -11,10 +11,10 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": false,
-    "target": "es6",
+    "target": "es2015",
     "outDir": "./lib"
   },
-  "inclue":[
+  "inclue": [
     "src/**/*.ts"
   ],
   "exclude": [
@@ -22,5 +22,9 @@
     "__tests__",
     "examples",
     "lib"
-  ]
+  ],
+  "compileOnSave": false,
+  "atom": {
+    "rewriteTsconfig": false
+  }
 }

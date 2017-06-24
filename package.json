@@ -30,20 +30,15 @@
   },
   "main": "./lib/index",
   "dependencies": {
-    "lodash.camelcase": "^4.3.0",
-    "lodash.capitalize": "^4.2.1",
-    "lodash.defaults": "^4.2.0",
-    "lodash.omit": "^4.5.0",
+    "lodash-es": "^4.17.4",
     "msgpack5rpc": "^1.1.0",
     "traverse": "^0.6.6",
+    "typescript": "^2.3.4",
     "winston": "^2.3.1"
   },
   "devDependencies": {
     "@types/jest": "^20.0.1",
-    "@types/lodash.camelcase": "^4.3.2",
-    "@types/lodash.capitalize": "^4.2.2",
-    "@types/lodash.defaults": "^4.2.2",
-    "@types/lodash.omit": "^4.5.2",
+    "@types/lodash": "^4.14.66",
     "@types/node": "^6.0.34",
     "@types/traverse": "^0.6.29",
     "@types/which": "^1.0.28",
@@ -59,7 +54,6 @@
     "lint-staged": "^3.6.1",
     "nodemon": "^1.3.7",
     "prettier": "^1.4.2",
-    "typescript": "^2.0.0",
     "typescript-eslint-parser": "^3.0.0",
     "which": "^1.2.14"
   },

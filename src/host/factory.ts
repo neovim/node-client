@@ -1,10 +1,9 @@
-import * as Module from 'module';
+// import * as Module from 'module';
 import * as path from 'path';
 import * as util from 'util';
 import * as vm from 'vm';
 
-import omit from 'lodash.omit';
-import defaults from 'lodash.defaults';
+import {omit, defaults} from 'lodash';
 import { logger } from '../utils/logger';
 import { DevNull } from '../utils/devnull';
 import {
@@ -14,6 +13,7 @@ import {
   NVIM_METHOD_NAME,
 } from '../plugin/properties';
 
+const Module = require('module');
 const BLACKLISTED_GLOBALS = [
   'reallyExit',
   'abort',
@@ -32,7 +32,7 @@ const BLACKLISTED_GLOBALS = [
 
 // @see node/lib/internal/module.js
 function makeRequireFunction() {
-  const require = p => this.require(p);
+  const require: any = (p:any) => this.require(p);
   require.resolve = request => Module._resolveFilename(request, this);
   require.main = process.mainModule;
   // Enable support to add extra extension types
@@ -69,7 +69,7 @@ function createSandbox(filename) {
   const module = new Module(filename);
   module.paths = Module._nodeModulePaths(filename);
 
-  const sandbox = vm.createContext({
+  const sandbox: any = vm.createContext({
     module,
     console: {},
   });
@@ -106,7 +106,7 @@ function createSandbox(filename) {
 }
 
 // inspiration drawn from Module
-function createPlugin(filename, nvim, options = {}) {
+function createPlugin(filename, nvim, options:any = {}) {
   const debug = createDebugFunction(filename);
 
   try {
