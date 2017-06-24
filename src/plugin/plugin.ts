@@ -12,9 +12,9 @@ export interface PluginWrapperInterface extends PluginWrapperConstructor {
 
 function wrapper(
   cls: PluginWrapperConstructor,
-  options: { dev?: boolean } = {}
+  options?: { dev?: boolean }
 ): PluginWrapperConstructor {
-  class PluginWrapper extends cls implements PluginWrapperInterface {
+  class WrapperClass extends cls implements PluginWrapperInterface {
     public nvim: Neovim;
 
     constructor(nvim: Neovim) {
@@ -26,12 +26,12 @@ function wrapper(
       this.nvim = nvim;
     }
   }
-  Object.defineProperty(PluginWrapper, NVIM_PLUGIN, { value: true });
+  Object.defineProperty(WrapperClass, NVIM_PLUGIN, { value: true });
 
-  if (options.dev) {
-    Object.defineProperty(PluginWrapper, NVIM_DEV_MODE, { value: true });
+  if (options && options.dev) {
+    Object.defineProperty(WrapperClass, NVIM_DEV_MODE, { value: true });
   }
-  return PluginWrapper;
+  return WrapperClass;
 }
 
 // Can decorate a class with options object

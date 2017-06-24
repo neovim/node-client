@@ -6,7 +6,7 @@ export interface NvimFunctionOptions {
   eval?: string;
 }
 
-export function nvimFunction(name: string, options: NvimFunctionOptions) {
+export function nvimFunction(name: string, options?: NvimFunctionOptions) {
   return function(cls, methodName) {
     // const {
     // sync,
@@ -14,7 +14,7 @@ export function nvimFunction(name: string, options: NvimFunctionOptions) {
     // } = options;
     const sync = options.sync;
     const f = cls[methodName];
-    const opts : NvimFunctionOptions = {};
+    const opts: NvimFunctionOptions = {};
 
     if (options && options.range) {
       opts.range = options.range;

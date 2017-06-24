@@ -8,7 +8,7 @@ export interface AutocmdOptions {
 
 // Example
 // @autocmd('BufEnter', { pattern: '*.js', eval: 'expand("<afile>")', sync: true })
-export function autocmd(name, options: AutocmdOptions) {
+export function autocmd(name, options?: AutocmdOptions) {
   return function(cls, methodName) {
     // const {
     // sync,
@@ -17,7 +17,7 @@ export function autocmd(name, options: AutocmdOptions) {
 
     const sync = options && options.sync;
     const f = cls[methodName];
-    const opts : AutocmdOptions = {
+    const opts: AutocmdOptions = {
       pattern: '',
     };
 
