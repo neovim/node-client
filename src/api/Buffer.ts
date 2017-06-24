@@ -1,4 +1,4 @@
-import { BaseApi } from './Base';
+import { BaseApi } from "./Base";
 export interface BufferSetLines {
   start?: number;
   end?: number;
@@ -27,42 +27,48 @@ export class Buffer extends BaseApi {
     return this.getLines();
   }
 
+  // Gets a changed tick of a buffer
+  // @return Promise<number>
+  get changedtick() {
+    return this.request(`${this.prefix}get_changedtick`, [this]);
+  }
+
   // Get lines
   getLines(
     { start, end, strictIndexing } = { start: 0, end: -1, strictIndexing: true }
   ): Promise<Array<string>> {
-    const indexing = typeof strictIndexing === 'undefined'
+    const indexing = typeof strictIndexing === "undefined"
       ? true
       : strictIndexing;
     return this.request(`${this.prefix}get_lines`, [
       this,
       start,
       end,
-      indexing,
+      indexing
     ]);
   }
 
   setLines(
     _lines: string | string[],
     { start: _start, end: _end, strictIndexing }: BufferSetLines = {
-      strictIndexing: true,
+      strictIndexing: true
     }
   ) {
     // TODO: Error checking
     // if (typeof start === 'undefined' || typeof end === 'undefined') {
     // }
-    const indexing = typeof strictIndexing === 'undefined'
+    const indexing = typeof strictIndexing === "undefined"
       ? true
       : strictIndexing;
-    const lines = typeof _lines === 'string' ? [_lines] : _lines;
-    const end = typeof _end !== 'undefined' ? _end : _start + 1;
+    const lines = typeof _lines === "string" ? [_lines] : _lines;
+    const end = typeof _end !== "undefined" ? _end : _start + 1;
 
     return this.request(`${this.prefix}set_lines`, [
       this,
       _start,
       end,
       indexing,
-      lines,
+      lines
     ]);
   }
 
@@ -73,11 +79,11 @@ export class Buffer extends BaseApi {
 
   // Replace lines starting at `start` index
   replace(_lines, start) {
-    const lines = typeof _lines === 'string' ? [_lines] : _lines;
+    const lines = typeof _lines === "string" ? [_lines] : _lines;
     return this.setLines(lines, {
       start,
       end: start + lines.length + 1,
-      strictIndexing: false,
+      strictIndexing: false
     });
   }
 
@@ -122,21 +128,21 @@ export class Buffer extends BaseApi {
       colStart,
       colEnd,
       srcId,
-      async: _isAsync,
+      async: _isAsync
     }: BufferHighlight = {
       colStart: 0,
       colEnd: -1,
-      srcId: -1,
+      srcId: -1
     }
   ) {
-    const isAsync = _isAsync || typeof srcId !== 'undefined';
+    const isAsync = _isAsync || typeof srcId !== "undefined";
     return this.request(`${this.prefix}add_highlight`, [
       srcId,
       hlGroup,
       line,
       colStart,
       colEnd,
-      isAsync,
+      isAsync
     ]);
   }
 
@@ -144,14 +150,14 @@ export class Buffer extends BaseApi {
     { srcId, lineStart, lineEnd, async }: BufferClearHighligh = {
       lineStart: 0,
       lineEnd: -1,
-      async: true,
+      async: true
     }
   ) {
     return this.request(`${this.prefix}clear_highlight`, [
       srcId,
       lineStart,
       lineEnd,
-      async,
+      async
     ]);
   }
 }

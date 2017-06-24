@@ -1,6 +1,6 @@
-import { BaseApi } from './Base';
-import { createChainableApi } from './helpers/createChainableApi';
-import { Window } from './Window';
+import { BaseApi } from "./Base";
+import { createChainableApi } from "./helpers/createChainableApi";
+import { Window } from "./Window";
 
 export class Tabpage extends BaseApi {
   get windows(): Promise<Array<Window>> {
@@ -9,7 +9,7 @@ export class Tabpage extends BaseApi {
 
   get window(): Promise<Window> {
     // Require is here otherwise we get circular refs
-    return createChainableApi.call(this, 'Window', Window, () =>
+    return createChainableApi.call(this, "Window", Window, () =>
       this.request(`${this.prefix}get_win`, [this])
     );
   }
@@ -22,5 +22,12 @@ export class Tabpage extends BaseApi {
   // Tabpage number
   get number(): Promise<number> {
     return this.request(`${this.prefix}get_number`, [this]);
+  }
+
+  getOption(): void {
+    this.logger.error("Tabpage does not have `getOption`");
+  }
+  setOption(): void {
+    this.logger.error("Tabpage does not have `setOption`");
   }
 }
