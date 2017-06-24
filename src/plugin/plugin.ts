@@ -9,19 +9,21 @@ export interface PluginWrapperConstructor {
 export interface PluginWrapperInterface extends PluginWrapperConstructor {
   setApi(nvim: Neovim): void;
 }
-
+export interface PluginDecoratorOptions {
+  dev?: boolean
+}
 function wrapper(
   cls: PluginWrapperConstructor,
-  options?: { dev?: boolean }
+  options?: PluginDecoratorOptions
 ): PluginWrapperConstructor {
+
+
   class WrapperClass extends cls implements PluginWrapperInterface {
     public nvim: Neovim;
-
     constructor(nvim: Neovim) {
       super(nvim);
       this.setApi(nvim);
     }
-
     setApi(nvim: Neovim) {
       this.nvim = nvim;
     }

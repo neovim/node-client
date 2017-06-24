@@ -3,6 +3,7 @@ import { createChainableApi } from "./helpers/createChainableApi";
 import { Window } from "./Window";
 
 export class Tabpage extends BaseApi {
+
   get windows(): Promise<Array<Window>> {
     return this.request(`${this.prefix}list_wins`, [this]);
   }

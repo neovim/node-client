@@ -1,6 +1,8 @@
 import { BaseApi } from "./Base";
 import { createChainableApi } from "./helpers/createChainableApi";
-import { TYPES } from "./helpers/types";
+import { Buffer } from './Buffer'
+import { Tabpage } from './Tabpage';
+import { Window } from './Window';
 /**
  * Neovim API
  */
@@ -12,67 +14,71 @@ export class Neovim extends BaseApi {
     this.prefix = "nvim_";
   }
 
-  get buffers() {
+  // Buffer
+  get buffers(): Promise<Buffer[]> {
     return this.request(`${this.prefix}list_bufs`);
   }
 
-  get buffer() {
-    return createChainableApi.call(this, "Buffer", TYPES.Buffer, () =>
+  get buffer(): Buffer | Promise<Buffer> {
+    return createChainableApi.call(this, "Buffer", Buffer, () =>
       this.request(`${this.prefix}get_current_buf`)
     );
   }
 
   // (buffer: Buffer)
-  set buffer(buffer) {
+  set buffer(buffer: Buffer | Promise<Buffer>) {
     this.request(`${this.prefix}set_current_buf`, [buffer]);
   }
 
-  get tabpage() {
-    return createChainableApi.call(this, "Tabpage", TYPES.Tabpage, () =>
-      this.request(`${this.prefix}get_current_tabpage`)
-    );
-  }
-
-  get tabpages() {
+  // TabPage
+  get tabpages(): Promise<Tabpage[]> {
     return this.request(`${this.prefix}list_tabpages`);
   }
 
-  set tabpage(tabpage) {
+  get tabpage(): Tabpage | Promise<Tabpage> {
+    return createChainableApi.call(this, "Tabpage", Tabpage, () =>
+      this.request(`${this.prefix}get_current_tabpage`)
+    );
+  }
+  set tabpage(tabpage: Tabpage | Promise<Tabpage>) {
     this.request(`${this.prefix}set_current_tabpage`, [tabpage]);
   }
 
-  get window() {
-    return createChainableApi.call(this, "Window", TYPES.Window, () =>
+
+  // window
+
+  get windows(): Promise<Window[]> {
+    return this.request(`${this.prefix}list_wins`);
+  }
+
+  get window(): Window | Promise<Window> {
+    return createChainableApi.call(this, "Window", Window, () =>
       this.request(`${this.prefix}get_current_win`)
     );
   }
 
-  get windows() {
-    return this.request(`${this.prefix}list_wins`);
-  }
-
-  set window(win) {
+  set window(win: Window | Promise<Window>) {
     // Throw error if win is not instance of Window?
     this.request(`${this.prefix}set_current_win`, [win]);
   }
   // @return Promise<Array<string>>
-  get runtimePaths(): Promise<string> {
+  get runtimePaths(): Promise<Array<string>> {
     return this.request(`${this.prefix}list_runtime_paths`);
   }
   // (dir: string): void
-  set dir(dir) {
+  set dir(dir: string) {
     this.request(`${this.prefix}set_current_dir`, [dir]);
   }
 
   // Get current line
   // @return Promise<string>
-  get line(): Promise<string> {
+  get line(): string | Promise<string> {
     return this.request(`${this.prefix}get_current_line`);
   }
 
   // Set current line
   // (line: string): void
-  set line(line) {
+  set line(line: string | Promise<string>) {
     this.request(`${this.prefix}set_current_line`, [line]);
   }
 
@@ -85,7 +91,7 @@ export class Neovim extends BaseApi {
   }
 
   // (name: string): number
-  getColorByName(name) {
+  getColorByName(name: string): Promise<number> {
     return this.request(`${this.prefix}get_color_by_name`, [name]);
   }
 
@@ -93,45 +99,45 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}del_current_line`);
   }
 
-  eval(arg) {
+  eval(arg: any[]) {
     return this.request(`${this.prefix}eval`, [arg]);
   }
 
-  call(fname, args = []) {
+  call(fname: string, args = []) {
     return this.request(`${this.prefix}call_function`, [fname, args]);
   }
-  
+
   // (calls: Array<string>): [Array<any>, boolean]
-  callAtomic(calls): Promise<[Array<any>, boolean]> {
+  callAtomic(calls: Array<string>): Promise<[Array<any>, boolean]> {
     return this.request(`${this.prefix}call_atomic`, [calls]);
   }
 
-  command(arg) {
-    return this.request(`${this.prefix}command`, [arg]);
+  command(arg: string) {
+    this.request(`${this.prefix}command`, [arg]);
   }
 
   // TODO: Documentation
-  commandOutput(arg): Promise<any> {
+  commandOutput(arg: string): Promise<string> {
     return this.request(`${this.prefix}command_output`, [arg]);
   }
 
   // Gets a v: variable
-  getVvar(name): Promise<string> {
+  getVvar(name: string): Promise<string> {
     return this.request(`${this.prefix}get_vvar`, [name]);
   }
 
   // (keys: string, mode: string, escapeCsi: boolean): void
-  feedKeys(keys, mode, escapeCsi): Promise<any> {
+  feedKeys(keys: string, mode: string, escapeCsi: boolean): Promise<any> {
     return this.request(`${this.prefix}feedkeys`, [keys, mode, escapeCsi]);
   }
 
   // (keys: string): number
-  input(keys) {
+  input(keys: string): Promise<number> {
     return this.request(`${this.prefix}input`, [keys]);
   }
 
   // (str: string, fromPart: boolean, doIt: boolean, special: boolean): string
-  replaceTermcodes(str, fromPart, doIt, special) {
+  replaceTermcodes(str: string, fromPart: boolean, doIt: boolean, special: boolean): Promise<string> {
     return this.request(`${this.prefix}replace_termcodes`, [
       str,
       fromPart,
@@ -141,27 +147,27 @@ export class Neovim extends BaseApi {
   }
 
   // (str: string): number
-  strWidth(str) {
+  strWidth(str: string): Promise<number> {
     return this.request(`${this.prefix}strwidth`, [str]);
   }
 
   // (str: string)
-  outWrite(str) {
+  outWrite(str: string): Promise<any> {
     return this.request(`${this.prefix}out_write`, [str]);
   }
 
   // (str: string)
-  errWrite(str): Promise<any> {
+  errWrite(str: string): Promise<any> {
     return this.request(`${this.prefix}err_write`, [str]);
   }
 
   // (str: string)
-  errWriteLine(str) {
+  errWriteLine(str: string): Promise<any> {
     return this.request(`${this.prefix}err_writeln`, [str]);
   }
 
   // Extra API methods
-  quit() {
+  quit(): void {
     this.command("qa!");
   }
 }
