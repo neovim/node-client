@@ -199,6 +199,14 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}ui_set_option`, [name, value]);
   }
 
+  subscribe(event: String): Promise<void> {
+    return this.request(`${this.prefix}subscribe`, [event]);
+  }
+
+  unsubscribe(event: String): Promise<void> {
+    return this.request(`${this.prefix}unsubscribe`, [event]);
+  }
+
   // Extra API methods
   quit(): void {
     this.command('qa!');
