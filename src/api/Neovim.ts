@@ -8,7 +8,7 @@ export type UiAttachOptions = {
   rgb?: boolean;
   ext_popupmenu?: boolean;
   ext_tabline?: boolean;
-}
+};
 
 /**
  * Neovim API
@@ -177,7 +177,11 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}err_writeln`, [str]);
   }
 
-  uiAttach(width: number, height: number, options: UiAttachOptions): Promise<void> {
+  uiAttach(
+    width: number,
+    height: number,
+    options: UiAttachOptions
+  ): Promise<void> {
     return this.request(`${this.prefix}ui_attach`, [width, height, options]);
   }
 
