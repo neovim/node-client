@@ -111,7 +111,7 @@ export class Buffer extends BaseApi {
   }
 
   mark(name: string): Promise<[number, number]> {
-    return this.request(`${this.prefix}get_mark`, name);
+    return this.request(`${this.prefix}get_mark`, [name]);
   }
 
   // range(start, end) {
