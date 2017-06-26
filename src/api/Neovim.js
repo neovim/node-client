@@ -170,6 +170,26 @@ class Neovim extends BaseApi {
   quit() {
     this.command('qa!');
   }
+
+  // uiAttach(width: number, height: number, enable_rgb: boolean, notify?: boolean): Promise<void>;
+  uiAttach(width, height, options = {}) {
+    return this.request(`${this.prefix}ui_attach`, [width, height, options]);
+  }
+
+  // uiDetach(notify?: boolean): Promise<void>;
+  uiDetach() {
+    return this.request(`${this.prefix}ui_detach`, []);
+  }
+
+  // uiTryResize(width: number, height: number, notify?: boolean): Promise<void>;
+  uiTryResize(width, height) {
+    return this.request(`${this.prefix}ui_try_resize`, [width, height]);
+  }
+
+  // uiSetOption(name: string, value: VimValue, notify?: boolean): Promise<void>;
+  uiSetOption(name, value) {
+    return this.request(`${this.prefix}ui_set_option`, [name, value]);
+  }
 }
 
 module.exports = Neovim;
