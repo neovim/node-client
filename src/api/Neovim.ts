@@ -8,6 +8,8 @@ export type UiAttachOptions = {
   rgb?: boolean;
   ext_popupmenu?: boolean;
   ext_tabline?: boolean;
+  ext_wildmenu?: boolean;
+  ext_cmdline?: boolean;
 };
 
 /**
