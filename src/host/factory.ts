@@ -13,7 +13,18 @@ import {
   NVIM_METHOD_NAME,
 } from '../plugin/properties';
 
-const Module = require('module');
+export interface IModule {
+  new (name: string);
+  _resolveFilename: (file: string, context: any) => string;
+  _extensions: {};
+  _cache: {};
+  _compile: () => void;
+  wrap: (content: string) => string;
+  require: (file: string) => NodeModule;
+  _nodeModulePaths: (filename: string) => string[];
+}
+
+const Module : IModule = require('module');
 const BLACKLISTED_GLOBALS = [
   'reallyExit',
   'abort',
@@ -32,7 +43,7 @@ const BLACKLISTED_GLOBALS = [
 
 // @see node/lib/internal/module.js
 function makeRequireFunction() {
-  const require: any = (p: any) => this.require(p);
+  const require : any = (p: any) => this.require(p);
   require.resolve = request => Module._resolveFilename(request, this);
   require.main = process.mainModule;
   // Enable support to add extra extension types
@@ -67,8 +78,8 @@ function createDebugFunction(filename) {
 
 export interface ISandbox {
   process: NodeJS.Process;
-  module: Module;
-  require: Module.require;
+  module: NodeModule;
+  require: (p: string) => any;
   console: {
     log: Function;
   };
