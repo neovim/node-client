@@ -64,12 +64,12 @@ describe('Neovim API', () => {
     });
 
     it('can change current working directory', async () => {
-      const initial = await nvim.call('getcwd', []);
+      const initial = await nvim.callFunction('getcwd', []);
       const parts = initial.split('/');
       const newCwd = parts.slice(0, parts.length - 1).join('/');
 
       nvim.dir = newCwd;
-      expect(await nvim.call('getcwd', [])).toBe(newCwd);
+      expect(await nvim.callFunction('getcwd', [])).toBe(newCwd);
     });
 
     it.skip('can get current mode', async () => {

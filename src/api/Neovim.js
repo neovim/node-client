@@ -103,6 +103,10 @@ class Neovim extends BaseApi {
     return this.request(`${this.prefix}call_function`, [fname, args]);
   }
 
+  callFunction(...args) {
+    return this.call(...args);
+  }
+
   // (calls: Array<string>): [Array<any>, boolean]
   callAtomic(calls) {
     return this.request(`${this.prefix}call_atomic`, [calls]);
