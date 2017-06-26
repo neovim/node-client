@@ -4,7 +4,7 @@ import { NVIM_PLUGIN, NVIM_DEV_MODE } from './properties';
 import { Neovim } from '../api/Neovim';
 
 export interface PluginWrapperConstructor {
-  new (nvim: Neovim): PluginWrapperInterface;
+  new(nvim: Neovim): PluginWrapperInterface;
 }
 export interface PluginWrapperInterface extends PluginWrapperConstructor {
   setApi(nvim: Neovim): void;
