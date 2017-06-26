@@ -1,22 +1,22 @@
 import { BaseApi } from './Base';
 export interface BufferSetLines {
-  start?: number,
-  end?: number,
-  strictIndexing?: boolean,
+  start?: number;
+  end?: number;
+  strictIndexing?: boolean;
 }
 export interface BufferHighlight {
-  hlGroup?: string,
-  line?: number,
-  colStart?: number,
-  colEnd?: number,
-  srcId?: number,
-  async?: boolean,
+  hlGroup?: string;
+  line?: number;
+  colStart?: number;
+  colEnd?: number;
+  srcId?: number;
+  async?: boolean;
 }
-export interface BufferClearHighligh {
-  srcId?: number,
-  lineStart?: number,
-  lineEnd?: number,
-  async?: boolean,
+export interface BufferClearHighlight {
+  srcId?: number;
+  lineStart?: number;
+  lineEnd?: number;
+  async?: boolean;
 }
 export class Buffer extends BaseApi {
   get length(): Promise<number> {
@@ -28,8 +28,7 @@ export class Buffer extends BaseApi {
   }
 
   // Gets a changed tick of a buffer
-  // @return Promise<number>
-  get changedtick() {
+  get changedtick(): Promise<number> {
     return this.request(`${this.prefix}get_changedtick`, [this]);
   }
 
@@ -123,9 +122,9 @@ export class Buffer extends BaseApi {
   addHighlight({
     hlGroup,
     line,
-    colStart,
-    colEnd,
-    srcId,
+    colStart: _start,
+    colEnd: _end,
+    srcId: _srcId,
     async: _isAsync,
   }: BufferHighlight): Promise<number> {
     const colEnd = typeof _end !== 'undefined' ? _end : -1;
@@ -143,7 +142,7 @@ export class Buffer extends BaseApi {
   }
 
   clearHighlight(
-    { srcId, lineStart, lineEnd, async }: BufferClearHighligh = {
+    { srcId, lineStart, lineEnd, async }: BufferClearHighlight = {
       srcId: -1,
       lineStart: 0,
       lineEnd: -1,

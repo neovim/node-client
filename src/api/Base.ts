@@ -18,11 +18,11 @@ export class BaseApi extends EventEmitter {
     logger,
     metadata
   }: {
-    session;
-    logger?;
-    data?;
-    metadata?;
-  }) {
+      session;
+      logger?;
+      data?;
+      metadata?;
+    }) {
     super();
 
     this._session = session;
@@ -47,7 +47,7 @@ export class BaseApi extends EventEmitter {
     }
   }
 
-  async request(name, args = []) {
+  async request(name, args = []): Promise<any> {
     // `this._isReady` is undefined in ExtType classes (i.e. Buffer, Window, Tabpage)
     // But this is just for Neovim API, since it's possible to call this method from Neovim class
     // before session is ready.

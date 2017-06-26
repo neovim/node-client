@@ -103,7 +103,7 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}eval`, [arg]);
   }
 
-  call(fname: string, args = []) {
+  call(fname: string, args: Array<any> = []) {
     return this.request(`${this.prefix}call_function`, [fname, args]);
   }
 
