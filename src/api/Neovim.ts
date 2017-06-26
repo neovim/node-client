@@ -3,6 +3,13 @@ import { createChainableApi } from './helpers/createChainableApi';
 import { Buffer } from './Buffer';
 import { Tabpage } from './Tabpage';
 import { Window } from './Window';
+
+export type UiAttachOptions = {
+  rgb?: boolean;
+  ext_popupmenu?: boolean;
+  ext_tabline?: boolean;
+}
+
 /**
  * Neovim API
  */
@@ -44,8 +51,6 @@ export class Neovim extends BaseApi {
     this.request(`${this.prefix}set_current_tabpage`, [tabpage]);
   }
 
-  // window
-
   get windows(): Promise<Window[]> {
     return this.request(`${this.prefix}list_wins`);
   }
@@ -60,23 +65,21 @@ export class Neovim extends BaseApi {
     // Throw error if win is not instance of Window?
     this.request(`${this.prefix}set_current_win`, [win]);
   }
-  // @return Promise<Array<string>>
+
   get runtimePaths(): Promise<Array<string>> {
     return this.request(`${this.prefix}list_runtime_paths`);
   }
-  // (dir: string): void
+
   set dir(dir: string) {
     this.request(`${this.prefix}set_current_dir`, [dir]);
   }
 
   // Get current line
-  // @return Promise<string>
   get line(): string | Promise<string> {
     return this.request(`${this.prefix}get_current_line`);
   }
 
   // Set current line
-  // (line: string): void
   set line(line: string | Promise<string>) {
     this.request(`${this.prefix}set_current_line`, [line]);
   }
@@ -172,6 +175,22 @@ export class Neovim extends BaseApi {
   // (str: string)
   errWriteLine(str: string): Promise<any> {
     return this.request(`${this.prefix}err_writeln`, [str]);
+  }
+
+  uiAttach(width: number, height: number, options: UiAttachOptions): Promise<void> {
+    return this.request(`${this.prefix}ui_attach`, [width, height, options]);
+  }
+
+  uiDetach(): Promise<void> {
+    return this.request(`${this.prefix}ui_detach`, []);
+  }
+
+  uiTryResize(width: number, height: number): Promise<void> {
+    return this.request(`${this.prefix}ui_try_resize`, [width, height]);
+  }
+
+  uiSetOption(name: string, value: any): Promise<void> {
+    return this.request(`${this.prefix}ui_set_option`, [name, value]);
   }
 
   // Extra API methods
