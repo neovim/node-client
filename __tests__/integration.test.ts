@@ -58,7 +58,7 @@ describe('Node host', () => {
 
   it('can run a command from plugin', async () => {
     await nvim.command('JSHostTestCmd');
-    const line = await nvim.getCurrentLine();
+    const line = await nvim.line;
     expect(line).toEqual('A line, for your troubles');
   });
 

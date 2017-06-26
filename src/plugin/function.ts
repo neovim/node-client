@@ -6,8 +6,8 @@ export interface NvimFunctionOptions {
   eval?: string;
 }
 
-export function nvimFunction(name: string, options?: NvimFunctionOptions) {
-  return function(cls, methodName) {
+export function nvimFunction(name: string, options: NvimFunctionOptions = {}) {
+  return function (cls, methodName) {
     // const {
     // sync,
     // ...opts,
