@@ -1,3 +1,3 @@
 export { attach } from './attach';
 export { Neovim, Buffer, Tabpage, Window } from './api/index';
-export * from './plugin';
+export { Plugin, Function, Autocmd, Command } from './plugin';
