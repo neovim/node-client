@@ -24,11 +24,10 @@ describe('Plugin class decorator', () => {
   });
 
   it('decorates class methods', () => {
-    class MyClass {
-      testF = () => {};
-      testC = () => {};
-      testA = () => {};
-    }
+    class MyClass {}
+    MyClass.prototype.testF = () => {};
+    MyClass.prototype.testC = () => {};
+    MyClass.prototype.testA = () => {};
 
     // This is how (closeish) babel applies decorators
     FunctionDecorator('TestF')(MyClass.prototype, 'testF');
