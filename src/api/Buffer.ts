@@ -1,4 +1,5 @@
 import { BaseApi } from './Base';
+
 export interface BufferSetLines {
   start?: number;
   end?: number;

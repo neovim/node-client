@@ -25,6 +25,7 @@ export interface IModule {
 }
 
 const Module : IModule = require('module');
+
 const BLACKLISTED_GLOBALS = [
   'reallyExit',
   'abort',

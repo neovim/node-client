@@ -1,6 +1,1 @@
-export {
-  Plugin,
-  Function,
-  Autocmd,
-  Command,
-} from './plugin/index';
+export { Plugin, Function, Autocmd, Command } from './plugin/index';

@@ -1,4 +1,9 @@
-export function createChainableApi(name, Type, requestPromise, chainCallPromise) {
+export function createChainableApi(
+  name,
+  Type,
+  requestPromise,
+  chainCallPromise
+) {
   // re-use current promise if not resolved yet
   if (
     this[`${name}Promise`] &&
