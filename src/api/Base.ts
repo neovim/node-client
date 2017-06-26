@@ -1,6 +1,14 @@
-import { EventEmitter } from "events";
-import { logger as loggerModule } from "../utils/logger";
-import { decode } from "../utils/decode";
+import { EventEmitter } from 'events';
+import { logger as loggerModule } from '../utils/logger';
+import { decode } from '../utils/decode';
+
+export type VimValue =
+  | number
+  | boolean
+  | string
+  | number[]
+  | { [key: string]: any }
+  | null;
 
 // Instead of dealing with multiple inheritance (or lackof), just extend EE
 // Only the Neovim API class should use EE though
@@ -9,20 +17,20 @@ export class BaseApi extends EventEmitter {
   _data;
   _decode;
   protected _isReady;
-  prefix: string;
+  protected prefix: string;
   public logger;
 
   constructor({
     session,
     data,
     logger,
-    metadata
+    metadata,
   }: {
-      session;
-      logger?;
-      data?;
-      metadata?;
-    }) {
+    session;
+    logger?;
+    data?;
+    metadata?;
+  }) {
     super();
 
     this._session = session;
@@ -32,9 +40,9 @@ export class BaseApi extends EventEmitter {
     this.logger = logger || loggerModule;
 
     if (metadata) {
-      Object.defineProperty(this, "metadata", { value: metadata });
+      Object.defineProperty(this, 'metadata', { value: metadata });
       if (metadata.prefix) {
-        Object.defineProperty(this, "prefix", { value: metadata.prefix });
+        Object.defineProperty(this, 'prefix', { value: metadata.prefix });
       }
     }
   }
@@ -72,7 +80,7 @@ export class BaseApi extends EventEmitter {
     const _args = [];
 
     // Check if class is Neovim and if so, should not send `this` as first arg
-    if (this.prefix !== "nvim_") {
+    if (this.prefix !== 'nvim_') {
       _args.push(this);
     }
     return _args.concat(args);
@@ -85,7 +93,7 @@ export class BaseApi extends EventEmitter {
     return this.request(`${this.prefix}get_var`, args).then(
       res => res,
       err => {
-        if (err && err.message && err.message.includes("Key not found")) {
+        if (err && err.message && err.message.includes('Key not found')) {
           return null;
         }
         throw err;

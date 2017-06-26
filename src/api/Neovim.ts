@@ -1,17 +1,17 @@
-import { BaseApi } from "./Base";
-import { createChainableApi } from "./helpers/createChainableApi";
-import { Buffer } from './Buffer'
+import { BaseApi } from './Base';
+import { createChainableApi } from './helpers/createChainableApi';
+import { Buffer } from './Buffer';
 import { Tabpage } from './Tabpage';
 import { Window } from './Window';
 /**
  * Neovim API
  */
 export class Neovim extends BaseApi {
-  prefix: string = "";
+  protected prefix: string = '';
   constructor(options) {
     super(options);
 
-    this.prefix = "nvim_";
+    this.prefix = 'nvim_';
   }
 
   // Buffer
@@ -20,7 +20,7 @@ export class Neovim extends BaseApi {
   }
 
   get buffer(): Buffer | Promise<Buffer> {
-    return createChainableApi.call(this, "Buffer", Buffer, () =>
+    return createChainableApi.call(this, 'Buffer', Buffer, () =>
       this.request(`${this.prefix}get_current_buf`)
     );
   }
@@ -36,14 +36,13 @@ export class Neovim extends BaseApi {
   }
 
   get tabpage(): Tabpage | Promise<Tabpage> {
-    return createChainableApi.call(this, "Tabpage", Tabpage, () =>
+    return createChainableApi.call(this, 'Tabpage', Tabpage, () =>
       this.request(`${this.prefix}get_current_tabpage`)
     );
   }
   set tabpage(tabpage: Tabpage | Promise<Tabpage>) {
     this.request(`${this.prefix}set_current_tabpage`, [tabpage]);
   }
-
 
   // window
 
@@ -52,7 +51,7 @@ export class Neovim extends BaseApi {
   }
 
   get window(): Window | Promise<Window> {
-    return createChainableApi.call(this, "Window", Window, () =>
+    return createChainableApi.call(this, 'Window', Window, () =>
       this.request(`${this.prefix}get_current_win`)
     );
   }
@@ -141,12 +140,17 @@ export class Neovim extends BaseApi {
   }
 
   // (str: string, fromPart: boolean, doIt: boolean, special: boolean): string
-  replaceTermcodes(str: string, fromPart: boolean, doIt: boolean, special: boolean): Promise<string> {
+  replaceTermcodes(
+    str: string,
+    fromPart: boolean,
+    doIt: boolean,
+    special: boolean
+  ): Promise<string> {
     return this.request(`${this.prefix}replace_termcodes`, [
       str,
       fromPart,
       doIt,
-      special
+      special,
     ]);
   }
 
@@ -172,6 +176,6 @@ export class Neovim extends BaseApi {
 
   // Extra API methods
   quit(): void {
-    this.command("qa!");
+    this.command('qa!');
   }
 }
