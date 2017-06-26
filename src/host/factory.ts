@@ -78,8 +78,7 @@ function createSandbox(filename): ISandbox {
   const module = new Module(filename);
   module.paths = Module._nodeModulePaths(filename);
 
-  // const sandbox = <ISandbox>vm.createContext({
-  const sandbox: any = vm.createContext({
+  const sandbox = <ISandbox>vm.createContext({
     module,
     console: {},
   });
@@ -105,8 +104,7 @@ function createSandbox(filename): ISandbox {
 
   // patch `require` in sandbox to run loaded module in sandbox context
   // if you need any of these, it might be worth discussing spawning separate processes
-  // sandbox.process = <NodeJS.Process>omit(global.process, BLACKLISTED_GLOBALS);
-  sandbox.process = omit(global.process, BLACKLISTED_GLOBALS);
+  sandbox.process = <NodeJS.Process>omit(global.process, BLACKLISTED_GLOBALS);
 
   const devNull = new DevNull();
   sandbox.process.stdin = devNull;
