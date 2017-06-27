@@ -1,12 +1,12 @@
 /**
  * Handles attaching session
  */
-import * as Session from 'msgpack5rpc';
+// import * as Session from 'msgpack5rpc';
 import { decode } from '../utils/decode';
 import { generateWrappers } from './helpers/generateWrappers';
 import { TYPES } from './helpers/types';
 import { Neovim } from './Neovim';
-
+const Session = require('msgpack5rpc');
 export class NeovimClient extends Neovim {
   requestQueue: Array<any>;
   _sessionAttached: boolean;
