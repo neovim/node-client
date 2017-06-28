@@ -1,10 +1,12 @@
 /* eslint-env jest */
 import * as path from 'path';
-import { loadPlugin } from './factory';
+import { loadPlugin, IPluginObject } from './factory';
 
 const PLUGIN_PATH = path.join(
   __dirname,
-  '../../__tests__',
+  '..',
+  '..',
+  '__tests__',
   'integration',
   'rplugin',
   'node',
@@ -12,7 +14,7 @@ const PLUGIN_PATH = path.join(
 );
 
 describe('Plugin Factory (used by host)', () => {
-  let pluginObj;
+  let pluginObj: IPluginObject;
 
   beforeEach(() => {
     pluginObj = loadPlugin(PLUGIN_PATH, null);
@@ -45,13 +47,13 @@ describe('Plugin Factory (used by host)', () => {
 
   it('should load the plugin a sandbox', () => {
     const sandbox = pluginObj.sandbox;
-    expect(global.loaded).toBeUndefined();
-    expect(sandbox.loaded).toEqual(true);
+    expect(global['loaded']).toBeUndefined();
+    expect(sandbox['loaded']).toEqual(true);
     expect(Object.keys(sandbox.process)).not.toContain(['chdir', 'exit']);
   });
 
   it('should load files required by the plugin in a sandbox', () => {
-    const required = pluginObj.sandbox.required;
+    const required = pluginObj.sandbox['required'];
     expect(required).toEqual('you bet!');
     // expect(
     // Object.keys(required.globals.process),

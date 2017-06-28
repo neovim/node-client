@@ -23,9 +23,15 @@ export interface IModule {
   require: (file: string) => NodeModule;
   _nodeModulePaths: (filename: string) => string[];
 }
-
-const Module : IModule = require('module');
-
+export interface IPluginObject {
+  shouldCache: boolean;
+  sandbox: ISandbox;
+  specs: any[];
+  handlers: {};
+  import: any;
+  module: any;
+}
+const Module: IModule = require('module');
 const BLACKLISTED_GLOBALS = [
   'reallyExit',
   'abort',
@@ -44,7 +50,7 @@ const BLACKLISTED_GLOBALS = [
 
 // @see node/lib/internal/module.js
 function makeRequireFunction() {
-  const require : any = (p: any) => this.require(p);
+  const require: any = (p: any) => this.require(p);
   require.resolve = request => Module._resolveFilename(request, this);
   require.main = process.mainModule;
   // Enable support to add extra extension types
