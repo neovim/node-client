@@ -15,7 +15,7 @@ export function nvimFunction(name: string, options: NvimFunctionOptions = {}) {
     const sync = options && !!options.sync;
     const isMethod = typeof methodName === 'string';
     const f = isMethod ? cls[methodName] : cls;
-    const opts : NvimFunctionOptions = {};
+    const opts: NvimFunctionOptions = {};
 
     if (options && options.range) {
       opts.range = options.range;
