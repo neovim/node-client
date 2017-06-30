@@ -1,0 +1,31 @@
+machine:
+  node:
+    version: 8.1
+
+  environment:
+    PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin:${HOME}/_neovim/bin"
+    NVIM_NODE_LOG_LEVEL: "debug"
+    TRAVIS_BUILD_DIR: "/home/ubuntu"
+    TRAVIS_OS_NAME: "linux"
+    VIM: "${HOME}/_neovim/share/nvim/runtime"
+
+dependencies:
+  cache_directories:
+    - ~/.cache/yarn
+
+  pre:
+    - eval "$(curl -Ss https://raw.githubusercontent.com/neovim/bot-ci/master/scripts/travis-setup.sh) nightly-x64"
+    - echo $PATH
+    - nvim --version
+    - yarn global add codecov
+
+  override:
+    - yarn
+    - yarn link
+    - yarn run prep-integration-test
+
+test:
+  override:
+    - yarn test -- --coverage
+  post:
+    - codecov
