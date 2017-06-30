@@ -3,20 +3,15 @@
 WIP: Currently only works on node >= 7
 
 ## Installation
-Install [node-host](https://github.com/billyvg/node-host) using your vim plugin manager. Then install the `neovim` package globally using `npm`.
+Install [node-host](https://github.com/neovim/node-host/tree/next) using your vim plugin manager. Then install the `neovim` package globally using `npm`.
 
 ```sh
-npm install -g neovim
+npm install -g neovim@next
 ```
+
 ## Usage
 This package exports a single `attach()` function which takes a pair of
 write/read streams and invokes a callback with a Nvim API object.
-
-A [typescript declaration file](index.d.ts) is available as documentation of the
-API and also for typescript users that seek to use this library. Note that the
-interfaces are [automatically generated](generate-typescript-interfaces.js) at a
-certain point in time, and may not correspond exactly to the API of your
-installed Nvim.
 
 ### `attach`
 
@@ -136,5 +131,7 @@ nvim.command('vsp');
 The tests and `scripts` can be consulted for more examples.
 
 ## Contributors
-* @fritzy for transferring over the npm package repo `neovim`!
-* @rhysd, @tarruda, @nhynes on work for the original `node-client`
+* [@billyvg](https://github.com/billyvg) for rewrite
+* [@mhartington](https://github.com/mhartington) for TypeScript rewrite
+* [@fritzy] for transferring over the npm package repo `neovim`!
+* [@rhysd](https://github.com/rhysd), [@tarruda](https://github.com/tarruda), [@nhynes](https://github.com/nhynes) on work for the original `node-client`
