@@ -15,8 +15,9 @@ export function autocmd(name, options?: AutocmdOptions) {
     // ...opts,
     // } = options;
 
-    const sync = options && options.sync;
-    const f = cls[methodName];
+    const sync = options && !!options.sync;
+    const isMethod = typeof methodName === 'string';
+    const f = isMethod ? cls[methodName] : cls;
     const opts: AutocmdOptions = {
       pattern: '',
     };
@@ -42,8 +43,12 @@ export function autocmd(name, options?: AutocmdOptions) {
         opts,
       },
     });
-    // eslint-disable-next-line no-param-reassign
-    cls[methodName] = f;
+
+    if (isMethod) {
+      // eslint-disable-next-line no-param-reassign
+      cls[methodName] = f;
+    }
+
     return cls;
   };
 }

@@ -15,9 +15,10 @@ export function command(name: string, options?: CommandOptions) {
     // ...opts,
     // } = options;
 
-    const f = cls[methodName];
-    const opts: CommandOptions = {};
     const sync = options && !!options.sync;
+    const isMethod = typeof methodName === 'string';
+    const f = isMethod ? cls[methodName] : cls;
+    const opts: CommandOptions = {};
 
     ['range', 'nargs'].forEach(option => {
       if (options && typeof options[option] !== 'undefined') {
@@ -35,8 +36,12 @@ export function command(name: string, options?: CommandOptions) {
         opts,
       },
     });
-    // eslint-disable-next-line no-param-reassign
-    cls[methodName] = f;
+
+    if (isMethod) {
+      // eslint-disable-next-line no-param-reassign
+      cls[methodName] = f;
+    }
+
     return cls;
   };
 }

@@ -12,8 +12,9 @@ export function nvimFunction(name: string, options: NvimFunctionOptions = {}) {
     // sync,
     // ...opts,
     // } = options;
-    const sync = options.sync;
-    const f = cls[methodName];
+    const sync = options && !!options.sync;
+    const isMethod = typeof methodName === 'string';
+    const f = isMethod ? cls[methodName] : cls;
     const opts : NvimFunctionOptions = {};
 
     if (options && options.range) {
@@ -33,8 +34,12 @@ export function nvimFunction(name: string, options: NvimFunctionOptions = {}) {
         opts,
       },
     });
-    // eslint-disable-next-line no-param-reassign
-    cls[methodName] = f;
+
+    if (isMethod) {
+      // eslint-disable-next-line no-param-reassign
+      cls[methodName] = f;
+    }
+
     return cls;
   };
 }
