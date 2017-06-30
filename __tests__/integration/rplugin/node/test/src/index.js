@@ -3,12 +3,7 @@ loaded = [] instanceof Array;
 required = require('./fixture');
 // console.log('ahh, silence')
 
-const {
-  Plugin,
-  Function,
-  Autocmd,
-  Command,
-} = require('../../../../../../plugin');
+const { Plugin, Function, Autocmd, Command } = require('../../../../../../lib');
 
 @Plugin
 class Test {

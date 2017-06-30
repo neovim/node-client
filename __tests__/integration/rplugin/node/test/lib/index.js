@@ -1,4 +1,4 @@
-var _dec, _dec2, _dec3, _class, _desc, _value, _class2;
+var _dec, _dec2, _dec3, _dec4, _class, _desc, _value, _class2;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
   var desc = {};
@@ -39,13 +39,15 @@ const {
   Function,
   Autocmd,
   Command
-} = require('../../../../../../plugin');
+} = require('../../../../../../lib/plugin');
 
-let Test = (_dec = Command('JSHostTestCmd', { sync: true, range: '', nargs: '*' }), _dec2 = Autocmd('BufEnter', {
+let Test = (_dec = Plugin(), _dec2 = Command('JSHostTestCmd', { sync: true, range: '', nargs: '*' }), _dec3 = Autocmd('BufEnter', {
   sync: true,
   pattern: '*.test',
   eval: 'expand("<afile>")'
-}), _dec3 = Function('Func', { sync: true }), Plugin(_class = (_class2 = class Test {
+}), _dec4 = Function('Func', { sync: true }), _dec(_class = (_class2 = class Test {
+  constructor() {}
+
   hostTest(args, range) {
     if (args[0] === 'canhazresponse?') {
       throw new Error('no >:(');
@@ -66,7 +68,7 @@ let Test = (_dec = Command('JSHostTestCmd', { sync: true, range: '', nargs: '*' 
   func(args) {
     return 'Funcy ' + args;
   }
-}, (_applyDecoratedDescriptor(_class2.prototype, 'hostTest', [_dec], Object.getOwnPropertyDescriptor(_class2.prototype, 'hostTest'), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, 'onBufEnter', [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, 'onBufEnter'), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, 'func', [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, 'func'), _class2.prototype)), _class2)) || _class);
+}, (_applyDecoratedDescriptor(_class2.prototype, 'hostTest', [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, 'hostTest'), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, 'onBufEnter', [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, 'onBufEnter'), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, 'func', [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, 'func'), _class2.prototype)), _class2)) || _class);
 
 
 module.exports = Test;
