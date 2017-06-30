@@ -19,6 +19,9 @@ export interface BufferClearHighlight {
   lineEnd?: number;
   async?: boolean;
 }
+
+export interface AsyncBuffer extends Buffer, Promise<Buffer> {}
+
 export class Buffer extends BaseApi {
   get length(): Promise<number> {
     return this.request(`${this.prefix}line_count`, [this]);
@@ -37,9 +40,8 @@ export class Buffer extends BaseApi {
   getLines(
     { start, end, strictIndexing } = { start: 0, end: -1, strictIndexing: true }
   ): Promise<Array<string>> {
-    const indexing = typeof strictIndexing === 'undefined'
-      ? true
-      : strictIndexing;
+    const indexing =
+      typeof strictIndexing === 'undefined' ? true : strictIndexing;
     return this.request(`${this.prefix}get_lines`, [
       this,
       start,
@@ -57,9 +59,8 @@ export class Buffer extends BaseApi {
     // TODO: Error checking
     // if (typeof start === 'undefined' || typeof end === 'undefined') {
     // }
-    const indexing = typeof strictIndexing === 'undefined'
-      ? true
-      : strictIndexing;
+    const indexing =
+      typeof strictIndexing === 'undefined' ? true : strictIndexing;
     const lines = typeof _lines === 'string' ? [_lines] : _lines;
     const end = typeof _end !== 'undefined' ? _end : _start + 1;
 

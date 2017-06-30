@@ -1,8 +1,8 @@
 import { BaseApi } from './Base';
 import { createChainableApi } from './helpers/createChainableApi';
-import { Buffer } from './Buffer';
-import { Tabpage } from './Tabpage';
-import { Window } from './Window';
+import { Buffer, AsyncBuffer } from './Buffer';
+import { Tabpage, AsyncTabpage } from './Tabpage';
+import { Window, AsyncWindow } from './Window';
 
 export type UiAttachOptions = {
   rgb?: boolean;
@@ -28,14 +28,13 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}list_bufs`);
   }
 
-  get buffer(): Buffer | Promise<Buffer> {
+  get buffer(): AsyncBuffer {
     return createChainableApi.call(this, 'Buffer', Buffer, () =>
       this.request(`${this.prefix}get_current_buf`)
     );
   }
 
-  // (buffer: Buffer)
-  set buffer(buffer: Buffer | Promise<Buffer>) {
+  set buffer(buffer: AsyncBuffer) {
     this.request(`${this.prefix}set_current_buf`, [buffer]);
   }
 
@@ -44,12 +43,12 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}list_tabpages`);
   }
 
-  get tabpage(): Tabpage | Promise<Tabpage> {
+  get tabpage(): AsyncTabpage {
     return createChainableApi.call(this, 'Tabpage', Tabpage, () =>
       this.request(`${this.prefix}get_current_tabpage`)
     );
   }
-  set tabpage(tabpage: Tabpage | Promise<Tabpage>) {
+  set tabpage(tabpage: AsyncTabpage) {
     this.request(`${this.prefix}set_current_tabpage`, [tabpage]);
   }
 
@@ -57,13 +56,13 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}list_wins`);
   }
 
-  get window(): Window | Promise<Window> {
+  get window(): AsyncWindow {
     return createChainableApi.call(this, 'Window', Window, () =>
       this.request(`${this.prefix}get_current_win`)
     );
   }
 
-  set window(win: Window | Promise<Window>) {
+  set window(win: AsyncWindow) {
     // Throw error if win is not instance of Window?
     this.request(`${this.prefix}set_current_win`, [win]);
   }

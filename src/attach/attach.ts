@@ -1,4 +1,5 @@
 import { createConnection } from 'net';
+import child from 'child_process';
 
 import { NeovimClient } from './../api/client';
 import { logger } from '../utils/logger';
@@ -6,7 +7,7 @@ import { logger } from '../utils/logger';
 export interface Attach {
   reader?: NodeJS.ReadableStream;
   writer?: NodeJS.WritableStream;
-  proc?: NodeJS.Process | ChildProcess;
+  proc?: NodeJS.Process | child.ChildProcess;
   socket?: string;
 }
 
