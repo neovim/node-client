@@ -35,12 +35,6 @@
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
-    "@types/jest": "^20.0.1",
-    "@types/lodash": "^4.14.66",
-    "@types/node": "^7.0.32",
-    "@types/traverse": "^0.6.29",
-    "@types/which": "^1.0.28",
-    "@types/winston": "^2.3.3",
     "lodash-es": "^4.17.4",
     "msgpack5rpc": "^1.1.0",
     "traverse": "^0.6.6",
@@ -48,6 +42,12 @@
     "winston": "^2.3.1"
   },
   "devDependencies": {
+    "@types/jest": "^20.0.1",
+    "@types/lodash": "^4.14.66",
+    "@types/node": "^7.0.32",
+    "@types/traverse": "^0.6.29",
+    "@types/which": "^1.0.28",
+    "@types/winston": "^2.3.3",
     "babel-core": "^6.25.0",
     "husky": "^0.13.4",
     "jest": "^20.0.4",
