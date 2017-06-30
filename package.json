@@ -28,6 +28,10 @@
   "bin": {
     "neovim-node-host": "./bin/cli.js"
   },
+  "files": [
+    "bin/",
+    "lib/"
+  ],
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "dependencies": {
