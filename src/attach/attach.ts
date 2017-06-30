@@ -6,7 +6,7 @@ import { logger } from '../utils/logger';
 export interface Attach {
   reader?: NodeJS.ReadableStream;
   writer?: NodeJS.WritableStream;
-  proc?: NodeJS.Process;
+  proc?: NodeJS.Process | ChildProcess;
   socket?: string;
 }
 
