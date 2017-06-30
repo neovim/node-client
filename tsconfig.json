@@ -12,6 +12,9 @@
     "moduleResolution": "node",
     "sourceMap": false,
     "target": "es2015",
+    "types": [
+      "node"
+    ],
     "outDir": "./lib"
   },
   "include": [
