@@ -1,3 +1,6 @@
+# Breaking Changes Incoming
+We will be introducing breaking changes in the near future. See the [new node-host](https://github.com/neovim/node-host/tree/next) and [new node-client](https://github.com/neovim/node-client/tree/next) for more information about the changes
+
 # neovim-client
 
 [![Build Status](https://travis-ci.org/neovim/node-client.png)](https://travis-ci.org/neovim/node-client)
