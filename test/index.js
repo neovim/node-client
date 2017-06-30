@@ -22,6 +22,7 @@ describe('Nvim', function() {
     });
 
     attach(nvim.stdin, nvim.stdout, function(err, n) {
+      strictEqual(err, null);
       nvim = n;
       nvim.on('request', function(method, args, resp) {
         requests.push({method: method, args: args});
@@ -71,19 +72,27 @@ describe('Nvim', function() {
 
   it('can deal with custom types', function(done) {
     nvim.command('vsp', function(err, res) {
-      nvim.getWindows(function(err, windows) {
+      strictEqual(err, null);
+      nvim.listWins(function(err, windows) {
+        strictEqual(err, null);
         equal(windows.length, 2);
         equal(windows[0] instanceof nvim.Window, true);
         equal(windows[1] instanceof nvim.Window, true);
-        nvim.setCurrentWindow(windows[1], function(err, res) {
-          nvim.getCurrentWindow(function(err, win) {
+        nvim.setCurrentWin(windows[1], function(err, res) {
+          strictEqual(err, null);
+          nvim.getCurrentWin(function(err, win) {
+            strictEqual(err, null);
             equal(win.equals(windows[1]), true);
             nvim.getCurrentBuffer(function(err, buf) {
+              strictEqual(err, null);
               equal(buf instanceof nvim.Buffer, true);
               buf.getLineSlice(0, -1, true, true, function(err, lines) {
+                strictEqual(err, null);
                 deepEqual(lines, ['']);
                 buf.setLineSlice(0, -1, true, true, ['line1', 'line2'], function(err) {
+                  strictEqual(err, null);
                   buf.getLineSlice(0, -1, true, true, function(err, lines) {
+                    strictEqual(err, null);
                     deepEqual(lines, ['line1', 'line2']);
                     done();
                   });

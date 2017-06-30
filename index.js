@@ -31,14 +31,18 @@ function generateWrappers(Nvim, types, metadata) {
     var parts = func.name.split('_');
     var typeName = _.capitalize(parts[0]);
     // The type name is the word before the first dash capitalized. If the type
-    // is Vim, then it a editor-global method which will be attached to the Nvim
+    // is Nvim, then it a editor-global method which will be attached to the Nvim
     // class.
     var methodName = _.camelCase(parts.slice(typeName !== 'Ui').join('_'));
     var args = func.parameters.map(function(param) {
       return param[1];
     });
     var Type, callArgs;
-    if (typeName === 'Nvim' || typeName === 'Vim' || typeName === 'Ui') {
+    if (typeName === 'Vim') {
+        // Skip because vim_* functions are deprecated and exist for compatibility.
+        continue;
+    }
+    if (typeName === 'Nvim' || typeName === 'Ui') {
       Type = Nvim;
       callArgs = args.join(', ');
     } else {
@@ -71,7 +75,7 @@ function generateWrappers(Nvim, types, metadata) {
       parameterTypes: func.parameters.map(function(p) { return p[0]; }),
       canFail: func.can_fail,
     }
-    if (typeName === 'Nvim') {
+    if (typeName !== 'Nvim') {
       method.metadata.parameterTypes.shift();
     }
     Type.prototype[methodName] = method;

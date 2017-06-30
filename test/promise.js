@@ -16,12 +16,12 @@ try {
 describe('Nvim Promise API', function() {
   var nvim, requests, notifications;
 
-  before(function(done) {
+  before(function() {
     nvim = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {
       cwd: __dirname
     });
 
-    attach(nvim.stdin, nvim.stdout).then(function(n) {
+    return attach(nvim.stdin, nvim.stdout).then(function(n) {
       nvim = n;
       nvim.on('request', function(method, args, resp) {
         requests.push({method: method, args: args});
@@ -30,7 +30,6 @@ describe('Nvim Promise API', function() {
       nvim.on('notification', function(method, args) {
         notifications.push({method: method, args: args});
       });
-      done();
     });
   });
 
@@ -53,34 +52,32 @@ describe('Nvim Promise API', function() {
     });
   });
 
-  it('can receive notifications', function(done) {
+  it('can receive notifications', function() {
     return nvim.eval('rpcnotify(1, "notify", 1, 2, 3)').then(function(res) {
       equal(res, 1);
       deepEqual(requests, []);
       setImmediate(function() {
         deepEqual(notifications, [{method: 'notify', args: [1, 2, 3]}]);
-        done();
       });
     });
   });
 
-  it('can deal with custom types', function(done) {
+  it('can deal with custom types', function() {
     return nvim.command('vsp').then(function(res) {
-      nvim.getWindows().then(function(windows) {
+      return nvim.listWins().then(function(windows) {
         equal(windows.length, 2);
         // equal(windows[0] instanceof nvim.Window, true);
         // equal(windows[1] instanceof nvim.Window, true);
-        nvim.setCurrentWindow(windows[1]).then(function(res) {
-          nvim.getCurrentWindow().then(function(win) {
+        return nvim.setCurrentWin(windows[1]).then(function(res) {
+          return nvim.getCurrentWin().then(function(win) {
             equal(win._data, windows[1]._data);
-            nvim.getCurrentBuffer().then(function(buf) {
+            return nvim.getCurrentBuf().then(function(buf) {
               // equal(buf instanceof nvim.Buffer, true);
-              buf.getLineSlice(0, -1, true, true).then(function(lines) {
+              return buf.getLineSlice(0, -1, true, true).then(function(lines) {
                 deepEqual(lines, ['']);
-                buf.setLineSlice(0, -1, true, true, ['line1', 'line2']).then(function() {
-                  buf.getLineSlice(0, -1, true, true).then(function(lines) {
+                return buf.setLineSlice(0, -1, true, true, ['line1', 'line2']).then(function() {
+                  return buf.getLineSlice(0, -1, true, true).then(function(lines) {
                     deepEqual(lines, ['line1', 'line2']);
-                    done();
                   });
                 });
               });
