@@ -55,7 +55,7 @@ export class BaseApi extends EventEmitter {
     }
   }
 
-  async request(name, args = []): Promise<any> {
+  async request(name: string, args: any[] = []): Promise<any> {
     // `this._isReady` is undefined in ExtType classes (i.e. Buffer, Window, Tabpage)
     // But this is just for Neovim API, since it's possible to call this method from Neovim class
     // before session is ready.
@@ -63,8 +63,7 @@ export class BaseApi extends EventEmitter {
     await this._isReady;
     this.logger.debug(`request -> neovim.api.${name}`);
     return new Promise((resolve, reject) => {
-      // does args need this?
-      this._session.request(name, args, (err, res) => {
+      this._session.request(name, args, (err: any, res: any) => {
         this.logger.debug(`response -> neovim.api.${name}: ${res}`);
         if (err) {
           reject(new Error(`${name}: ${err[1]}`));
@@ -75,7 +74,6 @@ export class BaseApi extends EventEmitter {
     });
   }
 
-  // static
   _getArgsByPrefix(...args) {
     const _args = [];
 
@@ -86,8 +84,8 @@ export class BaseApi extends EventEmitter {
     return _args.concat(args);
   }
 
-  // Retrieves a scoped variable depending on `this`
-  getVar(name): Promise<string> {
+  /** Retrieves a scoped variable depending on type (using `this.prefix`) */
+  getVar(name: string): Promise<string> {
     const args = this._getArgsByPrefix(name);
 
     return this.request(`${this.prefix}get_var`, args).then(
@@ -101,30 +99,33 @@ export class BaseApi extends EventEmitter {
     );
   }
 
-  setVar(name, value): Promise<any> {
+  /** Set a scoped variable */
+  setVar(name: string, value: any): Promise<any> {
     const args = this._getArgsByPrefix(name, value);
     return this.request(`${this.prefix}set_var`, args);
   }
 
-  deleteVar(name): Promise<any> {
+  /** Delete a scoped variable */
+  deleteVar(name: string): Promise<any> {
     const args = this._getArgsByPrefix(name);
     return this.request(`${this.prefix}del_var`, args);
   }
 
-  // Retrieves a scoped option depending on `this`
-  getOption(name): Promise<any> | void {
+  /** Retrieves a scoped option depending on type of `this` */
+  getOption(name: string): Promise<any> | void {
     const args = this._getArgsByPrefix(name);
     return this.request(`${this.prefix}get_option`, args);
   }
 
-  setOption(name, value): Promise<any> | void {
+  /** Set scoped option */
+  setOption(name: string, value: any): Promise<any> | void {
     const args = this._getArgsByPrefix(name, value);
     return this.request(`${this.prefix}set_option`, args);
   }
 
   // TODO: Is this necessary?
-  // `request` is basically the same except you can choose to wait forpromise to be resolved
-  notify(name, args) {
+  /** `request` is basically the same except you can choose to wait forpromise to be resolved */
+  notify(name: string, args: any[]) {
     this.logger.debug(`notify -> neovim.api.${name}`);
     this._session.notify(name, args);
   }

@@ -23,20 +23,22 @@ export interface BufferClearHighlight {
 export interface AsyncBuffer extends Buffer, Promise<Buffer> {}
 
 export class Buffer extends BaseApi {
+  /** Total number of lines in buffer */
   get length(): Promise<number> {
     return this.request(`${this.prefix}line_count`, [this]);
   }
 
+  /** Get lines in buffer */
   get lines(): Promise<Array<string>> {
     return this.getLines();
   }
 
-  // Gets a changed tick of a buffer
+  /** Gets a changed tick of a buffer */
   get changedtick(): Promise<number> {
     return this.request(`${this.prefix}get_changedtick`, [this]);
   }
 
-  // Get lines
+  /** Get specific lines of buffer */
   getLines(
     { start, end, strictIndexing } = { start: 0, end: -1, strictIndexing: true }
   ): Promise<Array<string>> {
@@ -50,6 +52,7 @@ export class Buffer extends BaseApi {
     ]);
   }
 
+  /** Set lines of buffer given indeces */
   setLines(
     _lines: string | string[],
     { start: _start, end: _end, strictIndexing }: BufferSetLines = {
@@ -73,12 +76,16 @@ export class Buffer extends BaseApi {
     ]);
   }
 
-  // Insert lines at `start` index
+  /** Insert lines at `start` index */
   insert(lines: Array<string> | string, start: number) {
-    return this.setLines(lines, { start, end: start, strictIndexing: true });
+    return this.setLines(lines, {
+      start,
+      end: start,
+      strictIndexing: true,
+    });
   }
 
-  // Replace lines starting at `start` index
+  /** Replace lines starting at `start` index */
   replace(_lines: Array<string> | string, start: number) {
     const lines = typeof _lines === 'string' ? [_lines] : _lines;
     return this.setLines(lines, {
@@ -88,30 +95,36 @@ export class Buffer extends BaseApi {
     });
   }
 
+  /** Remove lines at index */
   remove(start: number, end: number, strictIndexing: boolean) {
     return this.setLines([], { start, end, strictIndexing });
   }
 
-  // Append a string or list of lines to end of buffer
+  /** Append a string or list of lines to end of buffer */
   append(lines: Array<string> | string) {
-    return this.setLines(lines, { start: -1, end: -1, strictIndexing: false });
+    return this.setLines(lines, {
+      start: -1,
+      end: -1,
+      strictIndexing: false,
+    });
   }
 
-  // Buffer name
+  /** Get buffer name */
   get name(): string | Promise<string> {
     return this.request(`${this.prefix}get_name`, [this]);
   }
 
+  /** Set current buffer name */
   set name(value: string | Promise<string>) {
     this.request(`${this.prefix}set_name`, [this, value]);
   }
 
-  // Is current buffer valid
-  // @return Promise<boolean>
+  /** Is current buffer valid */
   get valid(): Promise<boolean> {
     return this.request(`${this.prefix}is_valid`, [this]);
   }
 
+  /** Get mark position given mark name */
   mark(name: string): Promise<[number, number]> {
     return this.request(`${this.prefix}get_mark`, [name]);
   }
@@ -121,6 +134,29 @@ export class Buffer extends BaseApi {
   // return Range(this, start, end)
   // }
 
+  /**
+    Adds a highlight to buffer.
+
+    This can be used for plugins which dynamically generate
+    highlights to a buffer (like a semantic highlighter or
+    linter). The function adds a single highlight to a buffer.
+    Unlike matchaddpos() highlights follow changes to line
+    numbering (as lines are inserted/removed above the highlighted
+    line), like signs and marks do.
+
+    "src_id" is useful for batch deletion/updating of a set of
+    highlights. When called with src_id = 0, an unique source id
+    is generated and returned. Succesive calls can pass in it as
+    "src_id" to add new highlights to the same source group. All
+    highlights in the same group can then be cleared with
+    nvim_buf_clear_highlight. If the highlight never will be
+    manually deleted pass in -1 for "src_id".
+
+    If "hl_group" is the empty string no highlight is added, but a
+    new src_id is still returned. This is useful for an external
+    plugin to synchrounously request an unique src_id at
+    initialization, and later asynchronously add and clear
+    highlights in response to buffer changes. */
   addHighlight({
     hlGroup,
     line,
@@ -143,6 +179,11 @@ export class Buffer extends BaseApi {
     ]);
   }
 
+  /** Clears highlights from a given source group and a range of
+  lines
+
+  To clear a source group in the entire buffer, pass in 1 and -1
+  to lineStart and lineEnd respectively. */
   clearHighlight(
     { srcId, lineStart, lineEnd, async }: BufferClearHighlight = {
       srcId: -1,
