@@ -1,14 +1,8 @@
 import { EventEmitter } from 'events';
 import { logger as loggerModule } from '../utils/logger';
 import { decode } from '../utils/decode';
+import { VimValue } from '../types/VimValue';
 
-export type VimValue =
-  | number
-  | boolean
-  | string
-  | number[]
-  | { [key: string]: any }
-  | null;
 
 // Instead of dealing with multiple inheritance (or lackof), just extend EE
 // Only the Neovim API class should use EE though

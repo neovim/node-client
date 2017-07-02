@@ -3,6 +3,7 @@ import { createChainableApi } from './helpers/createChainableApi';
 import { Buffer, AsyncBuffer } from './Buffer';
 import { Tabpage, AsyncTabpage } from './Tabpage';
 import { Window, AsyncWindow } from './Window';
+import { VimValue } from '../types/VimValue';
 
 export type UiAttachOptions = {
   rgb?: boolean;
@@ -125,7 +126,7 @@ export class Neovim extends BaseApi {
   }
 
   /** Call a vim function */
-  call(fname: string, args: Array<any> = []) {
+  call(fname: string, args: Array<VimValue> = []) {
     return this.request(`${this.prefix}call_function`, [fname, args]);
   }
 
