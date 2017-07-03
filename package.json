@@ -72,7 +72,7 @@
     "*.{ts,js}": [
       "prettier --parser typescript --single-quote --trailing-comma es5 --write",
       "tslint --fix",
-      "npm run test-staged"
+      "npm run test-staged -- --no-cache"
     ]
   },
   "jest": {
