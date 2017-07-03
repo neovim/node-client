@@ -11,7 +11,7 @@ import { Neovim } from './Neovim';
 export class NeovimClient extends Neovim {
   protected requestQueue: Array<any>;
   private _sessionAttached: boolean;
-  public channelId: number;
+  private _channel_id: number;
 
   constructor(options: { session?: Session; logger?: ILogger } = {}) {
     const session = options.session || new Session([]);
@@ -41,8 +41,15 @@ export class NeovimClient extends Neovim {
     this.startSession();
   }
 
-  get isApiReady() {
-    return this._sessionAttached && typeof this.channelId !== 'undefined';
+  get isApiReady(): boolean {
+    return this._sessionAttached && typeof this._channel_id !== 'undefined';
+  }
+
+  get channelId(): Promise<number> {
+    return new Promise(async (resolve, reject) => {
+      await this._isReady;
+      resolve(this._channel_id);
+    });
   }
 
   handleRequest(
@@ -164,7 +171,7 @@ export class NeovimClient extends Neovim {
           });
         });
 
-        this.channelId = channelId;
+        this._channel_id = channelId;
         this._session.addTypes(extTypes);
 
         // register the non-queueing handlers
