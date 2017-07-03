@@ -133,5 +133,5 @@ The tests and `scripts` can be consulted for more examples.
 ## Contributors
 * [@billyvg](https://github.com/billyvg) for rewrite
 * [@mhartington](https://github.com/mhartington) for TypeScript rewrite
-* [@fritzy] for transferring over the npm package repo `neovim`!
+* [@fritzy](https://github.com/fritzy) for transferring over the npm package repo `neovim`!
 * [@rhysd](https://github.com/rhysd), [@tarruda](https://github.com/tarruda), [@nhynes](https://github.com/nhynes) on work for the original `node-client`
