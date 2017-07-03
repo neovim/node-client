@@ -3,7 +3,6 @@
  */
 import * as Session from 'msgpack5rpc';
 import { decode } from '../utils/decode';
-import { generateWrappers } from './helpers/generateWrappers';
 import { TYPES } from './helpers/types';
 import { Neovim } from './Neovim';
 
@@ -115,9 +114,6 @@ export class NeovimClient extends Neovim {
         const [channelId, encodedMetadata] = results;
         const metadata = decode(encodedMetadata);
         const extTypes = [];
-        const types = {};
-        const prefixMap = {};
-
         // this.logger.debug(`$$$: ${metadata}`);
 
         Object.keys(metadata.types).forEach(name => {
@@ -145,16 +141,7 @@ export class NeovimClient extends Neovim {
               }),
             encode: obj => obj._data,
           });
-
-          prefixMap[metaDataForType.prefix] = name;
-          types[name] = {
-            constructor: ExtType,
-            prefix: metaDataForType.prefix,
-          };
-          Neovim.prototype[name] = ExtType;
         });
-
-        generateWrappers(Neovim, types, prefixMap, metadata);
 
         this._channel_id = channelId;
         this._session.addTypes(extTypes);

@@ -18,6 +18,10 @@ export type UiAttachOptions = {
  */
 export class Neovim extends BaseApi {
   protected prefix: string = '';
+  public Buffer = Buffer;
+  public Window = Window;
+  public Tabpage = Tabpage;
+
   constructor(options) {
     super(options);
 
