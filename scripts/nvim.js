@@ -5,7 +5,7 @@
  */
 
 const cp = require('child_process');
-const attach = require('../attach');
+const attach = require('../').attach;
 // const inspect = require('util').inspect;
 
 module.exports = (async function() {
@@ -22,4 +22,4 @@ module.exports = (async function() {
 
   const nvim = await attach({ proc, socket });
   return nvim;
-}());
+})();
