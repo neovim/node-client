@@ -1,8 +1,8 @@
 export function createChainableApi(
-  name,
-  Type,
-  requestPromise,
-  chainCallPromise
+  name: string,
+  Type: any,
+  requestPromise: () => Promise<any>,
+  chainCallPromise: () => Promise<any>
 ) {
   // re-use current promise if not resolved yet
   if (
@@ -26,7 +26,7 @@ export function createChainableApi(
   });
 
   const proxyHandler = {
-    get: (target, prop) => {
+    get: (target: any, prop: string) => {
       // XXX which takes priority?
       // Check if property is property of an API object (Window, Buffer, Tabpage, etc)
       // If it is, then we return a promise of results of the call on that API object
@@ -54,14 +54,16 @@ export function createChainableApi(
           typeof Type.prototype[prop] === 'function'
         ) {
           // If property is a method on Type, we need to invoke it with captured args
-          return (...args) =>
-            this[`${name}Promise`].then(res => res[prop].call(res, ...args));
+          return (...args: any[]) =>
+            this[`${name}Promise`].then((res: any) =>
+              res[prop].call(res, ...args)
+            );
         }
 
         // Otherwise return the property requested after promise is resolved
         return (
           (chainCallPromise && chainCallPromise()) ||
-          this[`${name}Promise`].then(res => res[prop])
+          this[`${name}Promise`].then((res: any) => res[prop])
         );
       } else if (prop in target) {
         // Forward rest of requests to Promise
@@ -74,9 +76,12 @@ export function createChainableApi(
       return null;
     },
 
-    set: (target, prop, value, receiver) => {
+    set: (target: any, prop: string, value: any, receiver: Promise<any>) => {
       // eslint-disable-next-line no-param-reassign
-      if (receiver && (receiver instanceof Promise || 'then' in receiver)) {
+      if (
+        receiver &&
+        (receiver instanceof Promise || 'then' in (<any>receiver))
+      ) {
         receiver.then(obj => {
           if (prop in obj) {
             // eslint-disable-next-line no-param-reassign

@@ -1,36 +1,32 @@
 import { EventEmitter } from 'events';
-import { logger as loggerModule } from '../utils/logger';
+import { logger as loggerModule, ILogger } from '../utils/logger';
 import { decode } from '../utils/decode';
 import { VimValue } from '../types/VimValue';
+import Session = require('msgpack5rpc');
 
+export type BaseConstructorOptions = {
+  session: Session;
+  logger?: ILogger;
+  data?: Buffer;
+  metadata?: any;
+};
 
 // Instead of dealing with multiple inheritance (or lackof), just extend EE
 // Only the Neovim API class should use EE though
 export class BaseApi extends EventEmitter {
-  _session;
-  _data;
-  _decode;
-  protected _isReady;
+  protected _session: Session;
+  protected _data: Buffer; // Node Buffer
+  protected _decode: Function;
+  protected _isReady: Promise<boolean>;
   protected prefix: string;
-  public logger;
+  public logger: ILogger;
 
-  constructor({
-    session,
-    data,
-    logger,
-    metadata,
-  }: {
-    session;
-    logger?;
-    data?;
-    metadata?;
-  }) {
+  constructor({ session, data, logger, metadata }: BaseConstructorOptions) {
     super();
 
     this._session = session;
     this._data = data;
     this._decode = decode;
-
     this.logger = logger || loggerModule;
 
     if (metadata) {
@@ -41,7 +37,7 @@ export class BaseApi extends EventEmitter {
     }
   }
 
-  equals(other) {
+  equals(other: BaseApi) {
     try {
       return this._data.toString() === other._data.toString();
     } catch (e) {
@@ -68,7 +64,7 @@ export class BaseApi extends EventEmitter {
     });
   }
 
-  _getArgsByPrefix(...args) {
+  _getArgsByPrefix(...args: any[]) {
     const _args = [];
 
     // Check if class is Neovim and if so, should not send `this` as first arg

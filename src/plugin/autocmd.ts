@@ -8,8 +8,8 @@ export interface AutocmdOptions {
 
 // Example
 // @autocmd('BufEnter', { pattern: '*.js', eval: 'expand("<afile>")', sync: true })
-export function autocmd(name, options?: AutocmdOptions) {
-  return function(cls, methodName) {
+export function autocmd(name: string, options?: AutocmdOptions) {
+  return function(cls: any, methodName: string | null) {
     // const {
     // sync,
     // ...opts,
@@ -22,7 +22,7 @@ export function autocmd(name, options?: AutocmdOptions) {
       pattern: '',
     };
 
-    ['pattern', 'eval'].forEach(option => {
+    ['pattern', 'eval'].forEach((option: keyof AutocmdOptions) => {
       if (options && typeof options[option] !== 'undefined') {
         opts[option] = options[option];
       }

@@ -1,4 +1,4 @@
-import { BaseApi } from './Base';
+import { BaseApi, BaseConstructorOptions } from './Base';
 import { createChainableApi } from './helpers/createChainableApi';
 import { Buffer, AsyncBuffer } from './Buffer';
 import { Tabpage, AsyncTabpage } from './Tabpage';
@@ -22,7 +22,7 @@ export class Neovim extends BaseApi {
   public Window = Window;
   public Tabpage = Tabpage;
 
-  constructor(options) {
+  constructor(options: BaseConstructorOptions) {
     super(options);
 
     this.prefix = 'nvim_';

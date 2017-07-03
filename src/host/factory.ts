@@ -4,8 +4,11 @@ import * as util from 'util';
 import * as vm from 'vm';
 
 import { omit, defaults } from 'lodash';
+
+import { Neovim } from '../api/Neovim';
 import { logger } from '../utils/logger';
 import { DevNull } from '../utils/devnull';
+import { Spec } from '../types/Spec';
 import {
   NVIM_PLUGIN,
   NVIM_DEV_MODE,
@@ -14,10 +17,10 @@ import {
 } from '../plugin/properties';
 
 export interface IModule {
-  new (name: string);
+  new (name: string): any;
   _resolveFilename: (file: string, context: any) => string;
   _extensions: {};
-  _cache: {};
+  _cache: { [file: string]: any };
   _compile: () => void;
   wrap: (content: string) => string;
   require: (file: string) => NodeModule;
@@ -31,6 +34,12 @@ export interface IPluginObject {
   import: any;
   module: any;
 }
+
+export type LoadPluginOptions = {
+  cache?: boolean;
+  noCreateInstance?: boolean;
+};
+
 const Module: IModule = require('module');
 const BLACKLISTED_GLOBALS = [
   'reallyExit',
@@ -50,8 +59,8 @@ const BLACKLISTED_GLOBALS = [
 
 // @see node/lib/internal/module.js
 function makeRequireFunction() {
-  const require: any = (p: any) => this.require(p);
-  require.resolve = request => Module._resolveFilename(request, this);
+  const require: any = (p: string) => this.require(p);
+  require.resolve = (request: string) => Module._resolveFilename(request, this);
   require.main = process.mainModule;
   // Enable support to add extra extension types
   require.extensions = Module._extensions;
@@ -60,9 +69,9 @@ function makeRequireFunction() {
 }
 
 // @see node/lib/module.js
-function compileInSandbox(sandbox) {
+function compileInSandbox(sandbox: ISandbox) {
   // eslint-disable-next-line
-  return function(content, filename) {
+  return function(content: string, filename: string) {
     const require = makeRequireFunction.call(this);
     const dirname = path.dirname(filename);
     // remove shebang
@@ -75,8 +84,8 @@ function compileInSandbox(sandbox) {
   };
 }
 
-function createDebugFunction(filename) {
-  return (...args) => {
+function createDebugFunction(filename: string) {
+  return (...args: any[]) => {
     const debugId = path.basename(filename);
     const sout = util.format.apply(null, [`[${debugId}]`].concat(args));
     logger.info(sout);
@@ -87,12 +96,10 @@ export interface ISandbox {
   process: NodeJS.Process;
   module: NodeModule;
   require: (p: string) => any;
-  console: {
-    log: Function;
-  };
+  console: { [key in keyof Console]?: Function };
 }
 
-function createSandbox(filename): ISandbox {
+function createSandbox(filename: string): ISandbox {
   const module = new Module(filename);
   module.paths = Module._nodeModulePaths(filename);
 
@@ -101,10 +108,10 @@ function createSandbox(filename): ISandbox {
     console: {},
   });
 
-  defaults(sandbox, global);
+  defaults(sandbox);
 
   // Redirect console calls into logger
-  Object.keys(console).forEach(k => {
+  Object.keys(console).forEach((k: keyof Console) => {
     if (k === 'log') {
       sandbox.console.log = createDebugFunction(filename);
     } else if (k in logger) {
@@ -122,7 +129,7 @@ function createSandbox(filename): ISandbox {
 
   // patch `require` in sandbox to run loaded module in sandbox context
   // if you need any of these, it might be worth discussing spawning separate processes
-  sandbox.process = <NodeJS.Process>omit(global.process, BLACKLISTED_GLOBALS);
+  sandbox.process = <NodeJS.Process>omit(process, BLACKLISTED_GLOBALS);
 
   const devNull = new DevNull();
   sandbox.process.stdin = devNull;
@@ -134,16 +141,16 @@ function createSandbox(filename): ISandbox {
 
 // inspiration drawn from Module
 function createPlugin(
-  filename,
-  nvim,
-  options: { cache?: boolean; noCreateInstance?: boolean } = {}
+  filename: string,
+  nvim: Neovim,
+  options: LoadPluginOptions = {}
 ) {
   const debug = createDebugFunction(filename);
 
   try {
     const sandbox = createSandbox(filename);
-    const specs = [];
-    const handlers = {};
+    const specs: Spec[] = [];
+    const handlers: { [handerId: string]: string } = {};
 
     // Clear module from cache
     if (options && !options.cache) {
@@ -175,9 +182,8 @@ function createPlugin(
         specs,
         handlers,
         import: defaultImport,
-        module: !options || !options.noCreateInstance
-          ? new Wrapper(nvim)
-          : null,
+        module:
+          !options || !options.noCreateInstance ? new Wrapper(nvim) : null,
       };
     }
   } catch (err) {
@@ -189,7 +195,11 @@ function createPlugin(
   return null;
 }
 
-export function loadPlugin(filename, nvim, options = {}) {
+export function loadPlugin(
+  filename: string,
+  nvim: Neovim,
+  options: LoadPluginOptions = {}
+) {
   try {
     return createPlugin(filename, nvim, options);
   } catch (err) {

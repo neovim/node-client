@@ -4,29 +4,17 @@
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "lib": [
-      "es2015",
-      "dom"
-    ],
+    "lib": ["es2015", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": false,
+    "noImplicitAny": true,
     "target": "es2015",
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "outDir": "./lib"
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "__tests__",
-    "**/*.test.ts",
-    "examples",
-    "lib"
-  ],
+  "include": ["src"],
+  "exclude": ["node_modules", "__tests__", "**/*.test.ts", "examples", "lib"],
   "compileOnSave": false,
   "atom": {
     "rewriteTsconfig": false

@@ -1,8 +1,8 @@
-const winston = require('winston');
+import * as winston from 'winston';
 
 let logger;
 
-winston.level = process.env.NVIM_NODE_LOG_LEVEL || 'debug';
+(<any>winston).level = process.env.NVIM_NODE_LOG_LEVEL || 'debug';
 
 if (process.env.NVIM_NODE_LOG_FILE) {
   logger = new winston.Logger({
@@ -22,4 +22,5 @@ if (process.env.NVIM_NODE_LOG_FILE) {
   logger = winston;
 }
 
+export type ILogger = winston.Winston;
 export { logger };
