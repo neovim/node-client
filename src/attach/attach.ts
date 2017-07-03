@@ -20,8 +20,6 @@ export function attach({
   let writer;
   let reader;
 
-  logger.debug('proc');
-  logger.debug(proc);
   if (socket) {
     const client = createConnection(socket);
     writer = client;

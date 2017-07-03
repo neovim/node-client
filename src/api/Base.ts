@@ -1,42 +1,32 @@
 import { EventEmitter } from 'events';
-import { logger as loggerModule } from '../utils/logger';
+import { logger as loggerModule, ILogger } from '../utils/logger';
 import { decode } from '../utils/decode';
+import { VimValue } from '../types/VimValue';
+import Session = require('msgpack5rpc');
 
-export type VimValue =
-  | number
-  | boolean
-  | string
-  | number[]
-  | { [key: string]: any }
-  | null;
+export type BaseConstructorOptions = {
+  session: Session;
+  logger?: ILogger;
+  data?: Buffer;
+  metadata?: any;
+};
 
 // Instead of dealing with multiple inheritance (or lackof), just extend EE
 // Only the Neovim API class should use EE though
 export class BaseApi extends EventEmitter {
-  _session;
-  _data;
-  _decode;
-  protected _isReady;
+  protected _session: Session;
+  protected _data: Buffer; // Node Buffer
+  protected _decode: Function;
+  protected _isReady: Promise<boolean>;
   protected prefix: string;
-  public logger;
+  public logger: ILogger;
 
-  constructor({
-    session,
-    data,
-    logger,
-    metadata,
-  }: {
-    session;
-    logger?;
-    data?;
-    metadata?;
-  }) {
+  constructor({ session, data, logger, metadata }: BaseConstructorOptions) {
     super();
 
     this._session = session;
     this._data = data;
     this._decode = decode;
-
     this.logger = logger || loggerModule;
 
     if (metadata) {
@@ -47,7 +37,7 @@ export class BaseApi extends EventEmitter {
     }
   }
 
-  equals(other) {
+  equals(other: BaseApi) {
     try {
       return this._data.toString() === other._data.toString();
     } catch (e) {
@@ -55,7 +45,7 @@ export class BaseApi extends EventEmitter {
     }
   }
 
-  async request(name, args = []): Promise<any> {
+  async request(name: string, args: any[] = []): Promise<any> {
     // `this._isReady` is undefined in ExtType classes (i.e. Buffer, Window, Tabpage)
     // But this is just for Neovim API, since it's possible to call this method from Neovim class
     // before session is ready.
@@ -63,8 +53,7 @@ export class BaseApi extends EventEmitter {
     await this._isReady;
     this.logger.debug(`request -> neovim.api.${name}`);
     return new Promise((resolve, reject) => {
-      // does args need this?
-      this._session.request(name, args, (err, res) => {
+      this._session.request(name, args, (err: any, res: any) => {
         this.logger.debug(`response -> neovim.api.${name}: ${res}`);
         if (err) {
           reject(new Error(`${name}: ${err[1]}`));
@@ -75,8 +64,7 @@ export class BaseApi extends EventEmitter {
     });
   }
 
-  // static
-  _getArgsByPrefix(...args) {
+  _getArgsByPrefix(...args: any[]) {
     const _args = [];
 
     // Check if class is Neovim and if so, should not send `this` as first arg
@@ -86,8 +74,8 @@ export class BaseApi extends EventEmitter {
     return _args.concat(args);
   }
 
-  // Retrieves a scoped variable depending on `this`
-  getVar(name): Promise<string> {
+  /** Retrieves a scoped variable depending on type (using `this.prefix`) */
+  getVar(name: string): Promise<string> {
     const args = this._getArgsByPrefix(name);
 
     return this.request(`${this.prefix}get_var`, args).then(
@@ -101,30 +89,33 @@ export class BaseApi extends EventEmitter {
     );
   }
 
-  setVar(name, value): Promise<any> {
+  /** Set a scoped variable */
+  setVar(name: string, value: any): Promise<any> {
     const args = this._getArgsByPrefix(name, value);
     return this.request(`${this.prefix}set_var`, args);
   }
 
-  deleteVar(name): Promise<any> {
+  /** Delete a scoped variable */
+  deleteVar(name: string): Promise<any> {
     const args = this._getArgsByPrefix(name);
     return this.request(`${this.prefix}del_var`, args);
   }
 
-  // Retrieves a scoped option depending on `this`
-  getOption(name): Promise<any> | void {
+  /** Retrieves a scoped option depending on type of `this` */
+  getOption(name: string): Promise<any> | void {
     const args = this._getArgsByPrefix(name);
     return this.request(`${this.prefix}get_option`, args);
   }
 
-  setOption(name, value): Promise<any> | void {
+  /** Set scoped option */
+  setOption(name: string, value: any): Promise<any> | void {
     const args = this._getArgsByPrefix(name, value);
     return this.request(`${this.prefix}set_option`, args);
   }
 
   // TODO: Is this necessary?
-  // `request` is basically the same except you can choose to wait forpromise to be resolved
-  notify(name, args) {
+  /** `request` is basically the same except you can choose to wait forpromise to be resolved */
+  notify(name: string, args: any[]) {
     this.logger.debug(`notify -> neovim.api.${name}`);
     this._session.notify(name, args);
   }

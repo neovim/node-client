@@ -1,17 +1,19 @@
 /**
  * Handles attaching session
  */
-import * as Session from 'msgpack5rpc';
+import Session = require('msgpack5rpc');
 import { decode } from '../utils/decode';
-import { generateWrappers } from './helpers/generateWrappers';
+import { ILogger } from '../utils/logger';
 import { TYPES } from './helpers/types';
+import { VimValue } from '../types/VimValue';
 import { Neovim } from './Neovim';
 
 export class NeovimClient extends Neovim {
-  requestQueue: Array<any>;
-  _sessionAttached: boolean;
-  _channel_id;
-  constructor(options: { session?; logger? } = {}) {
+  protected requestQueue: Array<any>;
+  private _sessionAttached: boolean;
+  private _channel_id: number;
+
+  constructor(options: { session?: Session; logger?: ILogger } = {}) {
     const session = options.session || new Session([]);
     const { logger } = options;
 
@@ -27,17 +29,35 @@ export class NeovimClient extends Neovim {
     this.handleNotification = this.handleNotification.bind(this);
   }
 
-  attachSession({ reader, writer }) {
+  attachSession({
+    reader,
+    writer,
+  }: {
+    reader: NodeJS.ReadableStream;
+    writer: NodeJS.WritableStream;
+  }) {
     this._session.attach(writer, reader);
     this._sessionAttached = true;
     this.startSession();
   }
 
-  get isApiReady() {
+  get isApiReady(): boolean {
     return this._sessionAttached && typeof this._channel_id !== 'undefined';
   }
 
-  handleRequest(method, args, resp, ...restArgs) {
+  get channelId(): Promise<number> {
+    return new Promise(async (resolve, reject) => {
+      await this._isReady;
+      resolve(this._channel_id);
+    });
+  }
+
+  handleRequest(
+    method: string,
+    args: VimValue[],
+    resp: any,
+    ...restArgs: any[]
+  ) {
     this.logger.info('handleRequest: ', method);
     // If neovim API is not generated yet and we are not handle a 'specs' request
     // then queue up requests
@@ -53,7 +73,7 @@ export class NeovimClient extends Neovim {
     }
   }
 
-  handleNotification(method, args, ...restArgs) {
+  handleNotification(method: string, args: VimValue[], ...restArgs: any[]) {
     this.logger.info('handleNotification: ', method);
     // If neovim API is not generated yet then queue up requests
     //
@@ -87,20 +107,24 @@ export class NeovimClient extends Neovim {
     this._isReady = this.generateApi();
   }
 
-  requestApi() {
+  requestApi(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this._session.request('nvim_get_api_info', [], (err, res) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(res);
+      this._session.request(
+        'nvim_get_api_info',
+        [],
+        (err: Error, res: any[]) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(res);
+          }
         }
-      });
+      );
     });
   }
 
   // Request API from neovim and augment this current class to add these APIs
-  async generateApi() {
+  async generateApi(): Promise<null | boolean> {
     let results;
 
     try {
@@ -114,14 +138,11 @@ export class NeovimClient extends Neovim {
       try {
         const [channelId, encodedMetadata] = results;
         const metadata = decode(encodedMetadata);
-        const extTypes = [];
-        const types = {};
-        const prefixMap = {};
-
+        const extTypes: any[] = [];
         // this.logger.debug(`$$$: ${metadata}`);
 
-        Object.keys(metadata.types).forEach(name => {
-          let ExtType;
+        Object.keys(metadata.types).forEach((name: string) => {
+          let ExtType: any;
 
           // Generate a constructor function for each type in metadata.types
           if (typeof TYPES[name] === 'undefined') {
@@ -136,25 +157,19 @@ export class NeovimClient extends Neovim {
           extTypes.push({
             constructor: ExtType,
             code: metaDataForType.id,
-            decode: data =>
-              new ExtType({
-                session: this._session,
-                data,
-                metadata: metaDataForType,
-                logger: this.logger,
-              }),
-            encode: obj => obj._data,
+            decode: (data: Buffer) => {
+              if (ExtType) {
+                return new ExtType({
+                  session: this._session,
+                  data,
+                  metadata: metaDataForType,
+                  logger: this.logger,
+                });
+              }
+            },
+            encode: (obj: any) => obj._data,
           });
-
-          prefixMap[metaDataForType.prefix] = name;
-          types[name] = {
-            constructor: ExtType,
-            prefix: metaDataForType.prefix,
-          };
-          Neovim.prototype[name] = ExtType;
         });
-
-        generateWrappers(Neovim, types, prefixMap, metadata);
 
         this._channel_id = channelId;
         this._session.addTypes(extTypes);

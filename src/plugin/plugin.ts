@@ -35,7 +35,7 @@ function wrapper(
 }
 
 // Can decorate a class with options object
-export function plugin(outter?) {
+export function plugin(outter: any) {
   /**
     * Decorator should support
     *
@@ -56,6 +56,6 @@ export function plugin(outter?) {
     * Plugin(TestPlugin)
     */
   return typeof outter !== 'function'
-    ? cls => wrapper(cls, outter)
+    ? (cls: any) => wrapper(cls, outter)
     : wrapper(outter);
 }

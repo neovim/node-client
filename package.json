@@ -32,8 +32,8 @@
     "bin/",
     "lib/"
   ],
-  "main": "./lib/index.js",
-  "typings": "./lib/index.d.ts",
+  "main": "./lib/index",
+  "typings": "./lib/index",
   "dependencies": {
     "lodash-es": "^4.17.4",
     "msgpack5rpc": "^1.1.0",
@@ -72,7 +72,7 @@
     "*.{ts,js}": [
       "prettier --parser typescript --single-quote --trailing-comma es5 --write",
       "tslint --fix",
-      "npm run test-staged"
+      "npm run test-staged -- --no-cache"
     ]
   },
   "jest": {

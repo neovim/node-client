@@ -9,7 +9,7 @@ export interface CommandOptions {
 // Example
 // @command('BufEnter', { range: '', nargs: '*' })
 export function command(name: string, options?: CommandOptions) {
-  return function(cls, methodName) {
+  return function(cls: any, methodName: string | null) {
     // const {
     // sync,
     // ...opts,
@@ -20,7 +20,7 @@ export function command(name: string, options?: CommandOptions) {
     const f = isMethod ? cls[methodName] : cls;
     const opts: CommandOptions = {};
 
-    ['range', 'nargs'].forEach(option => {
+    ['range', 'nargs'].forEach((option: keyof CommandOptions) => {
       if (options && typeof options[option] !== 'undefined') {
         opts[option] = options[option];
       }

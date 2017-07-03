@@ -1,9 +1,13 @@
 loaded = [] instanceof Array;
 // globals = global
 required = require('./fixture');
-// console.log('ahh, silence')
 
-const { Plugin, Function, Autocmd, Command } = require('../../../../../../lib');
+const {
+  Plugin,
+  Function,
+  Autocmd,
+  Command,
+} = require('../../../../../../lib/plugin');
 
 @Plugin
 class Test {
@@ -13,7 +17,7 @@ class Test {
       throw new Error('no >:(');
     }
 
-    this.nvim.setCurrentLine('A line, for your troubles');
+    this.nvim.setLine('A line, for your troubles');
 
     return true;
   }

@@ -1,7 +1,11 @@
 import * as util from 'util';
 import { attach } from '../attach';
 import { logger } from '../utils/logger';
-import { loadPlugin } from './factory';
+import { loadPlugin, LoadPluginOptions } from './factory';
+
+export interface Response {
+  send(resp: any, is_error?: boolean): void;
+}
 
 export class Host {
   public loaded: any;
@@ -14,7 +18,7 @@ export class Host {
     this.handlePlugin = this.handlePlugin.bind(this);
   }
 
-  getPlugin(filename, options = null) {
+  getPlugin(filename: string, options: LoadPluginOptions = null) {
     const plugin =
       this.loaded[filename] || loadPlugin(filename, this.nvim, options);
 
@@ -26,7 +30,7 @@ export class Host {
   }
 
   // Route incoming request to a plugin
-  handlePlugin(method, args) {
+  handlePlugin(method: string, args: any[]) {
     return new Promise(async (resolve, reject) => {
       logger.debug('host.handlePlugin: ', method);
 
@@ -61,7 +65,7 @@ export class Host {
     });
   }
 
-  handleRequestSpecs(method, args, res) {
+  handleRequestSpecs(method: string, args: any[], res: Response) {
     const filename = args[0];
     logger.debug(`requested specs for ${filename}`);
     // Can return null if there is nothing defined in plugin
@@ -71,7 +75,7 @@ export class Host {
     logger.debug(`specs: ${util.inspect(specs)}`);
   }
 
-  async handler(method, args, res) {
+  async handler(method: string, args: any[], res: Response) {
     logger.debug('request received: ', method);
     // 'poll' and 'specs' are requests by neovim,
     // otherwise it will
@@ -94,7 +98,7 @@ export class Host {
     }
   }
 
-  async start({ proc }) {
+  async start({ proc }: { proc: NodeJS.Process }) {
     // stdio is reversed since it's from the perspective of Neovim
     logger.debug('host.start');
     const nvim = attach({ reader: proc.stdin, writer: proc.stdout });

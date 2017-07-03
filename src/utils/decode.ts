@@ -1,9 +1,9 @@
-import * as Session from 'msgpack5rpc';
 import * as traverse from 'traverse';
+import Session = require('msgpack5rpc');
 
-export function decode(obj) {
+export function decode(obj: any) {
   traverse(obj).forEach(function traverseItemFunc(item) {
-    if (item instanceof Session) {
+    if (item instanceof (<any>Session)) {
       this.update(item, true);
     } else if (Buffer.isBuffer(item)) {
       try {
