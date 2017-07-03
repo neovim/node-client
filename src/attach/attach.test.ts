@@ -86,19 +86,19 @@ describe('Nvim Promise API', () => {
     await nvim.command('vsp');
     await nvim.command('vsp');
     await nvim.command('vsp');
-    const windows = await nvim.listWins();
+    const windows = await nvim.windows;
 
     expect(windows.length).toEqual(4);
     expect(windows[0] instanceof nvim.Window).toEqual(true);
     expect(windows[1] instanceof nvim.Window).toEqual(true);
 
-    await nvim.setCurrentWin(windows[2]);
-    const win = await nvim.getCurrentWin();
+    await nvim.setWindow(windows[2]);
+    const win = await nvim.window;
 
     expect(win).not.toEqual(windows[0]);
     expect(win).toEqual(windows[2]);
 
-    const buf = await nvim.getCurrentBuf();
+    const buf = await nvim.buffer;
     expect(buf instanceof nvim.Buffer).toEqual(true);
 
     const lines = await buf.getLines({ start: 0, end: -1 });
