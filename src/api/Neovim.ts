@@ -64,20 +64,34 @@ export class Neovim extends BaseApi {
 
   /** Get list of all windows */
   get windows(): Promise<Window[]> {
-    return this.request(`${this.prefix}list_wins`);
+    return this.getWindows();
   }
 
   /** Get current window */
   get window(): AsyncWindow {
+    return this.getWindow();
+  }
+
+  /** Set current window */
+  set window(win: AsyncWindow) {
+    this.setWindow(win);
+  }
+
+  /** Get list of all windows */
+  getWindows(): Promise<Window[]> {
+    return this.request(`${this.prefix}list_wins`);
+  }
+
+  /** Get current window */
+  getWindow(): AsyncWindow {
     return createChainableApi.call(this, 'Window', Window, () =>
       this.request(`${this.prefix}get_current_win`)
     );
   }
 
-  /** Set current window */
-  set window(win: AsyncWindow) {
+  setWindow(win: Window) {
     // Throw error if win is not instance of Window?
-    this.request(`${this.prefix}set_current_win`, [win]);
+    return this.request(`${this.prefix}set_current_win`, [win]);
   }
 
   /** Get list of all runtime paths */
@@ -92,12 +106,24 @@ export class Neovim extends BaseApi {
 
   /** Get current line. Always returns a Promise. */
   get line(): string | Promise<string> {
-    return this.request(`${this.prefix}get_current_line`);
+    return this.getLine();
   }
 
   /** Set current line */
   set line(line: string | Promise<string>) {
-    this.request(`${this.prefix}set_current_line`, [line]);
+    // Doing this to satisfy TS requirement that get/setters have to be same type
+    if (typeof line === 'string') {
+      this.setLine(line);
+    }
+  }
+
+  getLine(): Promise<string> {
+    return this.request(`${this.prefix}get_current_line`);
+  }
+
+  /** Set current line */
+  setLine(line: string): Promise<any> {
+    return this.request(`${this.prefix}set_current_line`, [line]);
   }
 
   /** Gets current mode */
