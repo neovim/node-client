@@ -29,3 +29,9 @@ test:
     - yarn test -- --coverage
   post:
     - codecov
+
+notify:
+  webhooks:
+    # A list of hook hashes, containing the url field
+    # gitter hook
+    - url: https://webhooks.gitter.im/e/3b41f8ca9bc284d73ce0
