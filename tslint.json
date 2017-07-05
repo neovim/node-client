@@ -21,6 +21,7 @@
       true,
       "functions"
     ],
+    "no-unused-variable": true,
     "no-internal-module": true,
     "no-trailing-whitespace": true,
     "no-var-keyword": false,
