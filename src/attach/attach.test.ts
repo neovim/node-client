@@ -95,8 +95,8 @@ describe('Nvim Promise API', () => {
     await nvim.setWindow(windows[2]);
     const win = await nvim.window;
 
-    expect(win).not.toEqual(windows[0]);
-    expect(win).toEqual(windows[2]);
+    expect(win.equals(windows[0])).toBe(false);
+    expect(win.equals(windows[2])).toBe(true);
 
     const buf = await nvim.buffer;
     expect(buf instanceof nvim.Buffer).toEqual(true);

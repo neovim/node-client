@@ -1,4 +1,5 @@
 import { BaseApi } from './Base';
+import { ExtType, Metadata } from './types';
 
 export interface BufferSetLines {
   start?: number;
@@ -23,6 +24,8 @@ export interface BufferClearHighlight {
 export interface AsyncBuffer extends Buffer, Promise<Buffer> {}
 
 export class Buffer extends BaseApi {
+  public prefix: string = Metadata[ExtType.Buffer].prefix;
+
   /** Total number of lines in buffer */
   get length(): Promise<number> {
     return this.request(`${this.prefix}line_count`, [this]);

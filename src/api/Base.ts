@@ -1,11 +1,11 @@
 import { EventEmitter } from 'events';
+
+import { Transport } from '../utils/transport';
 import { logger as loggerModule, ILogger } from '../utils/logger';
-import { decode } from '../utils/decode';
 import { VimValue } from '../types/VimValue';
-import Session = require('msgpack5rpc');
 
 export type BaseConstructorOptions = {
-  session: Session;
+  session: Transport;
   logger?: ILogger;
   data?: Buffer;
   metadata?: any;
@@ -14,26 +14,21 @@ export type BaseConstructorOptions = {
 // Instead of dealing with multiple inheritance (or lackof), just extend EE
 // Only the Neovim API class should use EE though
 export class BaseApi extends EventEmitter {
-  protected _session: Session;
-  protected _data: Buffer; // Node Buffer
-  protected _decode: Function;
+  protected _session: Transport;
   protected _isReady: Promise<boolean>;
   protected prefix: string;
   public logger: ILogger;
+  public _data: Buffer; // Node Buffer
 
   constructor({ session, data, logger, metadata }: BaseConstructorOptions) {
     super();
 
     this._session = session;
     this._data = data;
-    this._decode = decode;
     this.logger = logger || loggerModule;
 
     if (metadata) {
       Object.defineProperty(this, 'metadata', { value: metadata });
-      if (metadata.prefix) {
-        Object.defineProperty(this, 'prefix', { value: metadata.prefix });
-      }
     }
   }
 

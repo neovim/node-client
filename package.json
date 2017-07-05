@@ -36,7 +36,7 @@
   "typings": "./lib/index",
   "dependencies": {
     "lodash-es": "^4.17.4",
-    "msgpack5rpc": "^1.1.0",
+    "msgpack-lite": "^0.1.26",
     "traverse": "^0.6.6",
     "typescript": "^2.3.4",
     "winston": "^2.3.1"
@@ -44,6 +44,7 @@
   "devDependencies": {
     "@types/jest": "^20.0.1",
     "@types/lodash": "^4.14.66",
+    "@types/msgpack-lite": "^0.1.4",
     "@types/node": "^7.0.32",
     "@types/traverse": "^0.6.29",
     "@types/which": "^1.0.28",
