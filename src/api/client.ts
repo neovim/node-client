@@ -1,5 +1,5 @@
 /**
- * Handles attaching session
+ * Handles attaching transport
  */
 import { ILogger } from '../utils/logger';
 import { Transport } from '../utils/transport';
@@ -9,39 +9,40 @@ import { Neovim } from './Neovim';
 
 export class NeovimClient extends Neovim {
   protected requestQueue: Array<any>;
-  private _sessionAttached: boolean;
+  private transportAttached: boolean;
   private _channel_id: number;
 
-  constructor(options: { session?: Transport; logger?: ILogger } = {}) {
-    const session = options.session || new Transport();
+  constructor(options: { transport?: Transport; logger?: ILogger } = {}) {
+    const transport = options.transport || new Transport();
     const { logger } = options;
 
     // Neovim has no `data` or `metadata`
     super({
       logger,
-      session,
+      transport,
     });
 
     this.requestQueue = [];
-    this._sessionAttached = false;
+    this.transportAttached = false;
     this.handleRequest = this.handleRequest.bind(this);
     this.handleNotification = this.handleNotification.bind(this);
   }
 
-  attachSession({
+  /** Attaches msgpack to read/write streams **/
+  attach({
     reader,
     writer,
   }: {
     reader: NodeJS.ReadableStream;
     writer: NodeJS.WritableStream;
   }) {
-    this._session.attach(writer, reader);
-    this._sessionAttached = true;
-    this.startSession();
+    this.transport.attach(writer, reader);
+    this.transportAttached = true;
+    this.setupTransport();
   }
 
   get isApiReady(): boolean {
-    return this._sessionAttached && typeof this._channel_id !== 'undefined';
+    return this.transportAttached && typeof this._channel_id !== 'undefined';
   }
 
   get channelId(): Promise<number> {
@@ -87,20 +88,19 @@ export class NeovimClient extends Neovim {
     }
   }
 
-  // Listen and setup handlers for session
-  startSession() {
-    if (!this._sessionAttached) {
+  // Listen and setup handlers for transport
+  setupTransport() {
+    if (!this.transportAttached) {
       throw new Error('Not attached to input/output');
     }
 
-    this._session.on('request', this.handleRequest);
-    this._session.on('notification', this.handleNotification);
-    this._session.on('detach', () => {
-      // this.logger.debug('detached');
+    this.transport.on('request', this.handleRequest);
+    this.transport.on('notification', this.handleNotification);
+    this.transport.on('detach', () => {
       this.emit('disconnect');
-      this._session.removeAllListeners('request');
-      this._session.removeAllListeners('notification');
-      this._session.removeAllListeners('detach');
+      this.transport.removeAllListeners('request');
+      this.transport.removeAllListeners('notification');
+      this.transport.removeAllListeners('detach');
     });
 
     this._isReady = this.generateApi();
@@ -108,7 +108,7 @@ export class NeovimClient extends Neovim {
 
   requestApi(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this._session.request(
+      this.transport.request(
         'nvim_get_api_info',
         [],
         (err: Error, res: any[]) => {

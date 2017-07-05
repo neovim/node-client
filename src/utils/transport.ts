@@ -65,13 +65,13 @@ class Transport extends EventEmitter {
 
     Metadata.forEach(({ constructor }, id: number): void => {
       codec.addExtPacker(id, constructor, (obj: any) =>
-        msgpack.encode(obj._data)
+        msgpack.encode(obj.data)
       );
       codec.addExtUnpacker(
         id,
         data =>
           new constructor({
-            session: this,
+            transport: this,
             data: msgpack.decode(data),
           })
       );

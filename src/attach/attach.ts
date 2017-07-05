@@ -34,7 +34,7 @@ export function attach({
 
   if (writer && reader) {
     const neovim = new NeovimClient({ logger });
-    neovim.attachSession({
+    neovim.attach({
       writer,
       reader,
     });
