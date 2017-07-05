@@ -20,7 +20,7 @@ class Response {
     this.requestId = requestId;
   }
 
-  send(resp: any, isError?: boolean) {
+  send(resp: any, isError?: boolean): void {
     if (this.sent) {
       throw new Error(`Response to id ${this.requestId} already sent`);
     }
