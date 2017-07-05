@@ -1,14 +1,14 @@
+/**
+ * Some code borrowed from https://github.com/tarruda/node-msgpack5rpc
+ */
+
 import util from 'util';
 import { EventEmitter } from 'events';
 
 import * as msgpack from 'msgpack-lite';
 
 import { logger } from './logger';
-
 import { Metadata } from '../api/types';
-import { Buffer as NeovimBuffer } from '../api/Buffer';
-import { Window } from '../api/Window';
-import { Tabpage } from '../api/Tabpage';
 
 class Response {
   private requestId: number;
