@@ -108,7 +108,7 @@ function createSandbox(filename: string): ISandbox {
     console: {},
   });
 
-  defaults(sandbox);
+  defaults(sandbox, global);
 
   // Redirect console calls into logger
   Object.keys(console).forEach((k: keyof Console) => {
