@@ -6,7 +6,7 @@ import * as path from 'path';
 import { attach } from '../src/index';
 
 // eslint-disable-next-line
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
 
 describe('Node host', () => {
   const testdir = process.cwd();
