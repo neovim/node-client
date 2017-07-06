@@ -1,48 +1,48 @@
 /**
- * Handles attaching session
+ * Handles attaching transport
  */
-import Session = require('msgpack5rpc');
-import { decode } from '../utils/decode';
 import { ILogger } from '../utils/logger';
+import { Transport } from '../utils/transport';
 import { TYPES } from './helpers/types';
 import { VimValue } from '../types/VimValue';
 import { Neovim } from './Neovim';
 
 export class NeovimClient extends Neovim {
   protected requestQueue: Array<any>;
-  private _sessionAttached: boolean;
+  private transportAttached: boolean;
   private _channel_id: number;
 
-  constructor(options: { session?: Session; logger?: ILogger } = {}) {
-    const session = options.session || new Session([]);
+  constructor(options: { transport?: Transport; logger?: ILogger } = {}) {
+    const transport = options.transport || new Transport();
     const { logger } = options;
 
     // Neovim has no `data` or `metadata`
     super({
       logger,
-      session,
+      transport,
     });
 
     this.requestQueue = [];
-    this._sessionAttached = false;
+    this.transportAttached = false;
     this.handleRequest = this.handleRequest.bind(this);
     this.handleNotification = this.handleNotification.bind(this);
   }
 
-  attachSession({
+  /** Attaches msgpack to read/write streams **/
+  attach({
     reader,
     writer,
   }: {
     reader: NodeJS.ReadableStream;
     writer: NodeJS.WritableStream;
   }) {
-    this._session.attach(writer, reader);
-    this._sessionAttached = true;
-    this.startSession();
+    this.transport.attach(writer, reader);
+    this.transportAttached = true;
+    this.setupTransport();
   }
 
   get isApiReady(): boolean {
-    return this._sessionAttached && typeof this._channel_id !== 'undefined';
+    return this.transportAttached && typeof this._channel_id !== 'undefined';
   }
 
   get channelId(): Promise<number> {
@@ -69,7 +69,7 @@ export class NeovimClient extends Neovim {
         args: [method, args, resp, ...restArgs],
       });
     } else {
-      this.emit('request', decode(method), decode(args), resp);
+      this.emit('request', method, args, resp);
     }
   }
 
@@ -84,24 +84,23 @@ export class NeovimClient extends Neovim {
         args: [method, args, ...restArgs],
       });
     } else {
-      this.emit('notification', decode(method), decode(args));
+      this.emit('notification', method, args);
     }
   }
 
-  // Listen and setup handlers for session
-  startSession() {
-    if (!this._sessionAttached) {
+  // Listen and setup handlers for transport
+  setupTransport() {
+    if (!this.transportAttached) {
       throw new Error('Not attached to input/output');
     }
 
-    this._session.on('request', this.handleRequest);
-    this._session.on('notification', this.handleNotification);
-    this._session.on('detach', () => {
-      // this.logger.debug('detached');
+    this.transport.on('request', this.handleRequest);
+    this.transport.on('notification', this.handleNotification);
+    this.transport.on('detach', () => {
       this.emit('disconnect');
-      this._session.removeAllListeners('request');
-      this._session.removeAllListeners('notification');
-      this._session.removeAllListeners('detach');
+      this.transport.removeAllListeners('request');
+      this.transport.removeAllListeners('notification');
+      this.transport.removeAllListeners('detach');
     });
 
     this._isReady = this.generateApi();
@@ -109,7 +108,7 @@ export class NeovimClient extends Neovim {
 
   requestApi(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this._session.request(
+      this.transport.request(
         'nvim_get_api_info',
         [],
         (err: Error, res: any[]) => {
@@ -137,42 +136,16 @@ export class NeovimClient extends Neovim {
     if (results) {
       try {
         const [channelId, encodedMetadata] = results;
-        const metadata = decode(encodedMetadata);
-        const extTypes: any[] = [];
+        const metadata = encodedMetadata;
         // this.logger.debug(`$$$: ${metadata}`);
 
+        // Perform sanity check for metadata types
         Object.keys(metadata.types).forEach((name: string) => {
-          let ExtType: any;
-
-          // Generate a constructor function for each type in metadata.types
-          if (typeof TYPES[name] === 'undefined') {
-            this.logger.warn(`Class not found for ${name}`);
-          } else {
-            ExtType = TYPES[name];
-          }
-
           const metaDataForType = metadata.types[name];
-          // Collect the type information necessary for msgpack5 deserialization
-          // when it encounters the corresponding ext code.
-          extTypes.push({
-            constructor: ExtType,
-            code: metaDataForType.id,
-            decode: (data: Buffer) => {
-              if (ExtType) {
-                return new ExtType({
-                  session: this._session,
-                  data,
-                  metadata: metaDataForType,
-                  logger: this.logger,
-                });
-              }
-            },
-            encode: (obj: any) => obj._data,
-          });
+          // TODO: check `prefix` and `id`
         });
 
         this._channel_id = channelId;
-        this._session.addTypes(extTypes);
 
         // register the non-queueing handlers
         // dequeue any pending RPCs

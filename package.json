@@ -1,7 +1,7 @@
 {
   "name": "neovim",
   "description": "Neovim client API and neovim remote plugin provider",
-  "version": "3.2.7",
+  "version": "3.4.1-0",
   "homepage": "https://github.com/billyvg/node-client",
   "authors": [
     {
@@ -36,7 +36,7 @@
   "typings": "./lib/index",
   "dependencies": {
     "lodash-es": "^4.17.4",
-    "msgpack5rpc": "^1.1.0",
+    "msgpack-lite": "^0.1.26",
     "traverse": "^0.6.6",
     "typescript": "^2.3.4",
     "winston": "^2.3.1"
@@ -44,6 +44,7 @@
   "devDependencies": {
     "@types/jest": "^20.0.1",
     "@types/lodash": "^4.14.66",
+    "@types/msgpack-lite": "^0.1.4",
     "@types/node": "^7.0.32",
     "@types/traverse": "^0.6.29",
     "@types/which": "^1.0.28",
@@ -62,7 +63,7 @@
   "scripts": {
     "prepublishOnly": "npm run build",
     "test": "npm run build && jest --runInBand",
-    "test-staged": "jest --bail --findRelatedTests",
+    "test-staged": "jest --bail --no-cache --findRelatedTests",
     "prep-integration-test": "(cd __tests__/integration/rplugin/node/test && npm install)",
     "precommit": "lint-staged",
     "build": "tsc -p tsconfig.json || true",
@@ -72,7 +73,7 @@
     "*.{ts,js}": [
       "prettier --parser typescript --single-quote --trailing-comma es5 --write",
       "tslint --fix",
-      "npm run test-staged -- --no-cache"
+      "npm run test-staged"
     ]
   },
   "jest": {

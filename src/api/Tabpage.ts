@@ -1,10 +1,13 @@
 import { BaseApi } from './Base';
+import { ExtType, Metadata } from './types';
 import { createChainableApi } from './helpers/createChainableApi';
 import { Window, AsyncWindow } from './Window';
 
 export interface AsyncTabpage extends Tabpage, Promise<Tabpage> {}
 
 export class Tabpage extends BaseApi {
+  public prefix: string = Metadata[ExtType.Tabpage].prefix;
+
   /** Returns all windows of tabpage */
   get windows(): Promise<Window[]> {
     return this.request(`${this.prefix}list_wins`, [this]);

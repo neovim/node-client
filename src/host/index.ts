@@ -4,7 +4,7 @@ import { logger } from '../utils/logger';
 import { loadPlugin, LoadPluginOptions } from './factory';
 
 export interface Response {
-  send(resp: any, is_error?: boolean): void;
+  send(resp: any, isError?: boolean): void;
 }
 
 export class Host {
@@ -22,6 +22,7 @@ export class Host {
     const plugin =
       this.loaded[filename] || loadPlugin(filename, this.nvim, options);
 
+    logger.debug('getPlugin.shouldCache', plugin && plugin.shouldCache);
     if (plugin && plugin.shouldCache) {
       this.loaded[filename] = plugin;
     }

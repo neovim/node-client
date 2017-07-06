@@ -17,16 +17,10 @@ export type UiAttachOptions = {
  * Neovim API
  */
 export class Neovim extends BaseApi {
-  protected prefix: string = '';
+  protected prefix: string = 'nvim_';
   public Buffer = Buffer;
   public Window = Window;
   public Tabpage = Tabpage;
-
-  constructor(options: BaseConstructorOptions) {
-    super(options);
-
-    this.prefix = 'nvim_';
-  }
 
   /** Get list of all buffers */
   get buffers(): Promise<Buffer[]> {

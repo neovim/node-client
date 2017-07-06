@@ -1,4 +1,5 @@
 import { BaseApi } from './Base';
+import { ExtType, Metadata } from './types';
 
 export interface BufferSetLines {
   start?: number;
@@ -23,6 +24,8 @@ export interface BufferClearHighlight {
 export interface AsyncBuffer extends Buffer, Promise<Buffer> {}
 
 export class Buffer extends BaseApi {
+  public prefix: string = Metadata[ExtType.Buffer].prefix;
+
   /** Total number of lines in buffer */
   get length(): Promise<number> {
     return this.request(`${this.prefix}line_count`, [this]);
@@ -126,7 +129,7 @@ export class Buffer extends BaseApi {
 
   /** Get mark position given mark name */
   mark(name: string): Promise<[number, number]> {
-    return this.request(`${this.prefix}get_mark`, [name]);
+    return this.request(`${this.prefix}get_mark`, [this, name]);
   }
 
   // range(start, end) {
@@ -158,24 +161,25 @@ export class Buffer extends BaseApi {
     initialization, and later asynchronously add and clear
     highlights in response to buffer changes. */
   addHighlight({
-    hlGroup,
+    hlGroup: _hlGroup,
     line,
     colStart: _start,
     colEnd: _end,
     srcId: _srcId,
     async: _isAsync,
   }: BufferHighlight): Promise<number> {
+    const hlGroup = typeof _hlGroup !== 'undefined' ? _hlGroup : '';
     const colEnd = typeof _end !== 'undefined' ? _end : -1;
     const colStart = typeof _start !== 'undefined' ? _start : -0;
     const srcId = typeof _srcId !== 'undefined' ? _srcId : -1;
     const isAsync = _isAsync || typeof srcId !== 'undefined';
     return this.request(`${this.prefix}add_highlight`, [
+      this,
       srcId,
       hlGroup,
       line,
       colStart,
       colEnd,
-      isAsync,
     ]);
   }
 
@@ -184,19 +188,25 @@ export class Buffer extends BaseApi {
 
   To clear a source group in the entire buffer, pass in 1 and -1
   to lineStart and lineEnd respectively. */
-  clearHighlight(
-    { srcId, lineStart, lineEnd, async }: BufferClearHighlight = {
+  clearHighlight(args: BufferClearHighlight = {}) {
+    const defaults = {
       srcId: -1,
       lineStart: 0,
       lineEnd: -1,
       async: true,
-    }
-  ) {
+    };
+
+    const { srcId, lineStart, lineEnd, async } = Object.assign(
+      {},
+      defaults,
+      args
+    );
+
     return this.request(`${this.prefix}clear_highlight`, [
+      this,
       srcId,
       lineStart,
       lineEnd,
-      async,
     ]);
   }
 }
