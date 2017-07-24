@@ -1,4 +1,4 @@
-# neovim-client [![Build Status](https://circleci.com/gh/billyvg/node-client/tree/master.svg?style=shield)](https://circleci.com/gh/billyvg/node-client) [![codecov](https://codecov.io/gh/billyvg/node-client/branch/master/graph/badge.svg)](https://codecov.io/gh/billyvg/node-client)
+# neovim-client [![Build Status](https://circleci.com/gh/neovim/node-client/tree/master.svg?style=shield)](https://circleci.com/gh/neovim/node-client) [![codecov](https://codecov.io/gh/neovim/node-client/branch/master/graph/badge.svg)](https://codecov.io/gh/neovim/node-client) [![npm](https://img.shields.io/npm/v/neovim.svg)]()
 
 Currently tested for node >= 6
 
