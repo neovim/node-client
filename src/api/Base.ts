@@ -76,7 +76,7 @@ export class BaseApi extends EventEmitter {
     return this.request(`${this.prefix}get_var`, args).then(
       res => res,
       err => {
-        if (err && err.message && err.message.includes('Key not found')) {
+        if (err && err.message && err.message.includes('not found')) {
           return null;
         }
         throw err;
