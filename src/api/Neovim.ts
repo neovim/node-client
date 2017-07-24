@@ -214,6 +214,10 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}out_write`, [str]);
   }
 
+  outWriteLine(str: string): Promise<any> {
+    return this.outWrite(`${str}\n`);
+  }
+
   /** Write to error buffer */
   errWrite(str: string): Promise<any> {
     return this.request(`${this.prefix}err_write`, [str]);
