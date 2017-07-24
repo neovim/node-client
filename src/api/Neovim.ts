@@ -166,8 +166,8 @@ export class Neovim extends BaseApi {
   }
 
   /** Runs a vim command */
-  command(arg: string) {
-    this.request(`${this.prefix}command`, [arg]);
+  command(arg: string): Promise<any> {
+    return this.request(`${this.prefix}command`, [arg]);
   }
 
   /** Runs a command and returns output (synchronous?) */

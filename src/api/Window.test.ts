@@ -87,7 +87,7 @@ describe('Window API', () => {
 
     it('has correct height after ":split"', async () => {
       const currentHeight = await win.height;
-      nvim.command('split');
+      await nvim.command('split');
       // XXX: Not sure if this is correct, but guessing after a split we lose a row
       // due to status bar?
       expect(await win.height).toEqual(Math.floor(currentHeight / 2) - 1);
@@ -95,13 +95,13 @@ describe('Window API', () => {
       win.height = 5;
       expect(await win.height).toEqual(5);
 
-      nvim.command('q');
+      await nvim.command('q');
       expect(await win.height).toEqual(currentHeight);
     });
 
     it('has correct width after ":vsplit"', async () => {
       const width = await win.width;
-      nvim.command('vsplit');
+      await nvim.command('vsplit');
       // XXX: Not sure if this is correct, but guessing after a vsplit we lose a col
       // to gutter?
       expect(await win.width).toEqual(Math.floor(width / 2) - 1);
@@ -109,7 +109,7 @@ describe('Window API', () => {
       win.width = 10;
       expect(await win.width).toEqual(10);
 
-      nvim.command('q');
+      await nvim.command('q');
       expect(await win.width).toEqual(width);
     });
 

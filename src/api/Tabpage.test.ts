@@ -88,7 +88,7 @@ describe('Tabpage API', () => {
       expect(windows.length).toBe(1);
 
       // Add a new window
-      nvim.command('vsplit');
+      await nvim.command('vsplit');
 
       const newWindows = await tabpage.windows;
       expect(newWindows.length).toBe(2);
