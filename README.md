@@ -3,10 +3,10 @@
 WIP: Currently only works on node >= 7
 
 ## Installation
-Install [node-host](https://github.com/neovim/node-host/tree/next) using your vim plugin manager. Then install the `neovim` package globally using `npm`.
+Install [node-host](https://github.com/neovim/node-host) using your vim plugin manager. Then install the `neovim` package globally using `npm`.
 
 ```sh
-npm install -g neovim@next
+npm install -g neovim
 ```
 
 ## Usage
@@ -22,34 +22,36 @@ const attach = require('neovim').attach;
 const nvim_proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {});
 
 // Attach to neovim process
-const nvim = await attach({ proc: nvim_proc });
-nvim.command('vsp');
-nvim.command('vsp');
-nvim.command('vsp');
-const windows = await nvim.windows;
+(async function() {
+  const nvim = await attach({ proc: nvim_proc });
+  nvim.command('vsp');
+  nvim.command('vsp');
+  nvim.command('vsp');
+  const windows = await nvim.windows;
 
-// expect(windows.length).toEqual(4);
-// expect(windows[0] instanceof nvim.Window).toEqual(true);
-// expect(windows[1] instanceof nvim.Window).toEqual(true);
+  // expect(windows.length).toEqual(4);
+  // expect(windows[0] instanceof nvim.Window).toEqual(true);
+  // expect(windows[1] instanceof nvim.Window).toEqual(true);
 
-nvim.window = windows[2];
-const win = await nvim.window;
+  nvim.window = windows[2];
+  const win = await nvim.window;
 
-// expect(win).not.toEqual(windows[0]);
-// expect(win).toEqual(windows[2]);
+  // expect(win).not.toEqual(windows[0]);
+  // expect(win).toEqual(windows[2]);
 
-const buf = await nvim.buffer;
-// expect(buf instanceof nvim.Buffer).toEqual(true);
+  const buf = await nvim.buffer;
+  // expect(buf instanceof nvim.Buffer).toEqual(true);
 
-const lines = await buf.lines;
-// expect(lines).toEqual(['']);
+  const lines = await buf.lines;
+  // expect(lines).toEqual(['']);
 
-await buf.replace(['line1', 'line2'], 0);
-const newLines = await buf.lines;
-// expect(newLines).toEqual(['line1', 'line2']);
+  await buf.replace(['line1', 'line2'], 0);
+  const newLines = await buf.lines;
+  // expect(newLines).toEqual(['line1', 'line2']);
 
-nvim.quit();
-nvim_proc.disconnect();
+  nvim.quit();
+  nvim_proc.disconnect();
+})();
 ```
 
 ## Writing a Plugin
