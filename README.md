@@ -1,6 +1,6 @@
 # neovim-client [![Build Status](https://circleci.com/gh/billyvg/node-client/tree/master.svg?style=shield)](https://circleci.com/gh/billyvg/node-client) [![codecov](https://codecov.io/gh/billyvg/node-client/branch/master/graph/badge.svg)](https://codecov.io/gh/billyvg/node-client)
 
-WIP: Currently only works on node >= 7
+Currently tested for node >= 6
 
 ## Installation
 Install [node-host](https://github.com/neovim/node-host) using your vim plugin manager. Then install the `neovim` package globally using `npm`.
