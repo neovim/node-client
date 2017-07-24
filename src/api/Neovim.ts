@@ -150,12 +150,13 @@ export class Neovim extends BaseApi {
   }
 
   /** Call a vim function */
-  call(fname: string, args: Array<VimValue> = []) {
-    return this.request(`${this.prefix}call_function`, [fname, args]);
+  call(fname: string, args: VimValue | Array<VimValue> = []) {
+    const _args = Array.isArray(args) ? args : [args];
+    return this.request(`${this.prefix}call_function`, [fname, _args]);
   }
 
   /** Alias for `call` */
-  callFunction(fname: string, args: Array<any> = []) {
+  callFunction(fname: string, args: VimValue | Array<VimValue> = []) {
     return this.call(fname, args);
   }
 
