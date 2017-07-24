@@ -1,7 +1,7 @@
 {
   "name": "neovim",
   "description": "Neovim client API and neovim remote plugin provider",
-  "version": "3.4.3",
+  "version": "3.4.4",
   "homepage": "https://github.com/billyvg/node-client",
   "authors": [
     {
