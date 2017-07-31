@@ -35,7 +35,7 @@
   "main": "./lib/index",
   "typings": "./lib/index",
   "dependencies": {
-    "lodash-es": "^4.17.4",
+    "lodash": "^4.17.4",
     "msgpack-lite": "^0.1.26",
     "traverse": "^0.6.6",
     "typescript": "^2.3.4",
