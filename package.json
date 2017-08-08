@@ -2,7 +2,7 @@
   "name": "neovim",
   "description": "Neovim client API and neovim remote plugin provider",
   "version": "3.4.5",
-  "homepage": "https://github.com/billyvg/node-client",
+  "homepage": "https://github.com/neovim/node-client",
   "authors": [
     {
       "name": "Billy Vong",
@@ -19,10 +19,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/billyvg/node-client"
+    "url": "https://github.com/neovim/node-client"
   },
   "bugs": {
-    "url": "https://github.com/billyvg/node-client/issues"
+    "url": "https://github.com/neovim/node-client/issues"
   },
   "license": "MIT",
   "bin": {
