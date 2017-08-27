@@ -66,7 +66,7 @@ The plugin host creates an instance of the plugin and creates a mapping of the h
 `console` has been replaced by a `winston` interface and `console.log` will call `winston.info`.
 
 ```javascript
-import { Plugin, Function, AutoCommand, Command } from 'neovim/plugin';
+import { Plugin, Function, AutoCommand, Command } from 'neovim';
 
 // If `Plugin` decorator can be called with options
 @Plugin({ dev: true })
