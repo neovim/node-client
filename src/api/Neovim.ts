@@ -161,7 +161,7 @@ export class Neovim extends BaseApi {
   }
 
   /** Call Atomic calls */
-  callAtomic(calls: Array<any>): Promise<[Array<any>, boolean]> {
+  callAtomic(calls: Array<VimValue>): Promise<[Array<any>, boolean]> {
     return this.request(`${this.prefix}call_atomic`, [calls]);
   }
 
