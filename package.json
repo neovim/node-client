@@ -38,7 +38,6 @@
     "lodash": "^4.17.4",
     "msgpack-lite": "^0.1.26",
     "traverse": "^0.6.6",
-    "typescript": "^2.3.4",
     "winston": "^2.3.1"
   },
   "devDependencies": {
@@ -58,6 +57,7 @@
     "tslint": "^5.4.3",
     "tslint-config-prettier": "^1.1.0",
     "tslint-eslint-rules": "^4.1.1",
+    "typescript": "^2.3.4",
     "which": "^1.2.14"
   },
   "scripts": {
