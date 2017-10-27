@@ -89,6 +89,20 @@ describe('Neovim API', () => {
       expect(await nvim.getColorByName('white')).toBe(16777215);
     });
 
+    it('can get highlight by name or id', async () => {});
+
+    it('can run lua', async () => {
+      expect(
+        await nvim.lua('function test(a) return a end return test(...)', 1)
+      ).toBe(1);
+
+      expect(
+        await nvim.lua('function test(a) return a end return test(...)', [
+          'foo',
+        ])
+      ).toBe('foo');
+    });
+
     it('get/set/delete current line', async () => {
       const line = await nvim.line;
       expect(line).toBe('');

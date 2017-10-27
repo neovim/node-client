@@ -120,6 +120,11 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}set_current_line`, [line]);
   }
 
+  /** Gets keymap */
+  getKeymap(mode: string): Promise<Array<object>> {
+    return this.request(`${this.prefix}get_keymap`, [mode]);
+  }
+
   /** Gets current mode */
   get mode(): Promise<{ mode: string; blocking: boolean }> {
     return this.request(`${this.prefix}get_mode`);
@@ -135,6 +140,18 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}get_color_by_name`, [name]);
   }
 
+  /** Get highlight by name or id */
+  getHighlight(
+    nameOrId: string | number,
+    isRgb: boolean
+  ): Promise<object> | void {
+    let functionName = typeof nameOrId === 'string' ? 'by_name' : 'by_id';
+    return this.request(`${this.prefix}get_hl_${functionName}`, [
+      nameOrId,
+      isRgb,
+    ]);
+  }
+
   /** Delete current line in buffer */
   deleteCurrentLine(): Promise<any> {
     return this.request(`${this.prefix}del_current_line`);
@@ -147,6 +164,14 @@ export class Neovim extends BaseApi {
    **/
   eval(expr: string): Promise<VimValue> {
     return this.request(`${this.prefix}eval`, [expr]);
+  }
+
+  /**
+   * Executes lua, it's possible neovim client does not support this
+   */
+  lua(code: string, args: Array<VimValue> = []): Promise<object> {
+    const _args = Array.isArray(args) ? args : [args];
+    return this.request(`${this.prefix}execute_lua`, [code, _args]);
   }
 
   /** Call a vim function */
