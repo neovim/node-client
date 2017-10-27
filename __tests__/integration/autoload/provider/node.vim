@@ -25,6 +25,11 @@ function! provider#node#Prog()
 endfunction
 
 function! provider#node#Require(host) abort
+  if s:err != ''
+    echoerr s:err
+    return
+  endif
+
   let args = ['node', provider#node#Prog()]
   let node_plugins = remote#host#PluginsForHost(a:host.name)
 
@@ -47,7 +52,7 @@ function! provider#node#Require(host) abort
   throw remote#host#LoadErrorForHost(a:host.orig_name, '$NVIM_NODE_LOG_FILE')
 endfunction
 
-function! provider#node#Call(method, args)
+function! provider#node#Call(method, args) abort
   if s:err != ''
     echoerr s:err
     return
@@ -72,7 +77,7 @@ let s:err = ''
 let s:prog = provider#node#Detect()
 
 if empty(s:prog)
-  let s:err = 'Cannot find the neovim-client node package. Try :CheckHealth'
+  let s:err = 'Cannot find the neovim-client node package. Try :CheckHealth. Did you forget `yarn link`?'
 endif
 
 " call remote#host#RegisterClone('legacy-node-provider', 'node')
