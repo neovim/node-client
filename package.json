@@ -66,7 +66,7 @@
     "test-staged": "jest --bail --no-cache --findRelatedTests",
     "prep-integration-test": "(cd __tests__/integration/rplugin/node/test && npm install)",
     "precommit": "lint-staged",
-    "build": "tsc -p tsconfig.json || true",
+    "build": "tsc -p tsconfig.json",
     "watch": "tsc -p tsconfig.json --watch true"
   },
   "lint-staged": {
