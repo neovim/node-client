@@ -4,8 +4,7 @@
   "description": "A test fixture",
   "main": "lib/index.js",
   "scripts": {
-    "build": "babel src --out-dir lib",
-    "test": "gulp test"
+    "build": "babel src --out-dir lib"
   },
   "author": "",
   "license": "MIT",
