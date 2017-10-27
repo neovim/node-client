@@ -1,3 +1,7 @@
+import { BaseApi } from '../Base';
+
+const baseProperties = Object.getOwnPropertyNames(BaseApi.prototype);
+
 export function createChainableApi(
   name: string,
   Type: any,
@@ -17,7 +21,10 @@ export function createChainableApi(
 
   // TODO: Optimize this
   // Define properties on the promise for devtools
-  Object.getOwnPropertyNames(Type.prototype).forEach(key => {
+  [
+    ...baseProperties,
+    ...Object.getOwnPropertyNames(Type.prototype),
+  ].forEach(key => {
     Object.defineProperty(this[`${name}Promise`], key, {
       enumerable: true,
       writable: true,
@@ -32,14 +39,15 @@ export function createChainableApi(
       // If it is, then we return a promise of results of the call on that API object
       // i.e. await this.buffer.name will return a promise of buffer name
 
-      const isOnPrototype = Object.prototype.hasOwnProperty.call(
-        Type.prototype,
-        prop
-      );
+      const isOnPrototype =
+        Object.prototype.hasOwnProperty.call(Type.prototype, prop) ||
+        Object.prototype.hasOwnProperty.call(BaseApi.prototype, prop);
 
       // Inspect the property descriptor to see if it is a getter or setter
       // Otherwise when we check if property is a method, it will call the getter
-      const descriptor = Object.getOwnPropertyDescriptor(Type.prototype, prop);
+      const descriptor =
+        Object.getOwnPropertyDescriptor(Type.prototype, prop) ||
+        Object.getOwnPropertyDescriptor(BaseApi.prototype, prop);
       const isGetter =
         descriptor &&
         (typeof descriptor.get !== 'undefined' ||
@@ -51,7 +59,10 @@ export function createChainableApi(
         if (
           isOnPrototype &&
           !isGetter &&
-          typeof Type.prototype[prop] === 'function'
+          ((prop in Type.prototype &&
+            typeof Type.prototype[prop] === 'function') ||
+            (prop in BaseApi.prototype &&
+              typeof BaseApi.prototype[prop] === 'function'))
         ) {
           // If property is a method on Type, we need to invoke it with captured args
           return (...args: any[]) =>

@@ -169,6 +169,18 @@ describe.only('Buffer API', () => {
       });
     });
 
+    it('can chain calls from Base class i.e. getOption', async () => {
+      const initial = await nvim.buffer.getOption('copyindent');
+      nvim.buffer.setOption('copyindent', true);
+      expect(await nvim.buffer.getOption('copyindent')).toBe(true);
+      nvim.buffer.setOption('copyindent', false);
+      expect(await nvim.buffer.getOption('copyindent')).toBe(false);
+
+      // Restore option
+      nvim.buffer.setOption('copyindent', initial);
+      expect(await nvim.buffer.getOption('copyindent')).toBe(initial);
+    });
+
     it('sets current buffer name to "bar.js" using api chaining', async () => {
       nvim.buffer.name = 'bar.js';
       expect(await nvim.buffer.name).toMatch('bar.js');

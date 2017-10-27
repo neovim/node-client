@@ -137,6 +137,11 @@ export class Buffer extends BaseApi {
   // return Range(this, start, end)
   // }
 
+  /** Gets keymap */
+  getKeymap(mode: string): Promise<Array<object>> {
+    return this.request(`${this.prefix}get_keymap`, [this, mode]);
+  }
+
   /**
     Adds a highlight to buffer.
 
