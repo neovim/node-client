@@ -1,26 +1,28 @@
 import * as winston from 'winston';
 
-let logger;
+let logger: winston.LoggerInstance;
 
 (<any>winston).level = process.env.NVIM_NODE_LOG_LEVEL || 'debug';
+let transports = [];
 
 if (process.env.NVIM_NODE_LOG_FILE) {
-  logger = new winston.Logger({
-    transports: [
-      new winston.transports.File({
-        filename: process.env.NVIM_NODE_LOG_FILE,
-        level: winston.level,
-        json: false,
-      }),
-    ],
-  });
-} else {
-  if (!process.env.ALLOW_CONSOLE) {
-    // Remove Console transport
-    winston.remove(winston.transports.Console);
-  }
-  logger = winston;
+  transports.push(
+    new winston.transports.File({
+      filename: process.env.NVIM_NODE_LOG_FILE,
+      level: winston.level,
+      json: false,
+    })
+  );
 }
 
-export type ILogger = winston.Winston;
+if (process.env.ALLOW_CONSOLE) {
+  transports.push(winston.transports.Console);
+}
+
+logger = new winston.Logger({
+  level: process.env.NVIM_NODE_LOG_LEVEL || 'debug',
+  transports,
+});
+
+export type ILogger = winston.LoggerInstance;
 export { logger };
