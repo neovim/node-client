@@ -6,7 +6,8 @@ os: osx
 osx_image: xcode9.1
 
 install:
-  - brew install neovim
+  - brew update
+  - HOMEBREW_NO_AUTO_UPDATE=1 brew install neovim
   - nvim --version
   - npm install -g yarn
   - yarn global add codecov
