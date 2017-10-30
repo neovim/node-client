@@ -1,0 +1,32 @@
+language: node_js
+node_js: stable
+
+# Use macOS 10.12: https://docs.travis-ci.com/user/languages/objective-c/
+os: osx
+osx_image: xcode9.1
+
+install:
+  - brew install neovim
+  - nvim --version
+  - npm install -g yarn
+  - yarn global add codecov
+
+script:
+  - export PATH="${PATH}:node_modules/.bin"
+  - export NVIM_NODE_LOG_LEVEL=debug
+  - yarn
+  - yarn link
+  - yarn run prep-integration-test
+  - yarn test -- --coverage
+
+after_success:
+  - codecov
+
+cache:
+  directories:
+    - $HOME/.cache/yarn
+
+notifications:
+  email:
+    on_success: never # for now
+    on_failure: never # for now
