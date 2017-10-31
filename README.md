@@ -1,6 +1,10 @@
-# neovim-client [![Build Status](https://circleci.com/gh/neovim/node-client/tree/master.svg?style=shield)](https://circleci.com/gh/neovim/node-client) [![codecov](https://codecov.io/gh/neovim/node-client/branch/master/graph/badge.svg)](https://codecov.io/gh/neovim/node-client) [![npm](https://img.shields.io/npm/v/neovim.svg)]()
+# neovim-client
 
-Currently tested for node >= 6
+| CI (Linux, macOS)                       | Coverage                               | npm                             |
+|-----------------------------------------|----------------------------------------|---------------------------------|
+| [![Build Status Badge][]][Build Status] | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] |
+
+Currently tested for node >= 8
 
 ## Installation
 Install [node-host](https://github.com/neovim/node-host) using your vim plugin manager. Then install the `neovim` package globally using `npm`.
@@ -137,3 +141,10 @@ The tests and `scripts` can be consulted for more examples.
 * [@mhartington](https://github.com/mhartington) for TypeScript rewrite
 * [@fritzy](https://github.com/fritzy) for transferring over the npm package repo `neovim`!
 * [@rhysd](https://github.com/rhysd), [@tarruda](https://github.com/tarruda), [@nhynes](https://github.com/nhynes) on work for the original `node-client`
+
+[Build Status Badge]: https://travis-ci.org/neovim/node-client.svg?branch=master
+[Build Status]: https://travis-ci.org/neovim/node-client
+[Coverage Badge]: https://codecov.io/gh/neovim/node-client/branch/master/graph/badge.svg
+[Coverage Report]: https://codecov.io/gh/neovim/node-client
+[npm version]: https://img.shields.io/npm/v/neovim.svg
+[npm package]: https://www.npmjs.com/package/neovim
