@@ -2,13 +2,24 @@ language: node_js
 node_js: stable
 
 # Use macOS 10.12: https://docs.travis-ci.com/user/languages/objective-c/
-os: osx
+os:
+  - osx
+  - linux
 osx_image: xcode9.1
+dist: trusty
 
 install:
-  - curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim-macos.tar.gz
-  - tar xzf nvim-macos.tar.gz
-  - export PATH="${PATH}:node_modules/.bin:$(pwd)/nvim-osx64/bin"
+  - |
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+      curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim-macos.tar.gz
+      tar xzf nvim-macos.tar.gz
+      export PATH="${PATH}:node_modules/.bin:$(pwd)/nvim-osx64/bin"
+    else
+      curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
+      tar xzf nvim-linux64.tar.gz
+      export PATH="${PATH}:node_modules/.bin:$(pwd)/nvim-linux64/bin"
+    fi
+  - echo $PATH
   - nvim --version
   - npm install -g yarn
   - yarn global add codecov
