@@ -1,8 +1,8 @@
 # neovim-client
 
-| Linux | macOS | Coverage | npm |
-|-------|-------|----------|-----|
-| [![Linux Build Status Badge][]][Linux Build Status] | [![macOS Build Status Badge][]][macOS Build Status] | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] |
+| CI (Linux, macOS)                       | Coverage                               | npm                             |
+|-----------------------------------------|----------------------------------------|---------------------------------|
+| [![Build Status Badge][]][Build Status] | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] |
 
 Currently tested for node >= 8
 
@@ -142,10 +142,8 @@ The tests and `scripts` can be consulted for more examples.
 * [@fritzy](https://github.com/fritzy) for transferring over the npm package repo `neovim`!
 * [@rhysd](https://github.com/rhysd), [@tarruda](https://github.com/tarruda), [@nhynes](https://github.com/nhynes) on work for the original `node-client`
 
-[Linux Build Status Badge]: https://circleci.com/gh/neovim/node-client/tree/master.svg?style=shield
-[Linux Build Status]: https://circleci.com/gh/neovim/node-client
-[macOS Build Status Badge]: https://travis-ci.org/neovim/node-client.svg?branch=master
-[macOS Build Status]: https://travis-ci.org/neovim/node-client
+[Build Status Badge]: https://travis-ci.org/neovim/node-client.svg?branch=master
+[Build Status]: https://travis-ci.org/neovim/node-client
 [Coverage Badge]: https://codecov.io/gh/neovim/node-client/branch/master/graph/badge.svg
 [Coverage Report]: https://codecov.io/gh/neovim/node-client
 [npm version]: https://img.shields.io/npm/v/neovim.svg
