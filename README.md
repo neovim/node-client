@@ -1,8 +1,8 @@
 # neovim-client
 
-| CI (Linux, macOS)                       | Coverage                               | npm                             |
-|-----------------------------------------|----------------------------------------|---------------------------------|
-| [![Build Status Badge][]][Build Status] | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] |
+| CI (Linux, macOS)                       | Coverage                               | npm                             | Gitter                      |
+|-----------------------------------------|----------------------------------------|---------------------------------|-----------------------------|
+| [![Build Status Badge][]][Build Status] | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] | [![Gitter Badge][]][Gitter] |
 
 Currently tested for node >= 8
 
@@ -148,3 +148,5 @@ The tests and `scripts` can be consulted for more examples.
 [Coverage Report]: https://codecov.io/gh/neovim/node-client
 [npm version]: https://img.shields.io/npm/v/neovim.svg
 [npm package]: https://www.npmjs.com/package/neovim
+[Gitter Badge]: https://badges.gitter.im/neovim/node-client.svg
+[Gitter]: https://gitter.im/neovim/node-client?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge

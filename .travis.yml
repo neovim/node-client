@@ -46,7 +46,7 @@ notifications:
     on_error: never
   webhooks:
     urls:
-      - https://webhooks.gitter.im/e/3b41f8ca9bc284d73ce0
+      - https://webhooks.gitter.im/e/7898b0d8d9ea3a28b496
     on_success: always
     on_failure: always
     on_cancel: always
