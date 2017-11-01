@@ -40,5 +40,15 @@ cache:
 
 notifications:
   email:
-    on_success: never # for now
-    on_failure: never # for now
+    on_success: never
+    on_failure: never
+    on_cancel: never
+    on_error: never
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/3b41f8ca9bc284d73ce0
+    on_success: always
+    on_failure: always
+    on_cancel: always
+    on_error: always
+    on_start: never
