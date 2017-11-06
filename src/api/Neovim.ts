@@ -1,4 +1,4 @@
-import { BaseApi, BaseConstructorOptions } from './Base';
+import { BaseApi } from './Base';
 import { createChainableApi } from './helpers/createChainableApi';
 import { Buffer, AsyncBuffer } from './Buffer';
 import { Tabpage, AsyncTabpage } from './Tabpage';

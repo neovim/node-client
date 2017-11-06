@@ -2,12 +2,10 @@
  * Some code borrowed from https://github.com/tarruda/node-msgpack5rpc
  */
 
-import util from 'util';
 import { EventEmitter } from 'events';
 
 import * as msgpack from 'msgpack-lite';
 
-import { logger } from './logger';
 import { Metadata } from '../api/types';
 
 class Response {
