@@ -2,7 +2,6 @@ import { EventEmitter } from 'events';
 
 import { Transport } from '../utils/transport';
 import { logger as loggerModule, ILogger } from '../utils/logger';
-import { VimValue } from '../types/VimValue';
 
 export type BaseConstructorOptions = {
   transport: Transport;

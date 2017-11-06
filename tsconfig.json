@@ -10,7 +10,7 @@
     "sourceMap": false,
     "noImplicitAny": true,
     "noImplicitReturns": true,
-    "noUnusedLocals": false,
+    "noUnusedLocals": true,
     "noUnusedParameters": false,
     "suppressImplicitAnyIndexErrors": true,
     "target": "es2015",

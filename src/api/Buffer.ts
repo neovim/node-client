@@ -177,7 +177,6 @@ export class Buffer extends BaseApi {
     const colEnd = typeof _end !== 'undefined' ? _end : -1;
     const colStart = typeof _start !== 'undefined' ? _start : -0;
     const srcId = typeof _srcId !== 'undefined' ? _srcId : -1;
-    const isAsync = _isAsync || typeof srcId !== 'undefined';
     return this.request(`${this.prefix}add_highlight`, [
       this,
       srcId,
@@ -201,11 +200,7 @@ export class Buffer extends BaseApi {
       async: true,
     };
 
-    const { srcId, lineStart, lineEnd, async } = Object.assign(
-      {},
-      defaults,
-      args
-    );
+    const { srcId, lineStart, lineEnd } = Object.assign({}, defaults, args);
 
     return this.request(`${this.prefix}clear_highlight`, [
       this,

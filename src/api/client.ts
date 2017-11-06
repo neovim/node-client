@@ -3,7 +3,6 @@
  */
 import { ILogger } from '../utils/logger';
 import { Transport } from '../utils/transport';
-import { TYPES } from './helpers/types';
 import { VimValue } from '../types/VimValue';
 import { Neovim } from './Neovim';
 
@@ -141,6 +140,7 @@ export class NeovimClient extends Neovim {
 
         // Perform sanity check for metadata types
         Object.keys(metadata.types).forEach((name: string) => {
+          // @ts-ignore: Declared but its value is never read
           const metaDataForType = metadata.types[name];
           // TODO: check `prefix` and `id`
         });
