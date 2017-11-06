@@ -10,6 +10,8 @@
     "sourceMap": false,
     "noImplicitAny": true,
     "noImplicitReturns": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "suppressImplicitAnyIndexErrors": true,
     "target": "es2015",
     "types": ["node"],

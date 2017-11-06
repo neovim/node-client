@@ -57,7 +57,7 @@
     "tslint": "^5.4.3",
     "tslint-config-prettier": "^1.1.0",
     "tslint-eslint-rules": "^4.1.1",
-    "typescript": "^2.3.4",
+    "typescript": "^2.6.1",
     "which": "^1.2.14"
   },
   "scripts": {
@@ -66,8 +66,8 @@
     "test-staged": "jest --bail --no-cache --findRelatedTests",
     "prep-integration-test": "(cd __tests__/integration/rplugin/node/test && npm install)",
     "precommit": "lint-staged",
-    "build": "tsc -p tsconfig.json",
-    "watch": "tsc -p tsconfig.json --watch true"
+    "build": "tsc --pretty -p tsconfig.json",
+    "watch": "tsc --pretty -p tsconfig.json --watch true"
   },
   "lint-staged": {
     "*.{ts,js}": [
