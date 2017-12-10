@@ -29,6 +29,8 @@
     "neovim-node-host": "./bin/cli.js"
   },
   "files": [
+    "scripts/nvim.js",
+    "scripts/api.js",
     "bin/",
     "lib/"
   ],
