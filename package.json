@@ -73,7 +73,7 @@
   },
   "lint-staged": {
     "*.{ts,js}": [
-      "prettier --parser typescript --single-quote --trailing-comma es5 --write",
+      "prettier --write",
       "tslint --fix",
       "npm run test-staged"
     ]
