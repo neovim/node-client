@@ -112,8 +112,8 @@ Will spawn the node process that calls `neovim-client-host` with `--inspect-brk`
 ### Logging
 Logging is done using `winston` through the `logger` module. Plugins have `console` replaced with this interface.
 
-#### `NVIM_NODE_DEBUG_LEVEL`
-Sets the logging level for winston. Default is `info`, available levels are `{ error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }`
+#### `NVIM_NODE_LOG_LEVEL`
+Sets the logging level for winston. Default is `debug`, available levels are `{ error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }`
 
 #### `NVIM_NODE_LOG_FILE`
 Sets the log file path
