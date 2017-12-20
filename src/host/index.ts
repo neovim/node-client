@@ -36,7 +36,11 @@ export class Host {
       logger.debug('host.handlePlugin: ', method);
 
       // Parse method name
-      const procInfo = method.split(':');
+      let procInfo = method.split(':');
+      if (process.platform === 'win32') {
+        const networkDrive = procInfo.shift();
+        procInfo[0] = networkDrive + ':' + procInfo[0];
+      }
       const filename = procInfo[0];
       const type = procInfo[1];
       const procName = `"${procInfo.slice(2).join(' ')}"`;
