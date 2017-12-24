@@ -28,6 +28,7 @@ script:
   - export NVIM_NODE_LOG_LEVEL=debug
   - yarn
   - yarn link
+  - npm install -g ./
   - yarn run prep-integration-test
   - yarn test -- --coverage
 
