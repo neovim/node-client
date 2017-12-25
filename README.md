@@ -1,8 +1,8 @@
 # neovim-client
 
-| CI (Linux, macOS)                       | Coverage                               | npm                             | Gitter                      |
-|-----------------------------------------|----------------------------------------|---------------------------------|-----------------------------|
-| [![Build Status Badge][]][Build Status] | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] | [![Gitter Badge][]][Gitter] |
+| CI (Linux, macOS) | CI (Windows) | Coverage | npm | Gitter |
+|-------------------|--------------|----------|-----|--------|
+| [![Build Status Badge][]][Build Status] | [![Windows Build Status Badge][]][Windows Build Status] | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] | [![Gitter Badge][]][Gitter] |
 
 Currently tested for node >= 8
 
@@ -144,6 +144,8 @@ The tests and `scripts` can be consulted for more examples.
 
 [Build Status Badge]: https://travis-ci.org/neovim/node-client.svg?branch=master
 [Build Status]: https://travis-ci.org/neovim/node-client
+[Windows Build Status Badge]: https://ci.appveyor.com/api/projects/status/r989vwm83m7qc67m?svg=true
+[Windows Build Status]: https://ci.appveyor.com/project/rhysd/node-client
 [Coverage Badge]: https://codecov.io/gh/neovim/node-client/branch/master/graph/badge.svg
 [Coverage Report]: https://codecov.io/gh/neovim/node-client
 [npm version]: https://img.shields.io/npm/v/neovim.svg
