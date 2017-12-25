@@ -36,7 +36,18 @@ export class Host {
       logger.debug('host.handlePlugin: ', method);
 
       // Parse method name
-      const procInfo = method.split(':');
+      let procInfo = method.split(':');
+      if (process.platform === 'win32') {
+        // Windows-style absolute paths is formatted as [A-Z]:\path\to\file.
+        // Forward slash as path separator is ok
+        // so Neovim uses it to avoid escaping backslashes.
+        //
+        // For absolute path of cmd.exe with forward slash as path separator,
+        // method.split(':') returns ['C', '/Windows/System32/cmd.exe', ...].
+        // procInfo should be ['C:/Windows/System32/cmd.exe', ...].
+        const networkDrive = procInfo.shift();
+        procInfo[0] = networkDrive + ':' + procInfo[0];
+      }
       const filename = procInfo[0];
       const type = procInfo[1];
       const procName = `"${procInfo.slice(2).join(' ')}"`;
