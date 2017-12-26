@@ -1,5 +1,6 @@
 /* eslint-env jest */
 import * as cp from 'child_process';
+import * as path from 'path';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as which from 'which';
 import { attach } from '../attach';
@@ -65,8 +66,7 @@ describe('Neovim API', () => {
 
     it('can change current working directory', async () => {
       const initial = await nvim.call('getcwd', []);
-      const parts = initial.split('/');
-      const newCwd = parts.slice(0, parts.length - 1).join('/');
+      const newCwd = path.dirname(initial);
 
       nvim.dir = newCwd;
       expect(await nvim.call('getcwd', [])).toBe(newCwd);
