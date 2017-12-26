@@ -1,10 +1,14 @@
 version: '{build}'
 clone_depth: 10
 environment:
-  NVIM_NODE_LOG_LEVEL: debug
+  matrix:
+    - NODE_VERSION: ""
+      NVIM_NODE_LOG_LEVEL: debug
+    - NODE_VERSION: "8"
+      NVIM_NODE_LOG_LEVEL: debug
 
 install:
-  - ps: Install-Product node 8
+  - ps: Install-Product node $Env:NODE_VERSION
   - node --version
   - npm --version
   - ps: |
