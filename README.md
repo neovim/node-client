@@ -144,7 +144,7 @@ The tests and `scripts` can be consulted for more examples.
 
 [Build Status Badge]: https://travis-ci.org/neovim/node-client.svg?branch=master
 [Build Status]: https://travis-ci.org/neovim/node-client
-[Windows Build Status Badge]: https://ci.appveyor.com/api/projects/status/r989vwm83m7qc67m?svg=true
+[Windows Build Status Badge]: https://ci.appveyor.com/api/projects/status/me5ru8ewx35shbq3?svg=true
 [Windows Build Status]: https://ci.appveyor.com/project/rhysd/node-client
 [Coverage Badge]: https://codecov.io/gh/neovim/node-client/branch/master/graph/badge.svg
 [Coverage Report]: https://codecov.io/gh/neovim/node-client
