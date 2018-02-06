@@ -7,7 +7,7 @@
 Currently tested for node >= 8
 
 ## Installation
-Install [node-host](https://github.com/neovim/node-host) using your vim plugin manager. Then install the `neovim` package globally using `npm`.
+Install the `neovim` package globally using `npm`.
 
 ```sh
 npm install -g neovim
