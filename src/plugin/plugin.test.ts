@@ -14,6 +14,16 @@ describe('Plugin class decorator', () => {
     expect(NewClass[NVIM_PLUGIN]).toBe(true);
   });
 
+  it('decorates class when using TypeScript decorators', () => {
+	  @Plugin({})
+	  class MyClass {
+		  constructor(nvim) {
+		  }
+	  }
+
+	  expect(MyClass[NVIM_PLUGIN]).toBe(true);
+  });
+
   it('decorates class with dev mode option', () => {
     class MyClass {}
 

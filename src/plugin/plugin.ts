@@ -35,7 +35,7 @@ function wrapper(
 }
 
 // Can decorate a class with options object
-export function plugin(outter: any) {
+export function plugin<T extends { new(nvim: Neovim): {}}>(outer: any): (constructor: T) => T {
   /**
     * Decorator should support
     *
@@ -55,7 +55,7 @@ export function plugin(outter: any) {
     *
     * Plugin(TestPlugin)
     */
-  return typeof outter !== 'function'
-    ? (cls: any) => wrapper(cls, outter)
-    : wrapper(outter);
+	return <any>(typeof outer !== 'function'
+	? (cls: T) => wrapper(<any>cls, outer)
+    : wrapper(outer));
 }
