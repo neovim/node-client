@@ -8,13 +8,8 @@ import { omit, defaults } from 'lodash';
 import { Neovim } from '../api/Neovim';
 import { logger } from '../utils/logger';
 import { DevNull } from '../utils/devnull';
-import { Spec } from '../types/Spec';
-import {
-  NVIM_PLUGIN,
-  NVIM_DEV_MODE,
-  NVIM_SPEC,
-  NVIM_METHOD_NAME,
-} from '../plugin/properties';
+
+import { NeovimPlugin } from './NeovimPlugin';
 
 export interface IModule {
   new (name: string): any;
@@ -26,18 +21,9 @@ export interface IModule {
   require: (file: string) => NodeModule;
   _nodeModulePaths: (filename: string) => string[];
 }
-export interface IPluginObject {
-  shouldCache: boolean;
-  sandbox: ISandbox;
-  specs: any[];
-  handlers: {};
-  import: any;
-  module: any;
-}
 
 export type LoadPluginOptions = {
   cache?: boolean;
-  noCreateInstance?: boolean;
 };
 
 const Module: IModule = require('module');
@@ -54,7 +40,7 @@ const BLACKLISTED_GLOBALS = [
   '_maxListeners',
   '_fatalException',
   'exit',
-  'kill',
+  'kill'
 ];
 
 // @see node/lib/internal/module.js
@@ -105,7 +91,7 @@ function createSandbox(filename: string): ISandbox {
 
   const sandbox = <ISandbox>vm.createContext({
     module,
-    console: {},
+    console: {}
   });
 
   defaults(sandbox, global);
@@ -144,13 +130,11 @@ function createPlugin(
   filename: string,
   nvim: Neovim,
   options: LoadPluginOptions = {}
-) {
+): NeovimPlugin | null {
   const debug = createDebugFunction(filename);
 
   try {
     const sandbox = createSandbox(filename);
-    const specs: Spec[] = [];
-    const handlers: { [handerId: string]: string } = {};
 
     // Clear module from cache
     if (options && !options.cache) {
@@ -160,33 +144,18 @@ function createPlugin(
     // attempt to import plugin
     // Require plugin to export a class
     const defaultImport = sandbox.require(filename);
-    const Wrapper = (defaultImport && defaultImport.default) || defaultImport;
+    const init = (defaultImport && defaultImport.default) || defaultImport;
 
     // Only process decorated objects
-    if (Wrapper && Wrapper[NVIM_PLUGIN]) {
-      const Child = Object.getPrototypeOf(Wrapper);
-      // Search for decorated methods
-      Object.getOwnPropertyNames(Child.prototype).forEach(methodName => {
-        const method = Wrapper.prototype[methodName];
-        if (method && method[NVIM_SPEC]) {
-          // Add spec
-          specs.push(method[NVIM_SPEC]);
-          const handlerId = [filename, method[NVIM_METHOD_NAME]].join(':');
-          handlers[handlerId] = methodName;
-        }
-      });
+    if (typeof init === 'function') {
+      const plugin = new NeovimPlugin(filename, nvim);
 
-      return {
-        shouldCache: !Wrapper[NVIM_DEV_MODE],
-        sandbox,
-        specs,
-        handlers,
-        import: defaultImport,
-        module:
-          !options || !options.noCreateInstance ? new Wrapper(nvim) : null,
-      };
+      init(plugin);
+
+      return plugin;
     }
   } catch (err) {
+    console.log(err);
     debug(`Error loading child ChildPlugin ${filename}`);
     debug(err);
   }

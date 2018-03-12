@@ -2,13 +2,14 @@ import * as util from 'util';
 import { attach } from '../attach';
 import { logger } from '../utils/logger';
 import { loadPlugin, LoadPluginOptions } from './factory';
+import { NeovimPlugin } from './NeovimPlugin';
 
 export interface Response {
   send(resp: any, isError?: boolean): void;
 }
 
 export class Host {
-  public loaded: any;
+  public loaded: { [index: string]: NeovimPlugin };
   public nvim: any;
 
   constructor() {
@@ -31,57 +32,42 @@ export class Host {
   }
 
   // Route incoming request to a plugin
-  handlePlugin(method: string, args: any[]) {
-    return new Promise(async (resolve, reject) => {
-      logger.debug('host.handlePlugin: ', method);
+  async handlePlugin(method: string, args: any[]) {
+    logger.debug('host.handlePlugin: ', method);
 
-      // Parse method name
-      let procInfo = method.split(':');
-      if (process.platform === 'win32') {
-        // Windows-style absolute paths is formatted as [A-Z]:\path\to\file.
-        // Forward slash as path separator is ok
-        // so Neovim uses it to avoid escaping backslashes.
-        //
-        // For absolute path of cmd.exe with forward slash as path separator,
-        // method.split(':') returns ['C', '/Windows/System32/cmd.exe', ...].
-        // procInfo should be ['C:/Windows/System32/cmd.exe', ...].
-        const networkDrive = procInfo.shift();
-        procInfo[0] = networkDrive + ':' + procInfo[0];
-      }
-      const filename = procInfo[0];
-      const type = procInfo[1];
-      const procName = `"${procInfo.slice(2).join(' ')}"`;
+    // Parse method name
+    let procInfo = method.split(':');
+    if (process.platform === 'win32') {
+      // Windows-style absolute paths is formatted as [A-Z]:\path\to\file.
+      // Forward slash as path separator is ok
+      // so Neovim uses it to avoid escaping backslashes.
+      //
+      // For absolute path of cmd.exe with forward slash as path separator,
+      // method.split(':') returns ['C', '/Windows/System32/cmd.exe', ...].
+      // procInfo should be ['C:/Windows/System32/cmd.exe', ...].
+      const networkDrive = procInfo.shift();
+      procInfo[0] = networkDrive + ':' + procInfo[0];
+    }
+    const filename = procInfo[0];
+    const type = procInfo[1];
+    const procName = `${procInfo.slice(2).join(' ')}`;
 
-      const plugin = this.getPlugin(filename);
+    const plugin = this.getPlugin(filename);
 
-      if (!plugin) {
-        const msg = `Could not load plugin: ${filename}`;
-        reject(new Error(msg));
-        logger.error(msg);
-      } else if (plugin.module) {
-        const handler = plugin.handlers[method];
-        if (typeof plugin.module[handler] !== 'function') {
-          const errMsg = `Missing handler for ${type}: "${procName}" in ${filename}`;
-          logger.error(errMsg);
-          reject(new Error(errMsg));
-        } else {
-          try {
-            resolve(await plugin.module[handler](...args));
-          } catch (err) {
-            const msg = `Error in plugin for ${type}:${procName}: ${err.message}`;
-            logger.error(`${msg} (file: ${filename}, stack: ${err.stack})`);
-            reject(err);
-          }
-        }
-      }
-    });
+    if (!plugin) {
+      const msg = `Could not load plugin: ${filename}`;
+      logger.error(msg);
+      throw new Error(msg);
+    } else {
+      return await plugin.handleRequest(procName, type, args);
+    }
   }
 
   handleRequestSpecs(method: string, args: any[], res: Response) {
     const filename = args[0];
     logger.debug(`requested specs for ${filename}`);
     // Can return null if there is nothing defined in plugin
-    const plugin = this.getPlugin(filename, { noCreateInstance: true });
+    const plugin = this.getPlugin(filename);
     const specs = (plugin && plugin.specs) || [];
     res.send(specs);
     logger.debug(`specs: ${util.inspect(specs)}`);
@@ -99,7 +85,6 @@ export class Host {
       this.handleRequestSpecs(method, args, res);
     } else {
       try {
-        // TODO check if sync
         const plugResult = await this.handlePlugin(method, args);
         res.send(
           !plugResult || typeof plugResult === 'undefined' ? null : plugResult
