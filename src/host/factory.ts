@@ -40,7 +40,7 @@ const BLACKLISTED_GLOBALS = [
   '_maxListeners',
   '_fatalException',
   'exit',
-  'kill'
+  'kill',
 ];
 
 // @see node/lib/internal/module.js
@@ -91,7 +91,7 @@ function createSandbox(filename: string): ISandbox {
 
   const sandbox = <ISandbox>vm.createContext({
     module,
-    console: {}
+    console: {},
   });
 
   defaults(sandbox, global);
@@ -144,15 +144,10 @@ function createPlugin(
     // attempt to import plugin
     // Require plugin to export a class
     const defaultImport = sandbox.require(filename);
-    const init = (defaultImport && defaultImport.default) || defaultImport;
+    const plugin = (defaultImport && defaultImport.default) || defaultImport;
 
-    // Only process decorated objects
-    if (typeof init === 'function') {
-      const plugin = new NeovimPlugin(filename, nvim);
-
-      init(plugin);
-
-      return plugin;
+    if (typeof plugin === 'function') {
+      return new NeovimPlugin(filename, plugin, nvim);
     }
   } catch (err) {
     console.log(err);

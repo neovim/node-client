@@ -69,6 +69,7 @@ export class Host {
     // Can return null if there is nothing defined in plugin
     const plugin = this.getPlugin(filename);
     const specs = (plugin && plugin.specs) || [];
+    logger.debug(JSON.stringify(specs));
     res.send(specs);
     logger.debug(`specs: ${util.inspect(specs)}`);
   }
@@ -96,8 +97,8 @@ export class Host {
   }
 
   async start({ proc }: { proc: NodeJS.Process }) {
-    // stdio is reversed since it's from the perspective of Neovim
     logger.debug('host.start');
+    // stdio is reversed since it's from the perspective of Neovim
     const nvim = attach({ reader: proc.stdin, writer: proc.stdout });
     this.nvim = nvim;
 

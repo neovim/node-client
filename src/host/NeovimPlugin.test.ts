@@ -3,10 +3,10 @@ import { NeovimPlugin } from './NeovimPlugin';
 
 describe('NeovimPlugin', () => {
   it('should initialise variables', () => {
-    const plugin = new NeovimPlugin('/tmp/filename');
+    const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
 
     expect(plugin.filename).toEqual('/tmp/filename');
-    expect(plugin.nvim).toBeUndefined();
+    expect(plugin.nvim).toEqual({});
     expect(plugin.dev).toBe(false);
     expect(Object.keys(plugin.autocmds)).toHaveLength(0);
     expect(Object.keys(plugin.commands)).toHaveLength(0);
@@ -14,13 +14,13 @@ describe('NeovimPlugin', () => {
   });
 
   it('should set dev options when you call setOptions', () => {
-    const plugin = new NeovimPlugin('/tmp/filename');
+    const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
     plugin.setOptions({ dev: true });
     expect(plugin.dev).toBe(true);
   });
 
   it('should store registered autocmds', () => {
-    const plugin = new NeovimPlugin('/tmp/filename');
+    const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
     const fn = () => {};
     const opts = { pattern: '*' };
     const spec = {
@@ -35,7 +35,7 @@ describe('NeovimPlugin', () => {
   });
 
   it('should store registered commands', () => {
-    const plugin = new NeovimPlugin('/tmp/filename');
+    const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
     const fn = () => {};
     const opts = { sync: true };
     const spec = {
@@ -50,7 +50,7 @@ describe('NeovimPlugin', () => {
   });
 
   it('should store registered functions', () => {
-    const plugin = new NeovimPlugin('/tmp/filename');
+    const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
     const fn = () => {};
     const opts = { sync: true };
     const spec = {
@@ -65,13 +65,13 @@ describe('NeovimPlugin', () => {
   });
 
   it('should not add autocmds with no pattern option', () => {
-    const plugin = new NeovimPlugin('/tmp/filename');
+    const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
     plugin.registerAutocmd('BufWritePre', () => {}, { pattern: '' });
     expect(Object.keys(plugin.autocmds)).toHaveLength(0);
   });
 
   it('should create functions from callable arrays', () => {
-    const plugin = new NeovimPlugin('/tmp/filename');
+    const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
     const obj = {
       func: jest.fn(function() {
         return this;
@@ -86,7 +86,7 @@ describe('NeovimPlugin', () => {
   });
 
   it('should not register commands with incorrect callable arguments', () => {
-    const plugin = new NeovimPlugin('/tmp/filename');
+    const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
     plugin.registerCommand('MyCommand', [], {});
     expect(Object.keys(plugin.commands)).toHaveLength(0);
   });

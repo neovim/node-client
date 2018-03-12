@@ -59,28 +59,111 @@ const nvim_proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {});
 ```
 
 ## Writing a Plugin
-A plugin can either be a file or folder in the `rplugin/node` directory. If the plugin is a folder, the `main` script from `package.json` will be loaded.
-
-### API (Work In Progress)
 If you are a plugin developer, I'd love to hear your feedback on the plugin API.
 
-The `neovim` package exports a few decorators, which means currently there's a dependency on `babel`.
-The plugin host creates an instance of the plugin and creates a mapping of the handling method.
+A plugin can either be a file or folder in the `rplugin/node` directory. If the plugin is a folder, the `main` script from `package.json` will be loaded.
+
+The plugin should export a function which takes a `NeovimPlugin` object as it's only parameter. You may then register autocmds, commands and functions by calling methods on the `NeovimPlugin` object. You should not do any heavy initialisation or start any async functions at this stage, as nvim may only be collecting information about your plugin without wishing to actually use it. You should wait for one of your autocmds, commands or functions to be called before starting any processing.
 
 `console` has been replaced by a `winston` interface and `console.log` will call `winston.info`.
 
-```javascript
-import { Plugin, Function, AutoCommand, Command } from 'neovim';
+### API (Work In Progress)
+
+```ts
+  NeovimPlugin.nvim
+```
+
+This is the Neovim api object you can use to send commands from your plugin to vim.
+
+```ts
+  NeovimPlugin.registerAutocmd(name: string, fn: Function, options: AutocmdOptions): void;
+  NeovimPlugin.registerAutocmd(name: string, fn: [any, Function], options: AutocmdOptions): void;
+
+  interface AutocmdOptions {
+    pattern: string;
+    eval?: string;
+    sync?: boolean;
+  }
+```
+
+Registers an autocmd for the event `name`, calling your function `fn` with `options`. Pattern is the only required option. If you wish to call a method on an object you may pass `fn` as an array of `[object, object.method]`.
+
+By default autocmds, commands and functions are all treated as asynchronous and should return `Promises` (or should be `async` functions).
+
+```ts
+  NeovimPlugin.registerCommand(name: string, fn: Function, options?: CommandOptions): void;
+  NeovimPlugin.registerCommand(name: string, fn: [any, Function], options?: CommandOptions): void;
+
+  interface CommandOptions {
+    sync?: boolean;
+    range?: string;
+    nargs?: string;
+  }
+```
+
+Registers a command named by `name`, calling function `fn` with `options`. This will be invoked from nvim by entering `:name` in normal mode.
+
+```ts
+  NeovimPlugin.registerFunction(name: string, fn: Function, options?: NvimFunctionOptions): void;
+  NeovimPlugin.registerFunction(name: string, fn: [any, Function], options?: NvimFunctionOptions): void;
+
+  interface NvimFunctionOptions {
+    sync?: boolean;
+    range?: string;
+    eval?: string;
+  }
+```
+
+Registers a function with name `name`, calling function `fn` with `options`. This will be invoked from nvim by entering eg `:call name()` in normal mode.
+
+###Examples
+
+####Functional style
+
+```js
+function onBufWrite() {
+  console.log('Buffer written!');
+}
+
+module.exports = (plugin) => {
+  plugin.registerAutocmd('BufWritePre', onBufWrite, { pattern: '*' });
+};
+```
+
+####Class style
+
+```js
+class MyPlugin {
+  constructor(plugin) {
+    this.plugin = plugin;
+
+    plugin.registerCommand('SetMyLine', [this, this.setLine]);
+  }
+
+  setLine() {
+    this.plugin.nvim.setLine('A line, for your troubles');
+  }
+}
+
+module.exports = (plugin) => new MyPlugin(plugin);
+
+// Or for convenience, exporting the class itself is equivalent to the above
+
+module.exports = MyPlugin;
+```
+
+####Decorator style
+
+The decorator api is still supported. The `NeovimPlugin` object is passed as a second parameter in case you wish to dynamically register further commands in the constructor.
+
+```js
+import { Plugin, Function, Autocmd, Command } from 'neovim';
 
 // If `Plugin` decorator can be called with options
 @Plugin({ dev: true })
 export default class TestPlugin {
-  /** nvim is set via host so below is unnecessary **/
-  /*
-  constructor(nvim) {
-    this.nvim = nvim;
+  constructor(nvim, plugin) {
   }
-  */
 
   @Function('Vsplit', { sync: true })
   splitMe(args, done) {

@@ -20,7 +20,7 @@ export interface CommandOptions {
 
 export interface NvimFunctionOptions {
   sync?: boolean;
-  range?: [number, number];
+  range?: string;
   eval?: string;
 }
 
@@ -32,9 +32,12 @@ export interface Handler {
 function callable(fn: Function): Function;
 function callable(fn: [any, Function]): Function;
 function callable(fn: any): Function {
+  logger.debug(typeof fn);
+  logger.debug(`${Array.isArray(fn)}`);
+  logger.debug(`${fn.length}`);
   if (typeof fn === 'function') {
     return fn;
-  } else if (fn instanceof Array && fn.length === 2) {
+  } else if (Array.isArray(fn) && fn.length === 2) {
     return function() {
       return fn[1].apply(fn[0], arguments);
     };
@@ -46,6 +49,7 @@ function callable(fn: any): Function {
 export class NeovimPlugin {
   public filename: string;
   public nvim: Neovim;
+  public instance: any;
 
   public dev: boolean;
 
@@ -53,13 +57,24 @@ export class NeovimPlugin {
   public commands: { [index: string]: Handler };
   public functions: { [index: string]: Handler };
 
-  constructor(filename: string, nvim?: Neovim) {
+  constructor(filename: string, plugin: any, nvim: Neovim) {
     this.filename = filename;
     this.nvim = nvim;
     this.dev = false;
     this.autocmds = {};
     this.commands = {};
     this.functions = {};
+
+    // Simplifies class and decorator style plugins
+    try {
+      this.instance = new plugin(this);
+    } catch (err) {
+      if (err instanceof TypeError) {
+        this.instance = plugin(this);
+      } else {
+        throw err;
+      }
+    }
   }
 
   setOptions(options: NeovimPluginOptions) {
@@ -70,11 +85,11 @@ export class NeovimPlugin {
     return !this.dev;
   }
 
-  registerAutocmd(name: string, fn: Function, options?: AutocmdOptions): void;
+  registerAutocmd(name: string, fn: Function, options: AutocmdOptions): void;
   registerAutocmd(
     name: string,
     fn: [any, Function],
-    options?: AutocmdOptions
+    options: AutocmdOptions
   ): void;
   registerAutocmd(name: string, fn: any, options?: AutocmdOptions): void {
     if (!options.pattern) {
