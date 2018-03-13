@@ -116,9 +116,9 @@ Registers a command named by `name`, calling function `fn` with `options`. This 
 
 Registers a function with name `name`, calling function `fn` with `options`. This will be invoked from nvim by entering eg `:call name()` in normal mode.
 
-###Examples
+### Examples
 
-####Functional style
+#### Functional style
 
 ```js
 function onBufWrite() {
@@ -130,7 +130,7 @@ module.exports = (plugin) => {
 };
 ```
 
-####Class style
+#### Class style
 
 ```js
 class MyPlugin {
@@ -152,7 +152,26 @@ module.exports = (plugin) => new MyPlugin(plugin);
 module.exports = MyPlugin;
 ```
 
-####Decorator style
+#### Prototype style
+
+```js
+function MyPlugin(plugin) {
+  this.plugin = plugin;
+  plugin.registerFunction('MyFunc', [this, MyPlugin.prototype.func]);
+}
+
+MyPlugin.prototype.func = function() {
+  this.plugin.nvim.setLine('A line, for your troubles'); 
+};
+
+export default MyPlugin;
+
+// or
+
+export default (plugin) => new MyPlugin(plugin);
+```
+
+#### Decorator style
 
 The decorator api is still supported. The `NeovimPlugin` object is passed as a second parameter in case you wish to dynamically register further commands in the constructor.
 
