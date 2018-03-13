@@ -43,10 +43,17 @@ describe('Plugin class decorator', () => {
     MyClass.prototype.testA = () => {};
 
     // This is how (closeish) babel applies decorators
-    FunctionDecorator('TestF')(MyClass.prototype, 'testF');
-    Command('TestCommand')(MyClass.prototype, 'testC');
+    FunctionDecorator('TestF', { eval: 'test', range: 'test' })(
+      MyClass.prototype,
+      'testF'
+    );
+    Command('TestCommand', { range: 'test', nargs: '3' })(
+      MyClass.prototype,
+      'testC'
+    );
     Autocmd('TestAutocmd', {
       pattern: '*.js',
+      eval: 'test'
     })(MyClass.prototype, 'testA');
 
     const plugin = Plugin(MyClass);
@@ -54,7 +61,7 @@ describe('Plugin class decorator', () => {
     const pluginObject = {
       registerAutocmd: jest.fn(),
       registerCommand: jest.fn(),
-      registerFunction: jest.fn(),
+      registerFunction: jest.fn()
     };
 
     const instance = instantiateOrRun(plugin, pluginObject);
@@ -65,19 +72,20 @@ describe('Plugin class decorator', () => {
       {
         pattern: '*.js',
         sync: false,
+        eval: 'test'
       }
     );
 
     expect(pluginObject.registerCommand).toHaveBeenCalledWith(
       'TestCommand',
       [instance, MyClass.prototype.testC],
-      { sync: false }
+      { sync: false, range: 'test', nargs: '3' }
     );
 
     expect(pluginObject.registerFunction).toHaveBeenCalledWith(
       'TestF',
       [instance, MyClass.prototype.testF],
-      { sync: false }
+      { sync: false, eval: 'test', range: 'test' }
     );
   });
 
@@ -91,7 +99,7 @@ describe('Plugin class decorator', () => {
     FunctionDecorator('TestF')(MyClass.prototype, 'testF');
     Command('TestCommand')(MyClass.prototype, 'testC');
     Autocmd('TestAutocmd', {
-      pattern: '*.js',
+      pattern: '*.js'
     })(MyClass.prototype, 'testA');
 
     const plugin = Plugin(MyClass);
@@ -104,21 +112,21 @@ describe('Plugin class decorator', () => {
         name: 'TestAutocmd',
         sync: false,
         opts: {
-          pattern: '*.js',
-        },
+          pattern: '*.js'
+        }
       },
       {
         type: 'command',
         name: 'TestCommand',
         sync: false,
-        opts: {},
+        opts: {}
       },
       {
         type: 'function',
         name: 'TestF',
         sync: false,
-        opts: {},
-      },
+        opts: {}
+      }
     ]);
   });
 });

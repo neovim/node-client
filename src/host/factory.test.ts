@@ -26,16 +26,16 @@ describe('Plugin Factory (used by host)', () => {
         type: 'autocmd',
         name: 'BufEnter',
         sync: true,
-        opts: { pattern: '*.test', eval: 'expand("<afile>")' },
+        opts: { pattern: '*.test', eval: 'expand("<afile>")' }
       },
       {
         type: 'command',
         name: 'JSHostTestCmd',
         sync: true,
-        opts: { range: '', nargs: '*' },
+        opts: { range: '', nargs: '*' }
       },
       { type: 'function', name: 'Func', sync: true, opts: {} },
-      { type: 'function', name: 'Global', sync: true, opts: {} },
+      { type: 'function', name: 'Global', sync: true, opts: {} }
     ];
     expect(pluginObj.specs).toEqual(exSPECted);
   });
@@ -72,6 +72,10 @@ describe('Plugin Factory (used by host)', () => {
     const plugin = loadPlugin(path.join(PLUGIN_PATH, 'test'), nvim, {});
     expect(plugin.nvim).toBe(nvim);
   });
+
+  it('returns null on invalid module', () => {
+    expect(loadPlugin('/asdlfjka/fl', {}, {})).toBeNull();
+  });
 });
 
 describe('Plugin Factory (decorator api)', () => {
@@ -87,16 +91,16 @@ describe('Plugin Factory (decorator api)', () => {
         type: 'autocmd',
         name: 'BufEnter',
         sync: true,
-        opts: { pattern: '*.test', eval: 'expand("<afile>")' },
+        opts: { pattern: '*.test', eval: 'expand("<afile>")' }
       },
       {
         type: 'command',
         name: 'JSHostTestCmd',
         sync: true,
-        opts: { range: '', nargs: '*' },
+        opts: { range: '', nargs: '*' }
       },
       { type: 'function', name: 'Func', sync: true, opts: {} },
-      { type: 'function', name: 'Global', sync: true, opts: {} },
+      { type: 'function', name: 'Global', sync: true, opts: {} }
     ];
     expect(pluginObj.specs).toEqual(exSPECted);
   });
