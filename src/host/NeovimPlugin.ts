@@ -29,9 +29,9 @@ export interface Handler {
   spec: Spec;
 }
 
-function callable(fn: Function): Function;
-function callable(fn: [any, Function]): Function;
-function callable(fn: any): Function {
+export function callable(fn: Function): Function;
+export function callable(fn: [any, Function]): Function;
+export function callable(fn: any): Function {
   logger.debug(typeof fn);
   logger.debug(`${Array.isArray(fn)}`);
   logger.debug(`${fn.length}`);
@@ -101,7 +101,7 @@ export class NeovimPlugin {
       type: 'autocmd',
       name,
       sync: options && !!options.sync,
-      opts: {},
+      opts: {}
     };
 
     ['pattern', 'eval'].forEach((option: keyof AutocmdOptions) => {
@@ -113,7 +113,7 @@ export class NeovimPlugin {
     try {
       this.autocmds[`${name} ${options.pattern}`] = {
         fn: callable(fn),
-        spec,
+        spec
       };
     } catch (err) {
       logger.error('registerAutocmd expected callable argument for ' + name);
@@ -131,7 +131,7 @@ export class NeovimPlugin {
       type: 'command',
       name,
       sync: options && !!options.sync,
-      opts: {},
+      opts: {}
     };
 
     ['range', 'nargs'].forEach((option: keyof CommandOptions) => {
@@ -143,7 +143,7 @@ export class NeovimPlugin {
     try {
       this.commands[name] = {
         fn: callable(fn),
-        spec,
+        spec
       };
     } catch (err) {
       logger.error('registerCommand expected callable argument for ' + name);
@@ -165,7 +165,7 @@ export class NeovimPlugin {
       type: 'function',
       name,
       sync: options && !!options.sync,
-      opts: {},
+      opts: {}
     };
 
     ['range', 'eval'].forEach((option: keyof NvimFunctionOptions) => {
@@ -177,7 +177,7 @@ export class NeovimPlugin {
     try {
       this.functions[name] = {
         fn: callable(fn),
-        spec,
+        spec
       };
     } catch (err) {
       logger.error('registerFunction expected callable argument for ' + name);
@@ -211,9 +211,8 @@ export class NeovimPlugin {
         handlers = this.functions;
         break;
       default:
-        const errMsg = `No handler for unknown type ${type}: "${name}" in ${
-          this.filename
-        }`;
+        const errMsg = `No handler for unknown type ${type}: "${name}" in ${this
+          .filename}`;
         logger.error(errMsg);
         throw new Error(errMsg);
     }
@@ -230,9 +229,8 @@ export class NeovimPlugin {
         throw new Error(err);
       }
     } else {
-      const errMsg = `Missing handler for ${type}: "${name}" in ${
-        this.filename
-      }`;
+      const errMsg = `Missing handler for ${type}: "${name}" in ${this
+        .filename}`;
       logger.error(errMsg);
       throw new Error(errMsg);
     }

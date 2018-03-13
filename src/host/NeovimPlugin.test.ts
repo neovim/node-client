@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { NeovimPlugin } from './NeovimPlugin';
+import { callable, NeovimPlugin } from './NeovimPlugin';
 
 describe('NeovimPlugin', () => {
   it('should initialise variables', () => {
@@ -17,6 +17,7 @@ describe('NeovimPlugin', () => {
     const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
     plugin.setOptions({ dev: true });
     expect(plugin.dev).toBe(true);
+    expect(plugin.shouldCache).toBe(false);
   });
 
   it('should store registered autocmds', () => {
@@ -27,7 +28,7 @@ describe('NeovimPlugin', () => {
       name: 'BufWritePre',
       type: 'autocmd',
       sync: false,
-      opts,
+      opts
     };
     plugin.registerAutocmd('BufWritePre', fn, opts);
     expect(Object.keys(plugin.autocmds)).toHaveLength(1);
@@ -42,7 +43,7 @@ describe('NeovimPlugin', () => {
       name: 'MyCommand',
       type: 'command',
       sync: true,
-      opts: {},
+      opts: {}
     };
     plugin.registerCommand('MyCommand', fn, opts);
     expect(Object.keys(plugin.commands)).toHaveLength(1);
@@ -57,7 +58,7 @@ describe('NeovimPlugin', () => {
       name: 'MyFunction',
       type: 'function',
       sync: true,
-      opts: {},
+      opts: {}
     };
     plugin.registerFunction('MyFunction', fn, opts);
     expect(Object.keys(plugin.functions)).toHaveLength(1);
@@ -71,11 +72,21 @@ describe('NeovimPlugin', () => {
   });
 
   it('should create functions from callable arrays', () => {
+    const fn = jest.fn(function() {
+      return this;
+    });
+    expect(callable(fn)).toEqual(fn);
+    callable([{}, fn])();
+    expect(fn).toHaveBeenCalledTimes(1);
+
+    const thisObj = {};
+    expect(callable([thisObj, fn])()).toBe(thisObj);
+
     const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
     const obj = {
       func: jest.fn(function() {
         return this;
-      }),
+      })
     };
 
     plugin.registerCommand('MyCommand', [obj, obj.func], {});
@@ -89,5 +100,69 @@ describe('NeovimPlugin', () => {
     const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
     plugin.registerCommand('MyCommand', [], {});
     expect(Object.keys(plugin.commands)).toHaveLength(0);
+  });
+
+  it('should return specs for registered commands', () => {
+    const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
+    const fn = () => {};
+    const aOpts = { pattern: '*' };
+    const aSpec = {
+      name: 'BufWritePre',
+      type: 'autocmd',
+      sync: false,
+      opts: aOpts
+    };
+    plugin.registerAutocmd('BufWritePre', fn, aOpts);
+
+    const cOpts = { sync: true };
+    const cSpec = {
+      name: 'MyCommand',
+      type: 'command',
+      sync: true,
+      opts: {}
+    };
+    plugin.registerCommand('MyCommand', fn, cOpts);
+
+    const fOpts = { sync: true };
+    const fSpec = {
+      name: 'MyFunction',
+      type: 'function',
+      sync: true,
+      opts: {}
+    };
+    plugin.registerFunction('MyFunction', fn, fOpts);
+
+    expect(plugin.specs).toEqual([aSpec, cSpec, fSpec]);
+  });
+
+  it('should handle requests for registered commands', async () => {
+    const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
+    const fn = arg => arg;
+
+    plugin.registerAutocmd('BufWritePre', fn, { pattern: '*', sync: true });
+    plugin.registerCommand('MyCommand', fn, { sync: true });
+    plugin.registerFunction('MyFunction', fn);
+
+    expect(await plugin.handleRequest('BufWritePre *', 'autocmd', [true])).toBe(
+      true
+    );
+    expect(await plugin.handleRequest('MyCommand', 'command', [false])).toBe(
+      false
+    );
+    expect(
+      await plugin.handleRequest('MyFunction', 'function', ['blue'])
+    ).toEqual('blue');
+  });
+
+  it('should throw on unknown request', () => {
+    const plugin = new NeovimPlugin('/tmp/filename', () => {}, {});
+    expect.assertions(1);
+    plugin.handleRequest('BufWritePre *', 'autocmd', [true]).catch(err => {
+      expect(err).toEqual(
+        new Error(
+          'Missing handler for autocmd: "BufWritePre *" in /tmp/filename'
+        )
+      );
+    });
   });
 });
