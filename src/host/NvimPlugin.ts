@@ -2,7 +2,7 @@ import { Neovim } from '../api/Neovim';
 import { logger } from '../utils/logger';
 import { Spec } from '../types/Spec';
 
-export interface NeovimPluginOptions {
+export interface NvimPluginOptions {
   dev?: boolean;
 }
 
@@ -46,7 +46,7 @@ export function callable(fn: any): Function {
   throw new Error();
 }
 
-export class NeovimPlugin {
+export class NvimPlugin {
   public filename: string;
   public nvim: Neovim;
   public instance: any;
@@ -77,7 +77,7 @@ export class NeovimPlugin {
     }
   }
 
-  setOptions(options: NeovimPluginOptions) {
+  setOptions(options: NvimPluginOptions) {
     this.dev = options.dev === undefined ? this.dev : options.dev;
   }
 

@@ -2,14 +2,14 @@ import * as util from 'util';
 import { attach } from '../attach';
 import { logger } from '../utils/logger';
 import { loadPlugin, LoadPluginOptions } from './factory';
-import { NeovimPlugin } from './NeovimPlugin';
+import { NvimPlugin } from './NvimPlugin';
 
 export interface Response {
   send(resp: any, isError?: boolean): void;
 }
 
 export class Host {
-  public loaded: { [index: string]: NeovimPlugin };
+  public loaded: { [index: string]: NvimPlugin };
   public nvim: any;
 
   constructor() {

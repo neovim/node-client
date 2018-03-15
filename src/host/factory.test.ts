@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import * as path from 'path';
 import { loadPlugin } from './factory';
-import { NeovimPlugin } from './NeovimPlugin';
+import { NvimPlugin } from './NvimPlugin';
 
 const PLUGIN_PATH = path.join(
   __dirname,
@@ -14,7 +14,7 @@ const PLUGIN_PATH = path.join(
 );
 
 describe('Plugin Factory (used by host)', () => {
-  let pluginObj: NeovimPlugin;
+  let pluginObj: NvimPlugin;
 
   beforeEach(() => {
     pluginObj = loadPlugin(path.join(PLUGIN_PATH, 'test'), null);
@@ -79,7 +79,7 @@ describe('Plugin Factory (used by host)', () => {
 });
 
 describe('Plugin Factory (decorator api)', () => {
-  let pluginObj: NeovimPlugin;
+  let pluginObj: NvimPlugin;
 
   beforeEach(() => {
     pluginObj = loadPlugin(path.join(PLUGIN_PATH, 'test_2'), null);

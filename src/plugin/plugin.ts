@@ -4,18 +4,18 @@ import { logger } from '../utils/logger';
 import { NVIM_SPEC } from './properties';
 import { Neovim } from '../api/Neovim';
 import {
-  NeovimPlugin,
+  NvimPlugin,
   AutocmdOptions,
   CommandOptions,
   NvimFunctionOptions
-} from '../host/NeovimPlugin';
+} from '../host/NvimPlugin';
 import { Spec } from '../types/Spec';
 
 export interface PluginWrapperConstructor {
-  new (nvim: Neovim, plugin?: NeovimPlugin): PluginWrapperInterface;
+  new (nvim: Neovim, plugin?: NvimPlugin): PluginWrapperInterface;
 }
 export interface PluginWrapperInterface {
-  new (plugin: NeovimPlugin): PluginWrapperInterface;
+  new (plugin: NvimPlugin): PluginWrapperInterface;
   setApi(nvim: Neovim): void;
 }
 export interface PluginDecoratorOptions {
@@ -29,7 +29,7 @@ function wrapper(
 
   return class WrapperClass extends cls implements PluginWrapperInterface {
     public nvim: Neovim;
-    constructor(plugin: NeovimPlugin) {
+    constructor(plugin: NvimPlugin) {
       super(plugin.nvim, plugin);
       this.setApi(plugin.nvim);
 

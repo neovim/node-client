@@ -9,7 +9,7 @@ import { Neovim } from '../api/Neovim';
 import { logger } from '../utils/logger';
 import { DevNull } from '../utils/devnull';
 
-import { NeovimPlugin } from './NeovimPlugin';
+import { NvimPlugin } from './NvimPlugin';
 
 export interface IModule {
   new (name: string): any;
@@ -40,7 +40,7 @@ const BLACKLISTED_GLOBALS = [
   '_maxListeners',
   '_fatalException',
   'exit',
-  'kill',
+  'kill'
 ];
 
 // @see node/lib/internal/module.js
@@ -91,7 +91,7 @@ function createSandbox(filename: string): ISandbox {
 
   const sandbox = <ISandbox>vm.createContext({
     module,
-    console: {},
+    console: {}
   });
 
   defaults(sandbox, global);
@@ -130,7 +130,7 @@ function createPlugin(
   filename: string,
   nvim: Neovim,
   options: LoadPluginOptions = {}
-): NeovimPlugin | null {
+): NvimPlugin | null {
   const debug = createDebugFunction(filename);
 
   try {
@@ -147,10 +147,9 @@ function createPlugin(
     const plugin = (defaultImport && defaultImport.default) || defaultImport;
 
     if (typeof plugin === 'function') {
-      return new NeovimPlugin(filename, plugin, nvim);
+      return new NvimPlugin(filename, plugin, nvim);
     }
   } catch (err) {
-    console.log(err);
     debug(`Error loading child ChildPlugin ${filename}`);
     debug(err);
   }

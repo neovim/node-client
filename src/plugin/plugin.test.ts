@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import { plugin as Plugin } from './plugin';
-import { NeovimPlugin } from '../host/NeovimPlugin';
+import { NvimPlugin } from '../host/NvimPlugin';
 import { nvimFunction as FunctionDecorator } from './function';
 import { command as Command } from './command';
 import { autocmd as Autocmd } from './autocmd';
@@ -104,7 +104,7 @@ describe('Plugin class decorator', () => {
 
     const plugin = Plugin(MyClass);
 
-    const pluginObject = new NeovimPlugin('/tmp/filename', plugin, {});
+    const pluginObject = new NvimPlugin('/tmp/filename', plugin, {});
 
     expect(pluginObject.specs).toEqual([
       {
