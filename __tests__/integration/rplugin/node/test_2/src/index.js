@@ -1,10 +1,12 @@
 loaded = [] instanceof Array;
-// globals = global
 required = require('./fixture');
+
+// Hack to get global object
+const global = Function('return this')();
 
 const {
   Plugin,
-  Function,
+  Function: NvimFunction,
   Autocmd,
   Command,
 } = require('../../../../../../lib/plugin');
@@ -34,9 +36,14 @@ class Test {
     });
   }
 
-  @Function('Func', { sync: true })
+  @NvimFunction('Func', { sync: true })
   func(args) {
     return 'Funcy ' + args;
+  }
+
+  @NvimFunction('Global', { sync: true })
+  getGlobal(name) {
+    return global[name];
   }
 }
 

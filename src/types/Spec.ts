@@ -4,6 +4,7 @@ export type Spec = {
   sync: boolean;
   opts: {
     range?: string;
+    nargs?: string;
     eval?: string;
     pattern?: string;
   };
