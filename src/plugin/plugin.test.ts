@@ -53,7 +53,7 @@ describe('Plugin class decorator', () => {
     );
     Autocmd('TestAutocmd', {
       pattern: '*.js',
-      eval: 'test'
+      eval: 'test',
     })(MyClass.prototype, 'testA');
 
     const plugin = Plugin(MyClass);
@@ -61,7 +61,7 @@ describe('Plugin class decorator', () => {
     const pluginObject = {
       registerAutocmd: jest.fn(),
       registerCommand: jest.fn(),
-      registerFunction: jest.fn()
+      registerFunction: jest.fn(),
     };
 
     const instance = instantiateOrRun(plugin, pluginObject);
@@ -72,7 +72,7 @@ describe('Plugin class decorator', () => {
       {
         pattern: '*.js',
         sync: false,
-        eval: 'test'
+        eval: 'test',
       }
     );
 
@@ -99,7 +99,7 @@ describe('Plugin class decorator', () => {
     FunctionDecorator('TestF')(MyClass.prototype, 'testF');
     Command('TestCommand')(MyClass.prototype, 'testC');
     Autocmd('TestAutocmd', {
-      pattern: '*.js'
+      pattern: '*.js',
     })(MyClass.prototype, 'testA');
 
     const plugin = Plugin(MyClass);
@@ -112,21 +112,21 @@ describe('Plugin class decorator', () => {
         name: 'TestAutocmd',
         sync: false,
         opts: {
-          pattern: '*.js'
-        }
+          pattern: '*.js',
+        },
       },
       {
         type: 'command',
         name: 'TestCommand',
         sync: false,
-        opts: {}
+        opts: {},
       },
       {
         type: 'function',
         name: 'TestF',
         sync: false,
-        opts: {}
-      }
+        opts: {},
+      },
     ]);
   });
 });

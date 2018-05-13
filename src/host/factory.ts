@@ -40,7 +40,7 @@ const BLACKLISTED_GLOBALS = [
   '_maxListeners',
   '_fatalException',
   'exit',
-  'kill'
+  'kill',
 ];
 
 // @see node/lib/internal/module.js
@@ -91,7 +91,7 @@ function createSandbox(filename: string): ISandbox {
 
   const sandbox = <ISandbox>vm.createContext({
     module,
-    console: {}
+    console: {},
   });
 
   defaults(sandbox, global);

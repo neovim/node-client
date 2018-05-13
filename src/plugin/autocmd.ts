@@ -28,9 +28,9 @@ export function autocmd(name: string, options?: AutocmdOptions) {
       }
     });
 
-    const nameWithPattern = `${name}${options.pattern
-      ? `:${options.pattern}`
-      : ''}`;
+    const nameWithPattern = `${name}${
+      options.pattern ? `:${options.pattern}` : ''
+    }`;
     Object.defineProperty(f, NVIM_METHOD_NAME, {
       value: `autocmd:${nameWithPattern}`,
     });

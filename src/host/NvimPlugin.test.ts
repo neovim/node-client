@@ -28,7 +28,7 @@ describe('NvimPlugin', () => {
       name: 'BufWritePre',
       type: 'autocmd',
       sync: false,
-      opts
+      opts,
     };
     plugin.registerAutocmd('BufWritePre', fn, opts);
     expect(Object.keys(plugin.autocmds)).toHaveLength(1);
@@ -43,7 +43,7 @@ describe('NvimPlugin', () => {
       name: 'MyCommand',
       type: 'command',
       sync: true,
-      opts: {}
+      opts: {},
     };
     plugin.registerCommand('MyCommand', fn, opts);
     expect(Object.keys(plugin.commands)).toHaveLength(1);
@@ -58,7 +58,7 @@ describe('NvimPlugin', () => {
       name: 'MyFunction',
       type: 'function',
       sync: true,
-      opts: {}
+      opts: {},
     };
     plugin.registerFunction('MyFunction', fn, opts);
     expect(Object.keys(plugin.functions)).toHaveLength(1);
@@ -86,7 +86,7 @@ describe('NvimPlugin', () => {
     const obj = {
       func: jest.fn(function() {
         return this;
-      })
+      }),
     };
 
     plugin.registerCommand('MyCommand', [obj, obj.func], {});
@@ -110,7 +110,7 @@ describe('NvimPlugin', () => {
       name: 'BufWritePre',
       type: 'autocmd',
       sync: false,
-      opts: aOpts
+      opts: aOpts,
     };
     plugin.registerAutocmd('BufWritePre', fn, aOpts);
 
@@ -119,7 +119,7 @@ describe('NvimPlugin', () => {
       name: 'MyCommand',
       type: 'command',
       sync: true,
-      opts: {}
+      opts: {},
     };
     plugin.registerCommand('MyCommand', fn, cOpts);
 
@@ -128,7 +128,7 @@ describe('NvimPlugin', () => {
       name: 'MyFunction',
       type: 'function',
       sync: true,
-      opts: {}
+      opts: {},
     };
     plugin.registerFunction('MyFunction', fn, fOpts);
 
