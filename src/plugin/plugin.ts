@@ -11,25 +11,24 @@ import {
 } from '../host/NvimPlugin';
 import { Spec } from '../types/Spec';
 
-export interface PluginWrapperConstructor {
-  new (nvim: Neovim, plugin?: NvimPlugin): PluginWrapperInterface;
-}
-export interface PluginWrapperInterface {
-  new (plugin: NvimPlugin): PluginWrapperInterface;
-  setApi(nvim: Neovim): void;
-}
+export { Neovim, NvimPlugin };
+
 export interface PluginDecoratorOptions {
   dev?: boolean;
 }
-function wrapper(
-  cls: PluginWrapperConstructor,
+
+export type Constructor<T> = { new (...args: any[]): T };
+
+function wrapper<T extends Constructor<{}>>(
+  cls: T,
   options?: PluginDecoratorOptions
-): any {
+) {
   logger.info(`Decorating class ${cls}`);
 
-  return class WrapperClass extends cls implements PluginWrapperInterface {
+  return class extends cls {
     public nvim: Neovim;
-    constructor(plugin: NvimPlugin) {
+    constructor(...args: any[]) {
+      const plugin: NvimPlugin = args[0];
       super(plugin.nvim, plugin);
       this.setApi(plugin.nvim);
 
@@ -105,7 +104,7 @@ function wrapper(
 // Can decorate a class with options object
 export function plugin(
   outter: any
-): (cls: PluginWrapperConstructor, options?: PluginDecoratorOptions) => any;
+): (cls: Constructor<{}>, options?: PluginDecoratorOptions) => any;
 export function plugin(outter: any): any;
 export function plugin(outter: any): any {
   /**
@@ -116,7 +115,7 @@ export function plugin(outter: any): any {
    *
    * and
    *
-   * @PluginA
+   * @Plugin
    * class TestPlug {}
    *
    *and
