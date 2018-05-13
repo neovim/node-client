@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 
 import { Transport } from '../utils/transport';
 import { logger as loggerModule, ILogger } from '../utils/logger';
+import { VimValue } from '../types/VimValue';
 
 export type BaseConstructorOptions = {
   transport: Transport;
@@ -69,7 +70,7 @@ export class BaseApi extends EventEmitter {
   }
 
   /** Retrieves a scoped variable depending on type (using `this.prefix`) */
-  getVar(name: string): Promise<string> {
+  getVar(name: string): Promise<VimValue> {
     const args = this._getArgsByPrefix(name);
 
     return this.request(`${this.prefix}get_var`, args).then(
@@ -84,25 +85,25 @@ export class BaseApi extends EventEmitter {
   }
 
   /** Set a scoped variable */
-  setVar(name: string, value: any): Promise<any> {
+  setVar(name: string, value: VimValue): Promise<void> {
     const args = this._getArgsByPrefix(name, value);
     return this.request(`${this.prefix}set_var`, args);
   }
 
   /** Delete a scoped variable */
-  deleteVar(name: string): Promise<any> {
+  deleteVar(name: string): Promise<void> {
     const args = this._getArgsByPrefix(name);
     return this.request(`${this.prefix}del_var`, args);
   }
 
   /** Retrieves a scoped option depending on type of `this` */
-  getOption(name: string): Promise<any> | void {
+  getOption(name: string): Promise<VimValue> | void {
     const args = this._getArgsByPrefix(name);
     return this.request(`${this.prefix}get_option`, args);
   }
 
   /** Set scoped option */
-  setOption(name: string, value: any): Promise<any> | void {
+  setOption(name: string, value: VimValue): Promise<void> | void {
     const args = this._getArgsByPrefix(name, value);
     return this.request(`${this.prefix}set_option`, args);
   }

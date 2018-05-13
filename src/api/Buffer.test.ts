@@ -140,12 +140,12 @@ describe.only('Buffer API', () => {
       expect(test).toBe(null);
     });
 
-    it('can set a b: variable', async () => {
-      buffer.setVar('test', 'testValue');
+    it('can set a b: variable to an object', async () => {
+      buffer.setVar('test', { foo: 'testValue' });
 
-      expect(await buffer.getVar('test')).toBe('testValue');
+      expect(await buffer.getVar('test')).toEqual({ foo: 'testValue' });
 
-      expect(await nvim.eval('b:test')).toBe('testValue');
+      expect(await nvim.eval('b:test')).toEqual({ foo: 'testValue' });
     });
 
     it('can delete a b: variable', async () => {
