@@ -21,16 +21,15 @@ export function createChainableApi(
 
   // TODO: Optimize this
   // Define properties on the promise for devtools
-  [
-    ...baseProperties,
-    ...Object.getOwnPropertyNames(Type.prototype),
-  ].forEach(key => {
-    Object.defineProperty(this[`${name}Promise`], key, {
-      enumerable: true,
-      writable: true,
-      configurable: true,
-    });
-  });
+  [...baseProperties, ...Object.getOwnPropertyNames(Type.prototype)].forEach(
+    key => {
+      Object.defineProperty(this[`${name}Promise`], key, {
+        enumerable: true,
+        writable: true,
+        configurable: true,
+      });
+    }
+  );
 
   const proxyHandler = {
     get: (target: any, prop: string) => {
@@ -91,7 +90,7 @@ export function createChainableApi(
       // eslint-disable-next-line no-param-reassign
       if (
         receiver &&
-        (receiver instanceof Promise || 'then' in (<any>receiver))
+        (receiver instanceof Promise || 'then' in <any>receiver)
       ) {
         receiver.then(obj => {
           if (prop in obj) {

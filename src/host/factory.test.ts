@@ -26,16 +26,16 @@ describe('Plugin Factory (used by host)', () => {
         type: 'autocmd',
         name: 'BufEnter',
         sync: true,
-        opts: { pattern: '*.test', eval: 'expand("<afile>")' }
+        opts: { pattern: '*.test', eval: 'expand("<afile>")' },
       },
       {
         type: 'command',
         name: 'JSHostTestCmd',
         sync: true,
-        opts: { range: '', nargs: '*' }
+        opts: { range: '', nargs: '*' },
       },
       { type: 'function', name: 'Func', sync: true, opts: {} },
-      { type: 'function', name: 'Global', sync: true, opts: {} }
+      { type: 'function', name: 'Global', sync: true, opts: {} },
     ];
     expect(pluginObj.specs).toEqual(exSPECted);
   });
@@ -86,23 +86,23 @@ describe('Plugin Factory (decorator api)', () => {
   });
 
   it('should collect the specs from a plugin file', () => {
-    const exSPECted = [
+    const expected = [
       {
         type: 'autocmd',
         name: 'BufEnter',
         sync: true,
-        opts: { pattern: '*.test', eval: 'expand("<afile>")' }
+        opts: { pattern: '*.test', eval: 'expand("<afile>")' },
       },
       {
         type: 'command',
         name: 'JSHostTestCmd',
         sync: true,
-        opts: { range: '', nargs: '*' }
+        opts: { range: '', nargs: '*' },
       },
       { type: 'function', name: 'Func', sync: true, opts: {} },
-      { type: 'function', name: 'Global', sync: true, opts: {} }
+      { type: 'function', name: 'Global', sync: true, opts: {} },
     ];
-    expect(pluginObj.specs).toEqual(exSPECted);
+    expect(pluginObj.specs).toEqual(expected);
   });
 
   it('should collect the handlers from a plugin', async () => {

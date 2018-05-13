@@ -7,7 +7,7 @@ import {
   NvimPlugin,
   AutocmdOptions,
   CommandOptions,
-  NvimFunctionOptions
+  NvimFunctionOptions,
 } from '../host/NvimPlugin';
 import { Spec } from '../types/Spec';
 
@@ -52,7 +52,7 @@ function wrapper<T extends Constructor<{}>>(
             case 'autocmd':
               const autoCmdOpts: AutocmdOptions = {
                 pattern: spec.opts.pattern,
-                sync: spec.sync
+                sync: spec.sync,
               };
 
               if (typeof spec.opts.eval !== 'undefined') {
@@ -63,7 +63,7 @@ function wrapper<T extends Constructor<{}>>(
               break;
             case 'command':
               const cmdOpts: CommandOptions = {
-                sync: spec.sync
+                sync: spec.sync,
               };
 
               if (typeof spec.opts.range !== 'undefined') {
@@ -77,7 +77,7 @@ function wrapper<T extends Constructor<{}>>(
               break;
             case 'function':
               const funcOpts: NvimFunctionOptions = {
-                sync: spec.sync
+                sync: spec.sync,
               };
 
               if (typeof spec.opts.range !== 'undefined') {
