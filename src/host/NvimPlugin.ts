@@ -16,6 +16,7 @@ export interface CommandOptions {
   sync?: boolean;
   range?: string;
   nargs?: string;
+  complete?: string;
 }
 
 export interface NvimFunctionOptions {
@@ -134,7 +135,7 @@ export class NvimPlugin {
       opts: {},
     };
 
-    ['range', 'nargs'].forEach((option: keyof CommandOptions) => {
+    ['range', 'nargs', 'complete'].forEach((option: keyof CommandOptions) => {
       if (options && typeof options[option] !== 'undefined') {
         spec.opts[option] = options[option];
       }

@@ -72,6 +72,9 @@ function wrapper<T extends Constructor<{}>>(
               if (typeof spec.opts.nargs !== 'undefined') {
                 cmdOpts.nargs = spec.opts.nargs;
               }
+              if (typeof spec.opts.complete !== 'undefined') {
+                cmdOpts.complete = spec.opts.complete;
+              }
 
               plugin.registerCommand(spec.name, [this, method], cmdOpts);
               break;

@@ -4,23 +4,21 @@ export interface CommandOptions {
   sync?: boolean;
   range?: string;
   nargs?: string;
+  complete?: string;
 }
 
 // Example
 // @command('BufEnter', { range: '', nargs: '*' })
+// @command('MyCommand', { complete: 'customlist,MyCustomCompleteListFunc' })
+// @command('MyCommand', { complete: 'dir' })
 export function command(name: string, options?: CommandOptions) {
   return function(cls: any, methodName: string | null) {
-    // const {
-    // sync,
-    // ...opts,
-    // } = options;
-
     const sync = options && !!options.sync;
     const isMethod = typeof methodName === 'string';
     const f = isMethod ? cls[methodName] : cls;
     const opts: CommandOptions = {};
 
-    ['range', 'nargs'].forEach((option: keyof CommandOptions) => {
+    ['range', 'nargs', 'complete'].forEach((option: keyof CommandOptions) => {
       if (options && typeof options[option] !== 'undefined') {
         opts[option] = options[option];
       }
