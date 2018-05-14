@@ -37,10 +37,6 @@
   "main": "./lib/index",
   "typings": "./lib/index",
   "dependencies": {
-    "@types/lodash": "^4.14.66",
-    "@types/msgpack-lite": "^0.1.4",
-    "@types/traverse": "^0.6.29",
-    "@types/winston": "^2.3.3",
     "lodash": "^4.17.4",
     "msgpack-lite": "^0.1.26",
     "traverse": "^0.6.6",
@@ -48,8 +44,12 @@
   },
   "devDependencies": {
     "@types/jest": "^20.0.1",
+    "@types/lodash": "^4.14.108",
+    "@types/msgpack-lite": "^0.1.4",
     "@types/node": "^7.0.32",
+    "@types/traverse": "^0.6.29",
     "@types/which": "^1.0.28",
+    "@types/winston": "^2.3.3",
     "babel-core": "^6.25.0",
     "husky": "^0.13.4",
     "jest": "^22.4.3",
