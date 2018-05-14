@@ -201,7 +201,7 @@ export class Neovim extends BaseApi {
   }
 
   /** Gets a v: variable */
-  getVvar(name: string): Promise<string> {
+  getVvar(name: string): Promise<VimValue> {
     return this.request(`${this.prefix}get_vvar`, [name]);
   }
 
