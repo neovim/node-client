@@ -7,5 +7,6 @@ export type Spec = {
     nargs?: string;
     eval?: string;
     pattern?: string;
+    complete?: string;
   };
 };
