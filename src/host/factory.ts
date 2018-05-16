@@ -131,8 +131,6 @@ function createPlugin(
   nvim: Neovim,
   options: LoadPluginOptions = {}
 ): NvimPlugin | null {
-  const debug = createDebugFunction(filename);
-
   try {
     const sandbox = createSandbox(filename);
 
@@ -150,8 +148,9 @@ function createPlugin(
       return new NvimPlugin(filename, plugin, nvim);
     }
   } catch (err) {
-    debug(`Error loading child ChildPlugin ${filename}`);
-    debug(err);
+    let file = path.basename(filename);
+    logger.error(`[${file}] ${err.stack}`);
+    logger.error(`[${file}] Error loading child ChildPlugin ${filename}`);
   }
 
   // There may have been an error, but maybe not
