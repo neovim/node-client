@@ -33,6 +33,7 @@ export class Host {
 
   // Route incoming request to a plugin
   async handlePlugin(method: string, args: any[]) {
+    if (method.startsWith('nvim_')) return
     logger.debug('host.handlePlugin: ', method);
 
     // Parse method name

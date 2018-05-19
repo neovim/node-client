@@ -112,6 +112,16 @@ export class Buffer extends BaseApi {
     });
   }
 
+  /* Turn on live updates */
+  attach(send_buffer: boolean) {
+    return this.request(`${this.prefix}attach`, [this, send_buffer]);
+  }
+
+  /* Turn off live updates */
+  detach() {
+    return this.request(`${this.prefix}detach`, [this]);
+  }
+
   /** Get buffer name */
   get name(): string | Promise<string> {
     return this.request(`${this.prefix}get_name`, [this]);
