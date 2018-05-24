@@ -1,5 +1,5 @@
 language: node_js
-node_js: 9
+node_js: stable
 
 # Use macOS 10.12: https://docs.travis-ci.com/user/languages/objective-c/
 os:
