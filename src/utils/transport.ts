@@ -6,6 +6,7 @@ import { EventEmitter } from 'events';
 
 import * as msgpack from 'msgpack-lite';
 
+import Buffered from './buffered';
 import { Metadata } from '../api/types';
 
 class Response {
@@ -81,7 +82,8 @@ class Transport extends EventEmitter {
 
   attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream) {
     this.encodeStream = this.encodeStream.pipe(writer);
-    reader.pipe(this.decodeStream);
+    let buffered = new Buffered();
+    reader.pipe(buffered).pipe(this.decodeStream);
     this.writer = writer;
     this.reader = reader;
   }
