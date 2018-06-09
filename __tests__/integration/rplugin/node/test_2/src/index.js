@@ -45,6 +45,11 @@ class Test {
   getGlobal(name) {
     return global[name];
   }
+
+  @NvimFunction('Illegal', { sync: true })
+  illegalProcessCall() {
+    process.chdir();
+  }
 }
 
 module.exports = Test;

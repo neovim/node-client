@@ -100,6 +100,7 @@ describe('Plugin Factory (decorator api)', () => {
       },
       { type: 'function', name: 'Func', sync: true, opts: {} },
       { type: 'function', name: 'Global', sync: true, opts: {} },
+      { type: 'function', name: 'Illegal', sync: true, opts: {} },
     ];
     expect(pluginObj.specs).toEqual(expected);
   });
@@ -134,5 +135,11 @@ describe('Plugin Factory (decorator api)', () => {
     const nvim = {};
     const plugin = loadPlugin(path.join(PLUGIN_PATH, 'test_2'), nvim, {});
     expect(plugin.nvim).toBe(nvim);
+  });
+
+  it('cannot call illegal process functions', () => {
+    const nvim = {};
+    const plugin = loadPlugin(path.join(PLUGIN_PATH, 'test_2'), nvim, {});
+    expect(plugin.functions.Illegal.fn).toThrow();
   });
 });

@@ -28,7 +28,7 @@ export type LoadPluginOptions = {
 
 const Module: IModule = require('module');
 
-const BLACKLISTED_GLOBALS = [
+const REMOVED_GLOBALS = [
   'reallyExit',
   'abort',
   'chdir',
@@ -43,6 +43,12 @@ const BLACKLISTED_GLOBALS = [
   'exit',
   'kill',
 ];
+
+function removedGlobalStub(name: string) {
+  return () => {
+    throw new Error(`process.${name}() is not allowed in Plugin sandbox`);
+  };
+}
 
 // @see node/lib/internal/module.js
 function makeRequireFunction() {
@@ -116,7 +122,11 @@ function createSandbox(filename: string): ISandbox {
 
   // patch `require` in sandbox to run loaded module in sandbox context
   // if you need any of these, it might be worth discussing spawning separate processes
-  sandbox.process = <NodeJS.Process>omit(process, BLACKLISTED_GLOBALS);
+  sandbox.process = <NodeJS.Process>omit(process, REMOVED_GLOBALS);
+
+  REMOVED_GLOBALS.forEach(name => {
+    sandbox.process[name] = removedGlobalStub(name);
+  });
 
   const devNull = new DevNull();
   sandbox.process.stdin = devNull;
