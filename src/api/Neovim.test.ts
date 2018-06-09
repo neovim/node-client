@@ -74,7 +74,6 @@ describe('Neovim API', () => {
 
     it.skip('can get current mode', async () => {
       const initial = await nvim.mode;
-      console.log(initial);
       expect(initial).toEqual({ mode: 'n', blocking: false });
 
       await nvim.command('startinsert');
