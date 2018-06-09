@@ -50,6 +50,11 @@ class Test {
   illegalProcessCall() {
     process.chdir();
   }
+
+  @NvimFunction('Umask', { sync: true })
+  umask(arg) {
+    return process.umask(arg);
+  }
 }
 
 module.exports = Test;
