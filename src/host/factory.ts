@@ -129,6 +129,15 @@ function createSandbox(filename: string): ISandbox {
   });
 
   const devNull = new DevNull();
+
+  // read-only umask
+  sandbox.process.umask = (mask: number) => {
+    if (typeof mask !== 'undefined') {
+      throw new Error('Cannot use process.umask() to change mask (read-only)');
+    }
+    return process.umask();
+  };
+
   sandbox.process.stdin = devNull;
   sandbox.process.stdout = devNull;
   sandbox.process.stderr = devNull;
