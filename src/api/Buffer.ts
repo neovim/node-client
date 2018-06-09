@@ -113,8 +113,8 @@ export class Buffer extends BaseApi {
   }
 
   /* Turn on live updates */
-  attach(send_buffer: boolean) {
-    return this.request(`${this.prefix}attach`, [this, send_buffer]);
+  attach(sendBuffer: boolean) {
+    return this.request(`${this.prefix}attach`, [this, sendBuffer]);
   }
 
   /* Turn off live updates */
