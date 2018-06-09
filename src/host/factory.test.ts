@@ -21,7 +21,7 @@ describe('Plugin Factory (used by host)', () => {
   });
 
   it('should collect the specs from a plugin file', () => {
-    const exSPECted = [
+    const expected = [
       {
         type: 'autocmd',
         name: 'BufEnter',
@@ -37,7 +37,7 @@ describe('Plugin Factory (used by host)', () => {
       { type: 'function', name: 'Func', sync: true, opts: {} },
       { type: 'function', name: 'Global', sync: true, opts: {} },
     ];
-    expect(pluginObj.specs).toEqual(exSPECted);
+    expect(pluginObj.specs).toEqual(expected);
   });
 
   it('should collect the handlers from a plugin', async () => {
@@ -47,7 +47,6 @@ describe('Plugin Factory (used by host)', () => {
   });
 
   it('should load the plugin a sandbox', async () => {
-    expect(global['loaded']).toBeUndefined();
     expect(
       await pluginObj.handleRequest('Global', 'function', ['loaded'])
     ).toEqual(true);
@@ -112,7 +111,6 @@ describe('Plugin Factory (decorator api)', () => {
   });
 
   it('should load the plugin a sandbox', async () => {
-    expect(global['loaded']).toBeUndefined();
     expect(
       await pluginObj.handleRequest('Global', 'function', ['loaded'])
     ).toEqual(true);

@@ -1,3 +1,4 @@
+/* eslint no-shadow:0, import/export:0 */
 // Plugin decorator
 import { logger } from '../utils/logger';
 

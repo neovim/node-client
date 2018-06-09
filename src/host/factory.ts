@@ -27,6 +27,7 @@ export type LoadPluginOptions = {
 };
 
 const Module: IModule = require('module');
+
 const BLACKLISTED_GLOBALS = [
   'reallyExit',
   'abort',

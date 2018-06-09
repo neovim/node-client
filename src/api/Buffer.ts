@@ -12,16 +12,12 @@ export interface BufferHighlight {
   colStart?: number;
   colEnd?: number;
   srcId?: number;
-  async?: boolean;
 }
 export interface BufferClearHighlight {
   srcId?: number;
   lineStart?: number;
   lineEnd?: number;
-  async?: boolean;
 }
-
-export interface AsyncBuffer extends Buffer, Promise<Buffer> {}
 
 export class Buffer extends BaseApi {
   public prefix: string = Metadata[ExtType.Buffer].prefix;
@@ -189,7 +185,6 @@ export class Buffer extends BaseApi {
     colStart: _start,
     colEnd: _end,
     srcId: _srcId,
-    async: _isAsync,
   }: BufferHighlight): Promise<number> {
     const hlGroup = typeof _hlGroup !== 'undefined' ? _hlGroup : '';
     const colEnd = typeof _end !== 'undefined' ? _end : -1;
@@ -215,7 +210,6 @@ export class Buffer extends BaseApi {
       srcId: -1,
       lineStart: 0,
       lineEnd: -1,
-      async: true,
     };
 
     const { srcId, lineStart, lineEnd } = Object.assign({}, defaults, args);
@@ -228,3 +222,5 @@ export class Buffer extends BaseApi {
     ]);
   }
 }
+
+export interface AsyncBuffer extends Buffer, Promise<Buffer> {}

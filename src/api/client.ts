@@ -9,7 +9,7 @@ import { Neovim } from './Neovim';
 export class NeovimClient extends Neovim {
   protected requestQueue: Array<any>;
   private transportAttached: boolean;
-  private _channel_id: number;
+  private _channelId: number;
 
   constructor(options: { transport?: Transport; logger?: ILogger } = {}) {
     const transport = options.transport || new Transport();
@@ -27,7 +27,7 @@ export class NeovimClient extends Neovim {
     this.handleNotification = this.handleNotification.bind(this);
   }
 
-  /** Attaches msgpack to read/write streams **/
+  /** Attaches msgpack to read/write streams * */
   attach({
     reader,
     writer,
@@ -41,13 +41,13 @@ export class NeovimClient extends Neovim {
   }
 
   get isApiReady(): boolean {
-    return this.transportAttached && typeof this._channel_id !== 'undefined';
+    return this.transportAttached && typeof this._channelId !== 'undefined';
   }
 
   get channelId(): Promise<number> {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async resolve => {
       await this._isReady;
-      resolve(this._channel_id);
+      resolve(this._channelId);
     });
   }
 
@@ -141,11 +141,11 @@ export class NeovimClient extends Neovim {
         // Perform sanity check for metadata types
         Object.keys(metadata.types).forEach((name: string) => {
           // @ts-ignore: Declared but its value is never read
-          const metaDataForType = metadata.types[name];
+          const metaDataForType = metadata.types[name]; // eslint-disable-line no-unused-vars
           // TODO: check `prefix` and `id`
         });
 
-        this._channel_id = channelId;
+        this._channelId = channelId;
 
         // register the non-queueing handlers
         // dequeue any pending RPCs

@@ -38,7 +38,7 @@ export class Host {
     logger.debug('host.handlePlugin: ', method);
 
     // Parse method name
-    let procInfo = method.split(':');
+    const procInfo = method.split(':');
     if (process.platform === 'win32') {
       // Windows-style absolute paths is formatted as [A-Z]:\path\to\file.
       // Forward slash as path separator is ok
@@ -48,7 +48,7 @@ export class Host {
       // method.split(':') returns ['C', '/Windows/System32/cmd.exe', ...].
       // procInfo should be ['C:/Windows/System32/cmd.exe', ...].
       const networkDrive = procInfo.shift();
-      procInfo[0] = networkDrive + ':' + procInfo[0];
+      procInfo[0] = `${networkDrive}:${procInfo[0]}`;
     }
     const filename = procInfo[0];
     const type = procInfo[1];
@@ -61,7 +61,7 @@ export class Host {
       logger.error(msg);
       throw new Error(msg);
     } else {
-      return await plugin.handleRequest(procName, type, args);
+      return plugin.handleRequest(procName, type, args);
     }
   }
 

@@ -1,3 +1,4 @@
+/* eslint import/export:0 */
 import { Neovim } from '../api/Neovim';
 import { logger } from '../utils/logger';
 import { Spec } from '../types/Spec';
@@ -8,6 +9,7 @@ export interface NvimPluginOptions {
 
 export interface AutocmdOptions {
   pattern: string;
+  // eslint-disable-next-line no-eval
   eval?: string;
   sync?: boolean;
 }
@@ -22,6 +24,7 @@ export interface CommandOptions {
 export interface NvimFunctionOptions {
   sync?: boolean;
   range?: string;
+  // eslint-disable-next-line no-eval
   eval?: string;
 }
 
@@ -39,8 +42,8 @@ export function callable(fn: any): Function {
   if (typeof fn === 'function') {
     return fn;
   } else if (Array.isArray(fn) && fn.length === 2) {
-    return function() {
-      return fn[1].apply(fn[0], arguments);
+    return function(...args: any[]) {
+      return fn[1].apply(fn[0], args);
     };
   }
 
@@ -68,6 +71,7 @@ export class NvimPlugin {
 
     // Simplifies class and decorator style plugins
     try {
+      // eslint-disable-next-line new-cap
       this.instance = new plugin(this);
     } catch (err) {
       if (err instanceof TypeError) {
@@ -94,7 +98,7 @@ export class NvimPlugin {
   ): void;
   registerAutocmd(name: string, fn: any, options?: AutocmdOptions): void {
     if (!options.pattern) {
-      logger.error('registerAutocmd expected pattern option for ' + name);
+      logger.error(`registerAutocmd expected pattern option for ${name}`);
       return;
     }
 
@@ -117,7 +121,7 @@ export class NvimPlugin {
         spec,
       };
     } catch (err) {
-      logger.error('registerAutocmd expected callable argument for ' + name);
+      logger.error(`registerAutocmd expected callable argument for ${name}`);
     }
   }
 
@@ -147,7 +151,7 @@ export class NvimPlugin {
         spec,
       };
     } catch (err) {
-      logger.error('registerCommand expected callable argument for ' + name);
+      logger.error(`registerCommand expected callable argument for ${name}`);
     }
   }
 
@@ -181,7 +185,7 @@ export class NvimPlugin {
         spec,
       };
     } catch (err) {
-      logger.error('registerFunction expected callable argument for ' + name);
+      logger.error(`registerFunction expected callable argument for ${name}`);
     }
   }
 
