@@ -15,6 +15,7 @@ describe('Node host', () => {
   let nvim;
 
   beforeAll(async () => {
+    process.env.NVIM_NODE_LOG_FILE = '/tmp/nvim.log';
     const plugdir = path.resolve(__dirname);
     const nvimrc = path.join(plugdir, 'nvimrc');
     args = [
@@ -82,7 +83,21 @@ describe('Node host', () => {
     expect(result).toEqual('Funcy args');
   });
 
-  it.skip('can call a function from plugin with args', async () => {
-    await nvim.command('e! nvimrc');
+  it('can open a new buffer', async () => {
+    await nvim.command('vsp');
+    await nvim.command('e bess');
+
+    await nvim.setVar('test', 'value');
+    expect(await nvim.getVar('test')).toBe('value');
+
+    // Should have two buffers
+    expect((await nvim.buffers).length).toBe(2);
+
+    // Active buffer id
+    expect((await nvim.buffer).data).toBe(2);
+
+    await nvim.command('bd! 1');
+
+    expect(await nvim.getVar('__test_buf_number')).toBe('1');
   });
 });
