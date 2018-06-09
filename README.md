@@ -80,10 +80,14 @@ This is the nvim api object you can use to send commands from your plugin to vim
 
   interface NvimPluginOptions {
     dev?: boolean;
+    alwaysInit?: boolean;
   }
 ```
 
-Set your plugin to dev mode, which will cause the module to be reloaded on each invokation.
+Set your plugin to dev mode, which will cause the module to be reloaded on each invocation.
+`alwaysInit` will always attempt to attempt to re-instantiate the plugin. e.g. your plugin class will
+always get called on each invocation of your plugin's command.
+
 
 ```ts
   NvimPlugin.registerAutocmd(name: string, fn: Function, options: AutocmdOptions): void;

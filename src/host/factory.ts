@@ -135,6 +135,10 @@ function createPlugin(
   try {
     const sandbox = createSandbox(filename);
 
+    logger.debug(
+      `createPlugin.${filename}.clearCache: ${options && !options.cache}`
+    );
+
     // Clear module from cache
     if (options && !options.cache) {
       delete Module._cache[require.resolve(filename)];

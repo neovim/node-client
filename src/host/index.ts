@@ -19,14 +19,23 @@ export class Host {
     this.handlePlugin = this.handlePlugin.bind(this);
   }
 
-  getPlugin(filename: string, options: LoadPluginOptions = null) {
-    const plugin =
-      this.loaded[filename] || loadPlugin(filename, this.nvim, options);
+  getPlugin(filename: string, options: LoadPluginOptions = {}) {
+    let plugin = this.loaded[filename];
+    const shouldUseCachedPlugin =
+      plugin && plugin.shouldCacheModule && !plugin.alwaysInit;
 
-    logger.debug('getPlugin.shouldCache', plugin && plugin.shouldCache);
-    if (plugin && plugin.shouldCache) {
-      this.loaded[filename] = plugin;
+    if (shouldUseCachedPlugin) {
+      logger.debug('getPlugin.useCachedPlugin');
+      return plugin;
     }
+
+    plugin = loadPlugin(filename, this.nvim, {
+      ...options,
+      cache: plugin && plugin.shouldCacheModule,
+    });
+
+    logger.debug('getPlugin.alwaysInit', plugin && !plugin.alwaysInit);
+    this.loaded[filename] = plugin;
 
     return plugin;
   }
