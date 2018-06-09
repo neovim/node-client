@@ -33,6 +33,8 @@ export class Host {
 
   // Route incoming request to a plugin
   async handlePlugin(method: string, args: any[]) {
+    // ignore methods that start with nvim_ prefix (e.g. when attaching to buffer and listening for notifications)
+    if (method.startsWith('nvim_')) return;
     logger.debug('host.handlePlugin: ', method);
 
     // Parse method name
