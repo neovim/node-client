@@ -17,7 +17,7 @@ describe('NvimPlugin', () => {
     const plugin = new NvimPlugin('/tmp/filename', () => {}, {});
     plugin.setOptions({ dev: true });
     expect(plugin.dev).toBe(true);
-    expect(plugin.shouldCache).toBe(false);
+    expect(plugin.shouldCacheModule).toBe(false);
   });
 
   it('should store registered autocmds', () => {

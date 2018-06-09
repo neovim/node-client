@@ -5,6 +5,7 @@ import { Spec } from '../types/Spec';
 
 export interface NvimPluginOptions {
   dev?: boolean;
+  alwaysInit?: boolean;
 }
 
 export interface AutocmdOptions {
@@ -36,9 +37,6 @@ export interface Handler {
 export function callable(fn: Function): Function;
 export function callable(fn: [any, Function]): Function;
 export function callable(fn: any): Function {
-  logger.debug(typeof fn);
-  logger.debug(`${Array.isArray(fn)}`);
-  logger.debug(`${fn.length}`);
   if (typeof fn === 'function') {
     return fn;
   } else if (Array.isArray(fn) && fn.length === 2) {
@@ -56,6 +54,7 @@ export class NvimPlugin {
   public instance: any;
 
   public dev: boolean;
+  public alwaysInit: boolean;
 
   public autocmds: { [index: string]: Handler };
   public commands: { [index: string]: Handler };
@@ -65,6 +64,7 @@ export class NvimPlugin {
     this.filename = filename;
     this.nvim = nvim;
     this.dev = false;
+    this.alwaysInit = false;
     this.autocmds = {};
     this.commands = {};
     this.functions = {};
@@ -84,9 +84,11 @@ export class NvimPlugin {
 
   setOptions(options: NvimPluginOptions) {
     this.dev = options.dev === undefined ? this.dev : options.dev;
+    this.alwaysInit = options.alwaysInit;
   }
 
-  get shouldCache() {
+  // Cache module (in dev mode will clear the require module cache)
+  get shouldCacheModule() {
     return !this.dev;
   }
 
