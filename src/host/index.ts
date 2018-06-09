@@ -34,7 +34,7 @@ export class Host {
   // Route incoming request to a plugin
   async handlePlugin(method: string, args: any[]) {
     // ignore methods that start with nvim_ prefix (e.g. when attaching to buffer and listening for notifications)
-    if (method.startsWith('nvim_')) return;
+    if (method.startsWith('nvim_')) return null;
     logger.debug('host.handlePlugin: ', method);
 
     // Parse method name
@@ -60,9 +60,9 @@ export class Host {
       const msg = `Could not load plugin: ${filename}`;
       logger.error(msg);
       throw new Error(msg);
-    } else {
-      return plugin.handleRequest(procName, type, args);
     }
+
+    return plugin.handleRequest(procName, type, args);
   }
 
   handleRequestSpecs(method: string, args: any[], res: Response) {

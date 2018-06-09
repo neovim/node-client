@@ -84,7 +84,7 @@ class Transport extends EventEmitter {
 
   attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream) {
     this.encodeStream = this.encodeStream.pipe(writer);
-    let buffered = new Buffered();
+    const buffered = new Buffered();
     reader.pipe(buffered).pipe(this.decodeStream);
     this.writer = writer;
     this.reader = reader;
