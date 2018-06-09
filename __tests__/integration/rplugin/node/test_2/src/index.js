@@ -45,6 +45,16 @@ class Test {
   getGlobal(name) {
     return global[name];
   }
+
+  @NvimFunction('Illegal', { sync: true })
+  illegalProcessCall() {
+    process.chdir();
+  }
+
+  @NvimFunction('Umask', { sync: true })
+  umask(arg) {
+    return process.umask(arg);
+  }
 }
 
 module.exports = Test;

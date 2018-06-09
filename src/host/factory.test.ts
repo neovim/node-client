@@ -100,8 +100,9 @@ describe('Plugin Factory (decorator api)', () => {
       },
       { type: 'function', name: 'Func', sync: true, opts: {} },
       { type: 'function', name: 'Global', sync: true, opts: {} },
+      { type: 'function', name: 'Illegal', sync: true, opts: {} },
     ];
-    expect(pluginObj.specs).toEqual(expected);
+    expect(pluginObj.specs).toEqual(expect.arrayContaining(expected));
   });
 
   it('should collect the handlers from a plugin', async () => {
@@ -134,5 +135,24 @@ describe('Plugin Factory (decorator api)', () => {
     const nvim = {};
     const plugin = loadPlugin(path.join(PLUGIN_PATH, 'test_2'), nvim, {});
     expect(plugin.nvim).toBe(nvim);
+  });
+
+  it('cannot call illegal process functions', () => {
+    const nvim = {};
+    const plugin = loadPlugin(path.join(PLUGIN_PATH, 'test_2'), nvim, {});
+    expect(plugin.functions.Illegal.fn).toThrow();
+  });
+
+  it('cannot write to process.umask', () => {
+    const nvim = {};
+    const plugin = loadPlugin(path.join(PLUGIN_PATH, 'test_2'), nvim, {});
+    expect(() => plugin.functions.Umask.fn(123)).toThrow();
+  });
+
+  it('can read process.umask()', () => {
+    const nvim = {};
+    const plugin = loadPlugin(path.join(PLUGIN_PATH, 'test_2'), nvim, {});
+    expect(() => plugin.functions.Umask.fn()).not.toThrow();
+    expect(plugin.functions.Umask.fn()).toBeDefined();
   });
 });
