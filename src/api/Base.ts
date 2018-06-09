@@ -5,11 +5,22 @@ import { logger as loggerModule, ILogger } from '../utils/logger';
 import { VimValue } from '../types/VimValue';
 
 export type BaseConstructorOptions = {
-  transport: Transport;
+  transport?: Transport;
   logger?: ILogger;
   data?: Buffer;
   metadata?: any;
+  client?: any;
 };
+
+const DO_REQUEST = Symbol('DO_REQUEST');
+
+// TODO:
+// APIs that should not be allowed to be called directly
+// attach/detach should be handled by the API client instead of the
+// user directly.
+//
+// i.e. a plugin that detaches will affect all plugins registered on host
+// const EXCLUDED = ['nvim_buf_attach', 'nvim_buf_detach'];
 
 // Instead of dealing with multiple inheritance (or lackof), just extend EE
 // Only the Neovim API class should use EE though
@@ -19,17 +30,29 @@ export class BaseApi extends EventEmitter {
   protected prefix: string;
   public logger: ILogger;
   public data: Buffer; // Node Buffer
+  protected client: any;
 
-  constructor({ transport, data, logger, metadata }: BaseConstructorOptions) {
+  constructor({
+    transport,
+    data,
+    logger,
+    metadata,
+    client,
+  }: BaseConstructorOptions) {
     super();
 
-    this.transport = transport;
+    this.setTransport(transport);
     this.data = data;
     this.logger = logger || loggerModule;
+    this.client = client;
 
     if (metadata) {
       Object.defineProperty(this, 'metadata', { value: metadata });
     }
+  }
+
+  protected setTransport(transport: Transport) {
+    this.transport = transport;
   }
 
   equals(other: BaseApi) {
@@ -40,14 +63,8 @@ export class BaseApi extends EventEmitter {
     }
   }
 
-  async request(name: string, args: any[] = []): Promise<any> {
-    // `this._isReady` is undefined in ExtType classes (i.e. Buffer, Window, Tabpage)
-    // But this is just for Neovim API, since it's possible to call this method from Neovim class
-    // before transport is ready.
-    // Not possible for ExtType classes since they are only created after transport is ready
-    await this._isReady;
-    this.logger.debug(`request -> neovim.api.${name}`);
-    return new Promise((resolve, reject) => {
+  [DO_REQUEST] = (name: string, args: any[] = []): Promise<any> =>
+    new Promise((resolve, reject) => {
       this.transport.request(name, args, (err: any, res: any) => {
         this.logger.debug(`response -> neovim.api.${name}: ${res}`);
         if (err) {
@@ -56,7 +73,17 @@ export class BaseApi extends EventEmitter {
           resolve(res);
         }
       });
+      // tslint:disable-next-line
     });
+
+  async request(name: string, args: any[] = []): Promise<any> {
+    // `this._isReady` is undefined in ExtType classes (i.e. Buffer, Window, Tabpage)
+    // But this is just for Neovim API, since it's possible to call this method from Neovim class
+    // before transport is ready.
+    // Not possible for ExtType classes since they are only created after transport is ready
+    await this._isReady;
+    this.logger.debug(`request -> neovim.api.${name}`);
+    return this[DO_REQUEST](name, args);
   }
 
   _getArgsByPrefix(...args: any[]) {

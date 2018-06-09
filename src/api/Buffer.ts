@@ -19,8 +19,27 @@ export interface BufferClearHighlight {
   lineEnd?: number;
 }
 
+export const DETACH = Symbol('detachBuffer');
+export const ATTACH = Symbol('attachBuffer');
+
 export class Buffer extends BaseApi {
   public prefix: string = Metadata[ExtType.Buffer].prefix;
+  private isAttached: boolean = false;
+
+  /**
+   * Attach to buffer to listen to buffer events
+   * @param sendBuffer Set to true if the initial notification should contain
+   *        the whole buffer. If so, the first notification will be a
+   *        `nvim_buf_lines_event`. Otherwise, the first notification will be
+   *        a `nvim_buf_changedtick_event`
+   */
+  [ATTACH] = (sendBuffer: boolean = false, options: {} = {}) =>
+    this.request(`${this.prefix}attach`, [this, sendBuffer, options]);
+
+  /**
+   * Detach from buffer to stop listening to buffer events
+   */
+  [DETACH] = () => this.request(`${this.prefix}detach`, [this]);
 
   /** Total number of lines in buffer */
   get length(): Promise<number> {
@@ -106,24 +125,6 @@ export class Buffer extends BaseApi {
       end: -1,
       strictIndexing: false,
     });
-  }
-
-  /**
-   * Attach to buffer to listen to buffer events
-   * @param sendBuffer Set to true if the initial notification should contain
-   *        the whole buffer. If so, the first notification will be a
-   *        `nvim_buf_lines_event`. Otherwise, the first notification will be
-   *        a `nvim_buf_changedtick_event`
-   */
-  attach(sendBuffer: boolean) {
-    return this.request(`${this.prefix}attach`, [this, sendBuffer]);
-  }
-
-  /**
-   * Detach from buffer to stop listening to buffer events
-   */
-  detach() {
-    return this.request(`${this.prefix}detach`, [this]);
   }
 
   /** Get buffer name */
@@ -220,6 +221,27 @@ export class Buffer extends BaseApi {
       lineStart,
       lineEnd,
     ]);
+  }
+
+  /**
+   * Listens to buffer for events
+   */
+  listen(eventName: string, cb: Function): Function {
+    if (!this.isAttached) {
+      this[ATTACH]();
+      this.isAttached = true;
+    }
+
+    this.client.attachBuffer(this, eventName, cb);
+    return () => {
+      this.unlisten(eventName, cb);
+    };
+  }
+
+  unlisten(eventName: string, cb: Function) {
+    const shouldDetach = this.client.detachBuffer(this, eventName, cb);
+    if (!shouldDetach) return;
+    this[DETACH]();
   }
 }
 

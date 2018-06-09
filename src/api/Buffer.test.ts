@@ -15,7 +15,7 @@ try {
   process.exit(1);
 }
 
-describe.only('Buffer API', () => {
+describe('Buffer API', () => {
   let proc;
   let nvim;
 
@@ -236,5 +236,143 @@ describe.only('Buffer API', () => {
       expect(await nvim.buffer.length).toEqual(1);
       expect(await nvim.buffer.lines).toEqual(['']);
     });
+  });
+});
+
+describe('Buffer event updates', () => {
+  let proc;
+  let nvim;
+
+  beforeAll(async done => {
+    proc = cp.spawn(
+      'nvim',
+      ['-u', 'NONE', '-N', '--embed', '-c', 'set noswapfile', 'test.js'],
+      {
+        cwd: __dirname,
+      }
+    );
+
+    nvim = await attach({ proc });
+    done();
+  });
+
+  afterAll(() => {
+    nvim.quit();
+    if (proc) {
+      proc.disconnect();
+    }
+  });
+
+  beforeEach(async () => {
+    await nvim.buffer.remove(0, -1);
+  });
+
+  it('can listen and unlisten', async () => {
+    const buffer = await nvim.buffer;
+    const mock = jest.fn();
+    const unlisten = buffer.listen('lines', mock);
+    await nvim.buffer.insert(['bar'], 1);
+    expect(mock).toHaveBeenCalledTimes(1);
+    unlisten();
+    await nvim.buffer.insert(['bar'], 1);
+    expect(mock).toHaveBeenCalledTimes(1);
+  });
+
+  it('can use `buffer.off` to unlisten', async () => {
+    const buffer = await nvim.buffer;
+    const mock = jest.fn();
+    buffer.listen('lines', mock);
+    await nvim.buffer.insert(['bar'], 1);
+    expect(mock).toHaveBeenCalledTimes(1);
+    buffer.unlisten('lines', mock);
+    await nvim.buffer.insert(['bar'], 1);
+    expect(mock).toHaveBeenCalledTimes(1);
+  });
+
+  it('listens to line updates', async done => {
+    const buffer = await nvim.buffer;
+    const bufferName = await buffer.name;
+    await buffer.insert(['test', 'foo'], 0);
+
+    const unlisten = buffer.listen(
+      'lines',
+      async (currentBuffer, tick, start, end, data) => {
+        expect(await currentBuffer.name).toBe(bufferName);
+        expect(start).toBe(1);
+        expect(end).toBe(1);
+        expect(data).toEqual(['bar']);
+        unlisten();
+        done();
+      }
+    );
+
+    await nvim.buffer.insert(['bar'], 1);
+  });
+
+  it('has listener on multiple buffers ', async () => {
+    await nvim.command('new');
+    const buffers = await nvim.buffers;
+    const foo = jest.fn();
+    const bar = jest.fn();
+
+    buffers[0].listen('lines', foo);
+    buffers[1].listen('lines', bar);
+
+    await nvim.buffer.insert(['bar'], 1);
+    expect(foo).toHaveBeenCalledTimes(0);
+    expect(bar).toHaveBeenCalledTimes(1);
+    await nvim.command('q!');
+
+    await nvim.buffer.insert(['foo'], 0);
+    expect(foo).toHaveBeenCalledTimes(1);
+    expect(bar).toHaveBeenCalledTimes(1);
+
+    buffers[0].unlisten('lines', foo);
+    buffers[1].unlisten('lines', bar);
+    await nvim.command('e!');
+  });
+
+  it('has multiple listeners for same event, on same buffer', async () => {
+    const buffer = await nvim.buffer;
+    const foo = jest.fn();
+    const bar = jest.fn();
+
+    const unlisten1 = buffer.listen('lines', foo);
+    const unlisten2 = buffer.listen('lines', bar);
+
+    await nvim.buffer.insert(['bar'], 1);
+    expect(foo).toHaveBeenCalledTimes(1);
+    expect(bar).toHaveBeenCalledTimes(1);
+
+    unlisten2();
+
+    await nvim.buffer.insert(['foo'], 0);
+    expect(foo).toHaveBeenCalledTimes(2);
+    expect(bar).toHaveBeenCalledTimes(1);
+
+    unlisten1();
+    await nvim.command('e!');
+  });
+
+  it('has multiple listeners for different events, on same buffer', async () => {
+    const buffer = await nvim.buffer;
+    const foo = jest.fn();
+    const bar = jest.fn();
+
+    const unlisten1 = buffer.listen('lines', foo);
+    const unlisten2 = buffer.listen('changedtick', bar);
+
+    await nvim.buffer.insert(['bar'], 1);
+    expect(foo).toHaveBeenCalledTimes(1);
+    expect(bar).toHaveBeenCalledTimes(1);
+
+    unlisten2();
+
+    await nvim.buffer.insert(['foo'], 0);
+    expect(foo).toHaveBeenCalledTimes(2);
+    expect(bar).toHaveBeenCalledTimes(1);
+
+    unlisten1();
+    await nvim.command('e!');
   });
 });
