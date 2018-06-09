@@ -4,17 +4,15 @@ import { NvimPlugin } from '../host/NvimPlugin';
 import { nvimFunction as FunctionDecorator } from './function';
 import { command as Command } from './command';
 import { autocmd as Autocmd } from './autocmd';
-import { NVIM_PLUGIN, NVIM_DEV_MODE, NVIM_METHOD_NAME } from './properties';
 
-const instantiateOrRun = (fn, ...args) => {
+const instantiateOrRun = (Fn, ...args) => {
   try {
-    return new fn(...args);
+    return new Fn(...args);
   } catch (err) {
     if (err instanceof TypeError) {
-      return fn(...args);
-    } else {
-      throw err;
+      return Fn(...args);
     }
+    throw err;
   }
 };
 

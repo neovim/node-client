@@ -1,9 +1,30 @@
 module.exports = {
   // extending prettier fucks up my vim...
-  extends: ['airbnb-base'],
-  parser: 'typescript-eslint-parser',
-  plugins: ['typescript', 'import'],
+  extends: ['airbnb-base', 'prettier'],
+  plugins: ['import'],
+  overrides: {
+    files: ['**/*.ts'],
+    parser: 'typescript-eslint-parser',
+    plugins: ['typescript'],
+    rules: {
+      'no-undef': 'off',
+
+      'typescript/no-unused-vars': 1,
+
+      'prefer-destructuring': 'off',
+
+      // https://github.com/eslint/typescript-eslint-parser/issues/414
+      'no-restricted-globals': 'off',
+
+      // https://github.com/eslint/typescript-eslint-parser/issues/434
+      'no-dupe-class-members': 'off',
+
+      'no-use-before-define': 'off',
+    },
+  },
+
   rules: {
+    camelcase: ['error', { properties: 'never' }],
     'class-methods-use-this': 0,
     'comma-dangle': [
       'error',
@@ -15,6 +36,8 @@ module.exports = {
         functions: 'ignore',
       },
     ],
+    'no-case-declarations': 'off',
+    'no-prototype-builtins': 'off',
     'no-underscore-dangle': 0,
     'no-mixed-operators': 0,
     'func-names': 0,

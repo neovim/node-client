@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import * as cp from 'child_process';
-// // eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import/no-extraneous-dependencies
 import * as which from 'which';
 import { attach } from '../attach';
 
@@ -193,7 +193,6 @@ describe('Window API', () => {
     });
 
     it.skip('gets current lines in buffer', async () => {
-      console.log(nvim.window.buffer.append);
       expect(await nvim.window.buffer.lines).toEqual(['test']);
     });
   });

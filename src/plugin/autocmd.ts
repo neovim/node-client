@@ -2,6 +2,7 @@ import { NVIM_SYNC, NVIM_SPEC, NVIM_METHOD_NAME } from './properties';
 
 export interface AutocmdOptions {
   pattern: string;
+  // eslint-disable-next-line no-eval
   eval?: string;
   sync?: boolean;
 }

@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import * as cp from 'child_process';
-// // eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import/no-extraneous-dependencies
 import * as which from 'which';
 import { attach } from './attach';
 
@@ -42,6 +42,7 @@ describe('Nvim Promise API', () => {
 
       done();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.log(err);
     }
   });

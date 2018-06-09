@@ -7,9 +7,13 @@ import { VimValue } from '../types/VimValue';
 
 export type UiAttachOptions = {
   rgb?: boolean;
+  // eslint-disable-next-line camelcase
   ext_popupmenu?: boolean;
+  // eslint-disable-next-line camelcase
   ext_tabline?: boolean;
+  // eslint-disable-next-line camelcase
   ext_wildmenu?: boolean;
+  // eslint-disable-next-line camelcase
   ext_cmdline?: boolean;
 };
 
@@ -145,7 +149,7 @@ export class Neovim extends BaseApi {
     nameOrId: string | number,
     isRgb: boolean
   ): Promise<object> | void {
-    let functionName = typeof nameOrId === 'string' ? 'by_name' : 'by_id';
+    const functionName = typeof nameOrId === 'string' ? 'by_name' : 'by_id';
     return this.request(`${this.prefix}get_hl_${functionName}`, [
       nameOrId,
       isRgb,
@@ -161,7 +165,8 @@ export class Neovim extends BaseApi {
    * Evaluates a VimL expression (:help expression). Dictionaries
    * and Lists are recursively expanded. On VimL error: Returns a
    * generic error; v:errmsg is not updated.
-   **/
+   *
+   */
   eval(expr: string): Promise<VimValue> {
     return this.request(`${this.prefix}eval`, [expr]);
   }
@@ -230,7 +235,7 @@ export class Neovim extends BaseApi {
     ]);
   }
 
-  /** Gets width of string*/
+  /** Gets width of string */
   strWidth(str: string): Promise<number> {
     return this.request(`${this.prefix}strwidth`, [str]);
   }

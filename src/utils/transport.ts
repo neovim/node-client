@@ -62,19 +62,21 @@ class Transport extends EventEmitter {
   setupCodec() {
     const codec = msgpack.createCodec();
 
-    Metadata.forEach(({ constructor }, id: number): void => {
-      codec.addExtPacker(id, constructor, (obj: any) =>
-        msgpack.encode(obj.data)
-      );
-      codec.addExtUnpacker(
-        id,
-        data =>
-          new constructor({
-            transport: this,
-            data: msgpack.decode(data),
-          })
-      );
-    });
+    Metadata.forEach(
+      ({ constructor }, id: number): void => {
+        codec.addExtPacker(id, constructor, (obj: any) =>
+          msgpack.encode(obj.data)
+        );
+        codec.addExtUnpacker(
+          id,
+          data =>
+            new constructor({
+              transport: this,
+              data: msgpack.decode(data),
+            })
+        );
+      }
+    );
 
     this.codec = codec;
     return this.codec;
@@ -82,7 +84,7 @@ class Transport extends EventEmitter {
 
   attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream) {
     this.encodeStream = this.encodeStream.pipe(writer);
-    let buffered = new Buffered();
+    const buffered = new Buffered();
     reader.pipe(buffered).pipe(this.decodeStream);
     this.writer = writer;
     this.reader = reader;
@@ -108,9 +110,9 @@ class Transport extends EventEmitter {
   }
 
   parseMessage(msg: any[]) {
-    var msg_type = msg[0];
+    const msgType = msg[0];
 
-    if (msg_type === 0) {
+    if (msgType === 0) {
       // request
       //   - msg[1]: id
       //   - msg[2]: method name
@@ -121,16 +123,16 @@ class Transport extends EventEmitter {
         msg[3],
         new Response(this.encodeStream, msg[1])
       );
-    } else if (msg_type === 1) {
+    } else if (msgType === 1) {
       // response to a previous request:
       //   - msg[1]: the id
       //   - msg[2]: error(if any)
       //   - msg[3]: result(if not errored)
-      var id = msg[1];
-      var handler = this.pending.get(id);
+      const id = msg[1];
+      const handler = this.pending.get(id);
       this.pending.delete(id);
       handler(msg[2], msg[3]);
-    } else if (msg_type === 2) {
+    } else if (msgType === 2) {
       // notification/event
       //   - msg[1]: event name
       //   - msg[2]: arguments

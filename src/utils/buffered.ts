@@ -11,42 +11,46 @@ export default class Buffered extends Transform {
       writableHighWaterMark: 10 * 1024 * 1024,
     } as any);
     this.chunks = null;
-    this.timer = null
+    this.timer = null;
   }
 
   sendData() {
-    let { chunks } = this;
+    const { chunks } = this;
     if (chunks) {
       this.chunks = null;
-      let buf = Buffer.concat(chunks);
+      const buf = Buffer.concat(chunks);
       this.push(buf);
     }
   }
 
-  _transform(chunk: Buffer, encoding: any, callback: any) {
-    let { chunks, timer } = this;
-    if (timer) clearTimeout(timer)
+  // eslint-disable-next-line consistent-return
+  _transform(chunk: Buffer, encoding: any, callback: any): void {
+    const { chunks, timer } = this;
+
+    if (timer) clearTimeout(timer);
+
     if (chunk.length < MIN_SIZE) {
       if (!chunks) return callback(null, chunk);
       chunks.push(chunk);
       this.sendData();
       callback();
-      return;
-    }
-    if (!chunks) {
-      chunks = this.chunks = [chunk];
     } else {
-      chunks.push(chunk);
+      if (!chunks) {
+        this.chunks = [chunk];
+      } else {
+        chunks.push(chunk);
+      }
+
+      this.timer = setTimeout(this.sendData.bind(this), 20);
+      callback();
     }
-    this.timer = setTimeout(this.sendData.bind(this), 20);
-    callback();
   }
 
   _flush(callback: any) {
-    let { chunks } = this;
+    const { chunks } = this;
     if (chunks) {
       this.chunks = null;
-      let buf = Buffer.concat(chunks);
+      const buf = Buffer.concat(chunks);
       callback(null, buf);
     } else {
       callback();

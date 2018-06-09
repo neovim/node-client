@@ -3,8 +3,6 @@ import { ExtType, Metadata } from './types';
 import { createChainableApi } from './helpers/createChainableApi';
 import { Window, AsyncWindow } from './Window';
 
-export interface AsyncTabpage extends Tabpage, Promise<Tabpage> {}
-
 export class Tabpage extends BaseApi {
   public prefix: string = Metadata[ExtType.Tabpage].prefix;
 
@@ -41,3 +39,5 @@ export class Tabpage extends BaseApi {
     this.logger.error('Tabpage does not have `setOption`');
   }
 }
+
+export interface AsyncTabpage extends Tabpage, Promise<Tabpage> {}

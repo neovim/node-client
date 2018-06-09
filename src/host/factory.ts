@@ -27,6 +27,7 @@ export type LoadPluginOptions = {
 };
 
 const Module: IModule = require('module');
+
 const BLACKLISTED_GLOBALS = [
   'reallyExit',
   'abort',
@@ -148,7 +149,7 @@ function createPlugin(
       return new NvimPlugin(filename, plugin, nvim);
     }
   } catch (err) {
-    let file = path.basename(filename);
+    const file = path.basename(filename);
     logger.error(`[${file}] ${err.stack}`);
     logger.error(`[${file}] Error loading child ChildPlugin ${filename}`);
   }
