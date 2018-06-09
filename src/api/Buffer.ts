@@ -112,12 +112,20 @@ export class Buffer extends BaseApi {
     });
   }
 
-  /* Turn on live updates */
+  /**
+   * Attach to buffer to listen to buffer events
+   * @param sendBuffer Set to true if the initial notification should contain
+   *        the whole buffer. If so, the first notification will be a
+   *        `nvim_buf_lines_event`. Otherwise, the first notification will be
+   *        a `nvim_buf_changedtick_event`
+   */
   attach(sendBuffer: boolean) {
     return this.request(`${this.prefix}attach`, [this, sendBuffer]);
   }
 
-  /* Turn off live updates */
+  /**
+   * Detach from buffer to stop listening to buffer events
+   */
   detach() {
     return this.request(`${this.prefix}detach`, [this]);
   }
