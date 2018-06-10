@@ -213,6 +213,29 @@ describe('Neovim API', () => {
     it('gets commands', async () => {
       expect(await nvim.commands).toEqual({});
     });
+
+    it('gets proc', async () => {
+      expect(await nvim.getProc(1)).toEqual(
+        expect.objectContaining({
+          name: expect.anything(),
+          pid: expect.anything(),
+          ppid: expect.anything(),
+        })
+      );
+    });
+
+    it('gets proc', async () => {
+      expect(await nvim.getProcChildren(1)).toEqual(expect.arrayContaining([]));
+    });
+
+    it('gets uis', async () => {
+      expect(await nvim.uis).toEqual([]);
+    });
+
+    it('can subscribe to vim events', async () => {
+      await nvim.subscribe('test');
+      await nvim.unsubscribe('test');
+    });
   });
 
   describe.skip('Chainable API calls', () => {});
