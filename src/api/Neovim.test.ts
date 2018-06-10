@@ -215,11 +215,11 @@ describe('Neovim API', () => {
     });
 
     it('gets proc', async () => {
-      expect(await nvim.getProc(1)).toEqual(expect.anything());
+      expect(async () => nvim.getProc(1)).not.toThrow();
     });
 
-    it('gets proc', async () => {
-      expect(await nvim.getProcChildren(1)).toEqual(expect.anything());
+    it('gets proc children', async () => {
+      expect(async () => nvim.getProcChildren(1)).not.toThrow();
     });
 
     it('gets uis', async () => {
