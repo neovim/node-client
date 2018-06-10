@@ -17,6 +17,12 @@ export type UiAttachOptions = {
   ext_cmdline?: boolean;
 };
 
+export type Proc = {
+  ppid: number;
+  name: string;
+  pid: number;
+};
+
 /**
  * Neovim API
  */
@@ -25,6 +31,10 @@ export class Neovim extends BaseApi {
   public Buffer = Buffer;
   public Window = Window;
   public Tabpage = Tabpage;
+
+  get apiInfo(): Promise<any[]> {
+    return this.request(`${this.prefix}get_api_info`);
+  }
 
   /** Get list of all buffers */
   get buffers(): Promise<Buffer[]> {
@@ -41,6 +51,22 @@ export class Neovim extends BaseApi {
   /** Set current buffer */
   set buffer(buffer: AsyncBuffer) {
     this.request(`${this.prefix}set_current_buf`, [buffer]);
+  }
+
+  get chans(): Promise<number[]> {
+    return this.request(`${this.prefix}get_chans`);
+  }
+
+  getChanInfo(chan: number): Promise<object> {
+    return this.request(`${this.prefix}get_chan_info`, [chan]);
+  }
+
+  get commands(): Promise<Object> {
+    return this.getCommands();
+  }
+
+  getCommands(options = {}): Promise<Object> {
+    return this.request(`${this.prefix}get_commands`, [this, options]);
   }
 
   /** Get list of all tabpages */
@@ -156,6 +182,14 @@ export class Neovim extends BaseApi {
     ]);
   }
 
+  getHighlightByName(name: string, isRgb: boolean): Promise<object> {
+    return this.request(`${this.prefix}get_hl_by_name`, [name, isRgb]);
+  }
+
+  getHighlightById(id: number, isRgb: boolean): Promise<object> {
+    return this.request(`${this.prefix}get_hl_by_id`, [id, isRgb]);
+  }
+
   /** Delete current line in buffer */
   deleteCurrentLine(): Promise<any> {
     return this.request(`${this.prefix}del_current_line`);
@@ -177,6 +211,24 @@ export class Neovim extends BaseApi {
   lua(code: string, args: Array<VimValue> = []): Promise<object> {
     const _args = Array.isArray(args) ? args : [args];
     return this.request(`${this.prefix}execute_lua`, [code, _args]);
+  }
+
+  // Alias for `lua()` to be consistent with neovim API
+  executeLua(code: string, args: Array<VimValue> = []): Promise<object> {
+    return this.lua(code, args);
+  }
+
+  callDictFunction(
+    dict: object,
+    fname: string,
+    args: VimValue | Array<VimValue> = []
+  ): object {
+    const _args = Array.isArray(args) ? args : [args];
+    return this.request(`${this.prefix}call_dict_function`, [
+      dict,
+      fname,
+      _args,
+    ]);
   }
 
   /** Call a vim function */
@@ -220,6 +272,27 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}input`, [keys]);
   }
 
+  /**
+   * Parse a VimL Expression
+   *
+   * TODO: return type, see :help
+   */
+  parseExpression(
+    expr: string,
+    flags: string,
+    highlight: boolean
+  ): Promise<object> {
+    return this.request(`${this.prefix}parse_expression`, [
+      expr,
+      flags,
+      highlight,
+    ]);
+  }
+
+  getProc(pid: number): Promise<Proc> {
+    return this.request(`${this.prefix}get_proc`, [pid]);
+  }
+
   /** Replace term codes */
   replaceTermcodes(
     str: string,
@@ -259,6 +332,11 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}err_writeln`, [str]);
   }
 
+  // TODO: add type
+  get uis(): Promise<any[]> {
+    return this.request(`${this.prefix}list_uis`);
+  }
+
   uiAttach(
     width: number,
     height: number,
@@ -281,13 +359,29 @@ export class Neovim extends BaseApi {
   }
 
   /** Subscribe to nvim event broadcasts */
-  subscribe(event: String): Promise<void> {
+  subscribe(event: string): Promise<void> {
     return this.request(`${this.prefix}subscribe`, [event]);
   }
 
   /** Unsubscribe to nvim event broadcasts */
-  unsubscribe(event: String): Promise<void> {
+  unsubscribe(event: string): Promise<void> {
     return this.request(`${this.prefix}unsubscribe`, [event]);
+  }
+
+  setClientInfo(
+    name: string,
+    version: object,
+    type: string,
+    methods: object,
+    attributes: object
+  ): void {
+    this.request(`${this.prefix}set_client_info`, [
+      name,
+      version,
+      type,
+      methods,
+      attributes,
+    ]);
   }
 
   /** Quit nvim */

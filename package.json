@@ -71,8 +71,11 @@
   },
   "scripts": {
     "prepublishOnly": "npm run build",
-    "test": "npm run build && jest --runInBand",
+    "test": "jest",
+    "test-build": "npm run build && npm run prep-integration-test && jest --runInBand --coverage",
     "test-staged": "jest --bail --no-cache --findRelatedTests",
+    "test-missing-apis": "yarn build && node script/findMissingApi",
+    "test-lint": "npm run lint",
     "lint": "eslint src/**/*.ts && tslint -p tsconfig.json",
     "prep-integration-test": "cd __tests__/integration/rplugin/node/test_2 && npm install && npm run build",
     "precommit": "lint-staged",
