@@ -236,6 +236,10 @@ describe('Neovim API', () => {
       await nvim.subscribe('test');
       await nvim.unsubscribe('test');
     });
+
+    it('sets clientInfo', async () => {
+      expect(() => nvim.setClientInfo('test', {}, '', {}, {})).not.toThrow();
+    });
   });
 
   describe.skip('Chainable API calls', () => {});
