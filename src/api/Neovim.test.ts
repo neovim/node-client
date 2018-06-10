@@ -4,6 +4,7 @@ import * as path from 'path';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as which from 'which';
 import { attach } from '../attach';
+import { Neovim } from './Neovim';
 
 try {
   which.sync('nvim');
@@ -42,6 +43,14 @@ describe('Neovim API', () => {
   });
 
   beforeEach(() => {});
+
+  it('sets transport when initialized', () => {
+    const transport = {};
+    const spy = jest.spyOn(Neovim.prototype, 'setTransport');
+    const neovim = new Neovim({ transport });
+    expect(spy).toHaveBeenCalledWith(transport);
+    expect(neovim.transport).toBe(transport);
+  });
 
   describe('Normal API calls', () => {
     it('gets a list of buffers and switches buffers', async () => {
