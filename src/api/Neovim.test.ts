@@ -215,17 +215,11 @@ describe('Neovim API', () => {
     });
 
     it('gets proc', async () => {
-      expect(await nvim.getProc(1)).toEqual(
-        expect.objectContaining({
-          name: expect.anything(),
-          pid: expect.anything(),
-          ppid: expect.anything(),
-        })
-      );
+      expect(await nvim.getProc(1)).toEqual(expect.anything());
     });
 
     it('gets proc', async () => {
-      expect(await nvim.getProcChildren(1)).toEqual(expect.arrayContaining([]));
+      expect(await nvim.getProcChildren(1)).toEqual(expect.anything());
     });
 
     it('gets uis', async () => {
