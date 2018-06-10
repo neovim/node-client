@@ -293,6 +293,10 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}get_proc`, [pid]);
   }
 
+  getProcChildren(pid: number): Promise<Proc[]> {
+    return this.request(`${this.prefix}get_proc_children`, [pid]);
+  }
+
   /** Replace term codes */
   replaceTermcodes(
     str: string,
