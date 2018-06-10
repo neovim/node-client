@@ -4,6 +4,7 @@ import { Buffer, AsyncBuffer } from './Buffer';
 import { Tabpage, AsyncTabpage } from './Tabpage';
 import { Window, AsyncWindow } from './Window';
 import { VimValue } from '../types/VimValue';
+import { ApiInfo } from '../types/ApiInfo'; // eslint-disable-line
 
 export type UiAttachOptions = {
   rgb?: boolean;
@@ -32,7 +33,7 @@ export class Neovim extends BaseApi {
   public Window = Window;
   public Tabpage = Tabpage;
 
-  get apiInfo(): Promise<any[]> {
+  get apiInfo(): Promise<[number, ApiInfo]> {
     return this.request(`${this.prefix}get_api_info`);
   }
 
@@ -54,7 +55,7 @@ export class Neovim extends BaseApi {
   }
 
   get chans(): Promise<number[]> {
-    return this.request(`${this.prefix}get_chans`);
+    return this.request(`${this.prefix}list_chans`);
   }
 
   getChanInfo(chan: number): Promise<object> {
@@ -66,7 +67,7 @@ export class Neovim extends BaseApi {
   }
 
   getCommands(options = {}): Promise<Object> {
-    return this.request(`${this.prefix}get_commands`, [this, options]);
+    return this.request(`${this.prefix}get_commands`, [options]);
   }
 
   /** Get list of all tabpages */
@@ -173,7 +174,7 @@ export class Neovim extends BaseApi {
   /** Get highlight by name or id */
   getHighlight(
     nameOrId: string | number,
-    isRgb: boolean
+    isRgb: boolean = true
   ): Promise<object> | void {
     const functionName = typeof nameOrId === 'string' ? 'by_name' : 'by_id';
     return this.request(`${this.prefix}get_hl_${functionName}`, [
@@ -182,11 +183,11 @@ export class Neovim extends BaseApi {
     ]);
   }
 
-  getHighlightByName(name: string, isRgb: boolean): Promise<object> {
+  getHighlightByName(name: string, isRgb: boolean = true): Promise<object> {
     return this.request(`${this.prefix}get_hl_by_name`, [name, isRgb]);
   }
 
-  getHighlightById(id: number, isRgb: boolean): Promise<object> {
+  getHighlightById(id: number, isRgb: boolean = true): Promise<object> {
     return this.request(`${this.prefix}get_hl_by_id`, [id, isRgb]);
   }
 

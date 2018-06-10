@@ -88,7 +88,33 @@ describe('Neovim API', () => {
       expect(await nvim.getColorByName('white')).toBe(16777215);
     });
 
-    it('can get highlight by name or id', async () => {});
+    it('can get highlight by name or id', async () => {
+      const buffer = await nvim.buffer;
+
+      await buffer.append('hello world');
+      const srcId = await buffer.addHighlight({
+        hlGroup: 'test',
+        line: 0,
+        colStart: 0,
+        colEnd: 3,
+        srcId: 0,
+      });
+      expect(srcId).toBeGreaterThan(0);
+
+      const highlightById = await nvim.getHighlightById(srcId);
+      expect(highlightById).toEqual(
+        expect.objectContaining({
+          foreground: expect.anything(),
+        })
+      );
+      expect(await nvim.getHighlight(srcId)).toEqual(highlightById);
+
+      // Note this doesn't work as you would think because
+      // addHighlight does not add a highlight group
+      expect(await nvim.getHighlightByName('test')).toEqual({});
+
+      buffer.remove(0, -1, false);
+    });
 
     it('can run lua', async () => {
       expect(
@@ -99,6 +125,13 @@ describe('Neovim API', () => {
         await nvim.lua('function test(a) return a end return test(...)', [
           'foo',
         ])
+      ).toBe('foo');
+
+      expect(
+        await nvim.executeLua(
+          'function test(a) return a end return test(...)',
+          ['foo']
+        )
       ).toBe('foo');
     });
 
@@ -132,6 +165,53 @@ describe('Neovim API', () => {
       // TODO how to test this?
       nvim.errWrite('test');
       nvim.errWriteLine('test');
+    });
+
+    it('parse expression', async () => {
+      expect(await nvim.parseExpression('@', 'm', true)).toEqual(
+        expect.objectContaining({})
+      );
+    });
+
+    it('gets api info', async () => {
+      const [, apiInfo] = await nvim.apiInfo;
+      expect(apiInfo).toEqual(
+        expect.objectContaining({
+          version: expect.anything(),
+          functions: expect.anything(),
+          ui_events: expect.anything(),
+          ui_options: expect.anything(),
+          error_types: expect.anything(),
+          types: expect.anything(),
+        })
+      );
+    });
+
+    it('gets all channels', async () => {
+      const chans = await nvim.chans;
+      expect(chans).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.anything(),
+            stream: expect.anything(),
+            mode: expect.anything(),
+          }),
+        ])
+      );
+    });
+
+    it('gets channel info', async () => {
+      expect(await nvim.getChanInfo(1)).toEqual(
+        expect.objectContaining({
+          id: expect.anything(),
+          stream: expect.anything(),
+          mode: expect.anything(),
+        })
+      );
+    });
+
+    it('gets commands', async () => {
+      expect(await nvim.commands).toEqual({});
     });
   });
 
