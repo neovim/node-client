@@ -1,9 +1,11 @@
 language: node_js
 node_js: stable
 cache: yarn
+env: # required for allowed_failures
 
 # Use macOS 10.12: https://docs.travis-ci.com/user/languages/objective-c/
 matrix:
+  fast_finish: true
   include:
     - os: osx
       osx_image: xcode9.1
@@ -17,6 +19,11 @@ matrix:
     - os: linux
       dist: trusty
       env: TEST_SUITE=test-build
+  allowed_failures:
+    - os: linux
+      dist: trusty
+      env: TEST_SUITE=test-missing-apis
+    
 
 install:
   - npm install -g yarn
