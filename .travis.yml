@@ -22,9 +22,7 @@ matrix:
       dist: trusty
       env: TEST_SUITE=test-build
   allowed_failures:
-    - os: linux
-      language: node_js
-      dist: trusty
+    - language: node_js
       env: TEST_SUITE=test-missing-apis
     
 
