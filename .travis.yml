@@ -19,6 +19,7 @@ matrix:
       env: TEST_SUITE=test-build
 
 install:
+  - npm install -g yarn
   - |
     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim-macos.tar.gz
