@@ -7,6 +7,20 @@ const search = process.argv[2] || '';
 const findConstructor = name => Metadata.find(obj => name.includes(obj.prefix));
 
 const hasApiMethod = name => {
+  // these are ignored because they are implemented, but has a non-normalized name/case
+  if (
+    [
+      'nvim_feedkeys',
+      'nvim_strwidth',
+      'nvim_err_writeln',
+      'nvim_buf_line_count',
+      'nvim_buf_attach',
+      'nvim_buf_detach',
+    ].includes(name)
+  ) {
+    return true;
+  }
+
   let methodName = name;
   const isSetter = name.includes('_set_');
   const isGetter =
@@ -34,10 +48,6 @@ const hasApiMethod = name => {
   const titleMethodName = `${methodName[0].toUpperCase()}${methodName.slice(
     1
   )}`;
-
-  // these are ignored because they are implemented, but has a non-normalized name/case
-  if (['feedkeys', 'strwidth', 'errWriteln', 'lineCount'].includes(methodName))
-    return true;
 
   const Constructor =
     (mappedConstructor && mappedConstructor.constructor) || Neovim;
