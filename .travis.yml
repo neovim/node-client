@@ -2,7 +2,8 @@ language: node_js
 node_js: stable
 cache: yarn
 
-env: TEST_SUITE=test-missing-apis # required for allowed_failures
+# required for allowed_failures
+env: TEST_SUITE=test-missing-apis
 
 # Use macOS 10.12: https://docs.travis-ci.com/user/languages/objective-c/
 matrix:
