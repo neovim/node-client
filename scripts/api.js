@@ -1,12 +1,10 @@
 /* eslint no-console:0  global-require:0 */
-const inspect = require('util').inspect;
-
 const search = process.argv[2] || '';
 
 async function main() {
   const nvim = await require('./nvim');
   const results = await nvim.requestApi();
-  const functions = results[1].functions;
+  const { functions } = results[1];
   const lines = functions.filter(({ name }) => name.indexOf(search) > -1);
   lines
     .filter(metadata => typeof metadata.deprecated_since === 'undefined')
@@ -18,7 +16,8 @@ async function main() {
           .map((p, i) => `${p}: ${paramTypes[i]}`)
           .join(', ')}): ${metadata.return_type}`
       );
-      console.log(`    ${inspect(metadata)}`);
+      console.log(`    method: ${metadata.method}`);
+      console.log(`    since: ${metadata.since}`);
       console.log('');
     });
   process.exit(0);

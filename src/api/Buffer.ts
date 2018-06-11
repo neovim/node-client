@@ -37,6 +37,14 @@ export class Buffer extends BaseApi {
     return this.request(`${this.prefix}get_changedtick`, [this]);
   }
 
+  get commands(): Promise<Object> {
+    return this.getCommands();
+  }
+
+  getCommands(options = {}): Promise<Object> {
+    return this.request(`${this.prefix}get_commands`, [this, options]);
+  }
+
   /** Get specific lines of buffer */
   getLines(
     { start, end, strictIndexing } = { start: 0, end: -1, strictIndexing: true }

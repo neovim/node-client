@@ -156,6 +156,10 @@ describe.only('Buffer API', () => {
       expect(await buffer.getVar('test')).toBe(null);
     });
 
+    it('can get list of commands', async () => {
+      expect(await nvim.buffer.commands).toEqual({});
+    });
+
     // TODO: How do we run integration tests for add/clear highlights? and get mark
   });
 
