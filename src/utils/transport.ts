@@ -44,6 +44,9 @@ class Transport extends EventEmitter {
   private writer: NodeJS.WritableStream;
   protected codec: msgpack.Codec;
 
+  // Neovim client that holds state
+  private client: any;
+
   constructor() {
     super();
 
@@ -72,6 +75,7 @@ class Transport extends EventEmitter {
           data =>
             new constructor({
               transport: this,
+              client: this.client,
               data: msgpack.decode(data),
             })
         );
@@ -82,12 +86,17 @@ class Transport extends EventEmitter {
     return this.codec;
   }
 
-  attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream) {
+  attach(
+    writer: NodeJS.WritableStream,
+    reader: NodeJS.ReadableStream,
+    client: any
+  ) {
     this.encodeStream = this.encodeStream.pipe(writer);
     const buffered = new Buffered();
     reader.pipe(buffered).pipe(this.decodeStream);
     this.writer = writer;
     this.reader = reader;
+    this.client = client;
   }
 
   detach() {

@@ -5,22 +5,22 @@ import { ILogger } from '../utils/logger';
 import { Transport } from '../utils/transport';
 import { VimValue } from '../types/VimValue';
 import { Neovim } from './Neovim';
+import { Buffer } from './Buffer';
 
 export class NeovimClient extends Neovim {
   protected requestQueue: Array<any>;
   private transportAttached: boolean;
   private _channelId: number;
+  private attachedBuffers: Map<string, Map<string, Function[]>> = new Map();
 
   constructor(options: { transport?: Transport; logger?: ILogger } = {}) {
-    const transport = options.transport || new Transport();
-    const { logger } = options;
-
     // Neovim has no `data` or `metadata`
     super({
-      logger,
-      transport,
+      logger: options.logger,
     });
 
+    const transport = options.transport || new Transport();
+    this.setTransport(transport);
     this.requestQueue = [];
     this.transportAttached = false;
     this.handleRequest = this.handleRequest.bind(this);
@@ -35,7 +35,7 @@ export class NeovimClient extends Neovim {
     reader: NodeJS.ReadableStream;
     writer: NodeJS.WritableStream;
   }) {
-    this.transport.attach(writer, reader);
+    this.transport.attach(writer, reader, this);
     this.transportAttached = true;
     this.setupTransport();
   }
@@ -72,6 +72,35 @@ export class NeovimClient extends Neovim {
     }
   }
 
+  emitNotification(method: string, args: any[]) {
+    if (method.endsWith('_event')) {
+      if (!method.startsWith('nvim_buf_')) {
+        this.logger.error('Unhandled event: ', method);
+        return;
+      }
+      const shortName = method.replace(/nvim_buf_(.*)_event/, '$1');
+      const [buffer] = args;
+      const bufferKey = `${buffer.data}`;
+
+      if (!this.attachedBuffers.has(bufferKey)) {
+        // this is a problem
+        return;
+      }
+
+      const bufferMap = this.attachedBuffers.get(bufferKey);
+      const cbs = bufferMap.get(shortName) || [];
+      cbs.forEach(cb => cb(...args));
+
+      // Handle `nvim_buf_detach_event`
+      // clean `attachedBuffers` since it will no longer be attached
+      if (shortName === 'detach') {
+        this.attachedBuffers.delete(bufferKey);
+      }
+    } else {
+      this.emit('notification', method, args);
+    }
+  }
+
   handleNotification(method: string, args: VimValue[], ...restArgs: any[]) {
     this.logger.info('handleNotification: ', method);
     // If neovim API is not generated yet then queue up requests
@@ -83,7 +112,7 @@ export class NeovimClient extends Neovim {
         args: [method, args, ...restArgs],
       });
     } else {
-      this.emit('notification', method, args);
+      this.emitNotification(method, args);
     }
   }
 
@@ -150,7 +179,11 @@ export class NeovimClient extends Neovim {
         // register the non-queueing handlers
         // dequeue any pending RPCs
         this.requestQueue.forEach(pending => {
-          this.emit(pending.type, ...pending.args);
+          if (pending.type === 'notification') {
+            this.emitNotification(pending.args[0], pending.args[1]);
+          } else {
+            this.emit(pending.type, ...pending.args);
+          }
         });
         this.requestQueue = [];
 
@@ -165,5 +198,52 @@ export class NeovimClient extends Neovim {
     }
 
     return null;
+  }
+
+  attachBuffer(buffer: Buffer, eventName: string, cb: Function) {
+    const bufferKey = `${buffer.data}`;
+
+    if (!this.attachedBuffers.has(bufferKey)) {
+      this.attachedBuffers.set(bufferKey, new Map());
+    }
+
+    const bufferMap = this.attachedBuffers.get(bufferKey);
+    if (!bufferMap.get(eventName)) {
+      bufferMap.set(eventName, []);
+    }
+
+    const cbs = bufferMap.get(eventName);
+    cbs.push(cb);
+    bufferMap.set(eventName, cbs);
+    this.attachedBuffers.set(bufferKey, bufferMap);
+
+    return cb;
+  }
+
+  /**
+   * Returns `true` if buffer should be detached
+   */
+  detachBuffer(buffer: Buffer, eventName: string, cb: Function) {
+    const bufferKey = `${buffer.data}`;
+    const bufferMap = this.attachedBuffers.get(bufferKey);
+    if (!bufferMap) return false;
+
+    const handlers = (bufferMap.get(eventName) || []).filter(
+      handler => handler !== cb
+    );
+
+    // Remove eventName listener from bufferMap if no more handlers
+    if (!handlers.length) {
+      bufferMap.delete(eventName);
+    } else {
+      bufferMap.set(eventName, handlers);
+    }
+
+    if (!bufferMap.size) {
+      this.attachedBuffers.delete(bufferKey);
+      return true;
+    }
+
+    return false;
   }
 }
