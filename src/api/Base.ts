@@ -29,7 +29,7 @@ export class BaseApi extends EventEmitter {
   protected _isReady: Promise<boolean>;
   protected prefix: string;
   public logger: ILogger;
-  public data: Buffer; // Node Buffer
+  public data: Buffer | Number; // Node Buffer
   protected client: any;
 
   constructor({
@@ -57,7 +57,7 @@ export class BaseApi extends EventEmitter {
 
   equals(other: BaseApi) {
     try {
-      return this.data.toString() === other.data.toString();
+      return String(this.data) === String(other.data);
     } catch (e) {
       return false;
     }
