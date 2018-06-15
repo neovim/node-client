@@ -289,7 +289,16 @@ describe('Buffer event updates', () => {
     expect(mock).toHaveBeenCalledTimes(1);
   });
 
-  it('can use `buffer.off` to unlisten', async () => {
+  it('only bind once for the same event and handler ', async () => {
+    const buffer = await nvim.buffer;
+    const mock = jest.fn();
+    buffer.listen('lines', mock);
+    buffer.listen('lines', mock);
+    await nvim.buffer.insert(['bar'], 1);
+    expect(mock).toHaveBeenCalledTimes(1);
+  });
+
+  it('can use `buffer.unlisten` to unlisten', async () => {
     const buffer = await nvim.buffer;
     const mock = jest.fn();
     buffer.listen('lines', mock);
