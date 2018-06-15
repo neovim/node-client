@@ -41,6 +41,13 @@ export class Buffer extends BaseApi {
    */
   [DETACH] = () => this.request(`${this.prefix}detach`, [this]);
 
+  /**
+   * Get the bufnr of Buffer
+   */
+  get id(): number {
+    return this.data as number;
+  }
+
   /** Total number of lines in buffer */
   get length(): Promise<number> {
     return this.request(`${this.prefix}line_count`, [this]);

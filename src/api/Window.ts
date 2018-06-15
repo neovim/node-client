@@ -9,6 +9,13 @@ export interface AsyncWindow extends Window, Promise<Window> {}
 export class Window extends BaseApi {
   public prefix: string = Metadata[ExtType.Window].prefix;
 
+  /**
+   * The windowid that not change within a Vim session
+   */
+  get id(): number {
+    return this.data as number;
+  }
+
   /** Get current buffer of window */
   get buffer(): AsyncBuffer {
     return createChainableApi.call(this, 'Buffer', Buffer, () =>

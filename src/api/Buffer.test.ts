@@ -3,6 +3,7 @@ import * as cp from 'child_process';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as which from 'which';
 import { attach } from '../attach';
+import { NeovimClient } from '../api/client';
 
 try {
   which.sync('nvim');
@@ -17,7 +18,7 @@ try {
 
 describe('Buffer API', () => {
   let proc;
-  let nvim;
+  let nvim: NeovimClient;
 
   beforeAll(async done => {
     proc = cp.spawn(
@@ -44,6 +45,12 @@ describe('Buffer API', () => {
   it('gets the current buffer', async () => {
     const buffer = await nvim.buffer;
     expect(buffer).toBeInstanceOf(nvim.Buffer);
+  });
+
+  it('get bufnr by id', async () => {
+    const buffer = await nvim.buffer;
+    const bufnr = await nvim.call('bufnr', ['%']);
+    expect(buffer.id).toBe(bufnr);
   });
 
   describe('Normal API calls', () => {
