@@ -213,6 +213,7 @@ export class NeovimClient extends Neovim {
     }
 
     const cbs = bufferMap.get(eventName);
+    if (cbs.indexOf(cb) !== -1) return cb;
     cbs.push(cb);
     bufferMap.set(eventName, cbs);
     this.attachedBuffers.set(bufferKey, bufferMap);
