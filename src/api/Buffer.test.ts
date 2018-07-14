@@ -5,6 +5,14 @@ import * as which from 'which';
 import { attach } from '../attach';
 import { NeovimClient } from '../api/client';
 
+function wait(ms: number): Promise<void> {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve();
+    }, ms);
+  });
+}
+
 try {
   which.sync('nvim');
 } catch (e) {
@@ -287,6 +295,18 @@ describe('Buffer event updates', () => {
     unlisten();
     await nvim.buffer.insert(['bar'], 1);
     expect(mock).toHaveBeenCalledTimes(1);
+  });
+
+  it('can reattach for buffer events', async () => {
+    const buffer = await nvim.buffer;
+    let unlisten = buffer.listen('lines', jest.fn());
+    unlisten();
+    await wait(10);
+    const mock = jest.fn();
+    unlisten = buffer.listen('lines', mock);
+    await nvim.buffer.insert(['bar'], 1);
+    expect(mock).toHaveBeenCalledTimes(1);
+    unlisten();
   });
 
   it('only bind once for the same event and handler ', async () => {
