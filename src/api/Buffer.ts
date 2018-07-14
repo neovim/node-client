@@ -256,6 +256,7 @@ export class Buffer extends BaseApi {
   unlisten(eventName: string, cb: Function) {
     const shouldDetach = this.client.detachBuffer(this, eventName, cb);
     if (!shouldDetach) return;
+    this.isAttached = false;
     this[DETACH]();
   }
 }
