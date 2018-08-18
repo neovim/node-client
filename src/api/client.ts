@@ -51,6 +51,11 @@ export class NeovimClient extends Neovim {
     });
   }
 
+  isAttached(buffer: Buffer): boolean {
+    const key = `${buffer.data}`;
+    return this.attachedBuffers.has(key);
+  }
+
   handleRequest(
     method: string,
     args: VimValue[],
