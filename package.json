@@ -103,7 +103,8 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts$",
-    "coverageDirectory": "./coverage/"
+    "coverageDirectory": "./coverage/",
+    "testURL": "http://localhost"
   },
   "keywords": [
     "neovim",
