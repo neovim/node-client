@@ -63,7 +63,7 @@ If you are a plugin developer, I'd love to hear your feedback on the plugin API.
 
 A plugin can either be a file or folder in the `rplugin/node` directory. If the plugin is a folder, the `main` script from `package.json` will be loaded.
 
-The plugin should export a function which takes a `NvimPlugin` object as it's only parameter. You may then register autocmds, commands and functions by calling methods on the `NvimPlugin` object. You should not do any heavy initialisation or start any async functions at this stage, as nvim may only be collecting information about your plugin without wishing to actually use it. You should wait for one of your autocmds, commands or functions to be called before starting any processing.
+The plugin should export a function which takes a `NvimPlugin` object as its only parameter. You may then register autocmds, commands and functions by calling methods on the `NvimPlugin` object. You should not do any heavy initialisation or start any async functions at this stage, as nvim may only be collecting information about your plugin without wishing to actually use it. You should wait for one of your autocmds, commands or functions to be called before starting any processing.
 
 `console` has been replaced by a `winston` interface and `console.log` will call `winston.info`.
 
