@@ -175,6 +175,7 @@ describe('Buffer API', () => {
       expect(await nvim.buffer.commands).toEqual({});
     });
 
+
     // TODO: How do we run integration tests for add/clear highlights? and get mark
   });
 
@@ -210,6 +211,16 @@ describe('Buffer API', () => {
     it('can replace first line of nvim.buffer with a string', async () => {
       nvim.buffer.replace('test', 0);
       expect(await nvim.buffer.lines).toEqual(['test']);
+    });
+
+    it('replaces the right lines', async () => {
+        await nvim.buffer.append([ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ]);
+
+        await nvim.buffer.replace( [ 'a', 'b', 'c' ], 2)
+
+        expect( nvim.buffer.lines ).resolves.toEqual([
+            '0', '1', 'a', 'b', 'c', '5', '6', '7', '8', '9' 
+        ]);
     });
 
     it('can insert lines at beginning of buffer', async () => {
