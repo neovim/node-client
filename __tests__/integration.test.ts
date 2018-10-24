@@ -35,7 +35,7 @@ describe('Node host', () => {
     fs.writeFileSync(nvimrc, `set rtp+=${integrationDir}`);
     cp.spawnSync('nvim', args);
 
-    proc = cp.spawn('nvim', ['-u', nvimrc, '-i', 'NONE', '-N', '--embed'], {});
+    proc = cp.spawn('nvim', ['-u', nvimrc, '-i', 'NONE', '-N', '--headless', '--embed'], {});
     nvim = await attach({ proc });
   });
 
