@@ -103,7 +103,7 @@ describe('Nvim Promise API', () => {
     expect(buf instanceof nvim.Buffer).toEqual(true);
 
     const lines = await buf.getLines({ start: 0, end: -1 });
-    expect(lines).toEqual(['']);
+    expect(lines).toEqual([]);
 
     buf.setLines(['line1', 'line2'], { start: 0, end: 1 });
     const newLines = await buf.getLines({ start: 0, end: -1 });
