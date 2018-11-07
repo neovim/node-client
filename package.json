@@ -51,6 +51,7 @@
     "@types/traverse": "^0.6.29",
     "@types/which": "^1.0.28",
     "@types/winston": "^2.3.3",
+    "axios": "^0.18.0",
     "babel-core": "^6.25.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
@@ -103,6 +104,7 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
+    "testEnvironment": "node",
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts$",
     "coverageDirectory": "./coverage/",
     "testURL": "http://localhost"
