@@ -13,6 +13,8 @@ Install the `neovim` package globally using `npm`.
 npm install -g neovim
 ```
 
+A global package is required for neovim to be able to communicate with a plugin.
+
 ## Usage
 This package exports a single `attach()` function which takes a pair of
 write/read streams and invokes a callback with a Nvim API object.
@@ -71,7 +73,7 @@ The plugin should export a function which takes a `NvimPlugin` object as its onl
   NvimPlugin.nvim
 ```
 
-This is the nvim api object you can use to send commands from your plugin to vim.
+This is the nvim api object you can use to send commands from your plugin to nvim.
 
 ```ts
   NvimPlugin.setOptions(options: NvimPluginOptions);
@@ -130,92 +132,7 @@ Registers a function with name `name`, calling function `fn` with `options`. Thi
 
 ### Examples
 
-#### Functional style
-
-```js
-function onBufWrite() {
-  console.log('Buffer written!');
-}
-
-module.exports = (plugin) => {
-  plugin.registerAutocmd('BufWritePre', onBufWrite, { pattern: '*' });
-};
-```
-
-#### Class style
-
-```js
-class MyPlugin {
-  constructor(plugin) {
-    this.plugin = plugin;
-
-    plugin.registerCommand('SetMyLine', [this, this.setLine]);
-  }
-
-  setLine() {
-    this.plugin.nvim.setLine('A line, for your troubles');
-  }
-}
-
-module.exports = (plugin) => new MyPlugin(plugin);
-
-// Or for convenience, exporting the class itself is equivalent to the above
-
-module.exports = MyPlugin;
-```
-
-#### Prototype style
-
-```js
-function MyPlugin(plugin) {
-  this.plugin = plugin;
-  plugin.registerFunction('MyFunc', [this, MyPlugin.prototype.func]);
-}
-
-MyPlugin.prototype.func = function() {
-  this.plugin.nvim.setLine('A line, for your troubles'); 
-};
-
-export default MyPlugin;
-
-// or
-
-export default (plugin) => new MyPlugin(plugin);
-```
-
-#### Decorator style
-
-The decorator api is still supported. The `NvimPlugin` object is passed as a second parameter in case you wish to dynamically register further commands in the constructor.
-
-```js
-import { Plugin, Function, Autocmd, Command } from 'neovim';
-
-// If `Plugin` decorator can be called with options
-@Plugin({ dev: true })
-export default class TestPlugin {
-  constructor(nvim, plugin) {
-  }
-
-  @Function('Vsplit', { sync: true })
-  splitMe(args, done) {
-    this.nvim.command('vsplit');
-  }
-
-  @Command('LongCommand')
-  async longCommand(args) {
-    console.log('Output will be routed to $NVIM_NODE_LOG_FILE');
-    const bufferName = await this.nvim.buffer.name;
-    return bufferName;
-  }
-
-  @Command('UsePromises')
-  promiseExample() {
-    return this.nvim.buffer.name.then((name) => {
-      console.log(`Current buffer name is ${name}`);
-    });
-  }
-}
-```
+Examples of how to write plugins can be seen in the `examples` directory.
 
 ## Debugging / troubleshooting
 Here are a few env vars you can set while starting `neovim`, that can help debugging and configuring logging:
