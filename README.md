@@ -132,7 +132,7 @@ Registers a function with name `name`, calling function `fn` with `options`. Thi
 
 ### Examples
 
-Examples of how to write plugins can be seen in the `examples` directory.
+Examples of how to write plugins can be seen in the [`examples`](https://github.com/neovim/node-client/tree/master/examples) directory.
 
 ## Debugging / troubleshooting
 Here are a few env vars you can set while starting `neovim`, that can help debugging and configuring logging:
@@ -165,7 +165,7 @@ require('neovim/scripts/nvim').then((n) => nvim = n);
 nvim.command('vsp');
 ```
 
-The tests and `scripts` can be consulted for more examples.
+The tests and [`scripts`](https://github.com/neovim/node-client/tree/master/scripts) can be consulted for more examples.
 
 ## Contributors
 * [@billyvg](https://github.com/billyvg) for rewrite
