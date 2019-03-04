@@ -24,7 +24,11 @@ matrix:
   allow_failures:
     - language: node_js
       env: TEST_SUITE=test-missing-apis
-    
+
+jobs:
+  include:
+    stage: docs
+      script: yarn doc
 
 install:
   - npm install -g yarn
@@ -68,3 +72,11 @@ notifications:
     on_cancel: always
     on_error: always
     on_start: never
+
+deploy:
+  local-dir: doc
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  on:
+    branch: master
