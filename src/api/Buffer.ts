@@ -173,6 +173,32 @@ export class Buffer extends BaseApi {
   }
 
   /**
+   * Checks if a buffer is valid and loaded. See |api-buffer| for
+   * more info about unloaded buffers.
+   */
+  get loaded(): Promise<boolean> {
+    return this.request(`${this.prefix}is_loaded`, [this]);
+  }
+
+  /**
+   * Returns the byte offset for a line.
+   *
+   * Line 1 (index=0) has offset 0. UTF-8 bytes are counted. EOL is
+   * one byte. 'fileformat' and 'fileencoding' are ignored. The
+   * line index just after the last line gives the total byte-count
+   * of the buffer. A final EOL byte is counted if it would be
+   * written, see 'eol'.
+   *
+   * Unlike |line2byte()|, throws error for out-of-bounds indexing.
+   * Returns -1 for unloaded buffer.
+   *
+   * @return {Number} Integer byte offset, or -1 for unloaded buffer.
+   */
+  getOffset(index: number): Promise<number> {
+    return this.request(`${this.prefix}get_offset`, [this, index]);
+  }
+
+  /**
     Adds a highlight to buffer.
 
     This can be used for plugins which dynamically generate

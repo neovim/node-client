@@ -168,6 +168,31 @@ describe('Buffer API', () => {
       })
     );
 
+    it('checks if buffer is loaded', async () => {
+      await nvim.command('new');
+      const buffer = await nvim.buffer;
+      expect(await buffer.loaded).toBe(true);
+      await nvim.command('bunload!');
+      expect(await buffer.loaded).toBe(false);
+    });
+
+    it(
+      'gets byte offset for a line',
+      withBuffer(['test', 'bar', ''], async buffer => {
+        expect(await buffer.getOffset(0)).toEqual(0);
+        expect(await buffer.getOffset(1)).toEqual(5); // test\n
+        expect(await buffer.getOffset(2)).toEqual(9); // test\n + bar\n
+        expect(await buffer.getOffset(3)).toEqual(10); // test\n + bar\n + \n
+        expect(buffer.getOffset(4)).rejects.toThrow();
+      })
+    );
+
+    it('returns -1 for byte offset of unloaded buffer', async () => {
+      await nvim.command('new');
+      await nvim.command('bunload!');
+      expect(await nvim.buffer.getOffset(0)).toEqual(-1);
+    });
+
     it(
       'append lines to end of buffer',
       withBuffer(['test', 'bar', 'foo'], async buffer => {
