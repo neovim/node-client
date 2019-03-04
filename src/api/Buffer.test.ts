@@ -115,8 +115,10 @@ describe('Buffer API', () => {
     it(
       'sets current buffer name to "foo.js"',
       withBuffer([], async buffer => {
+        // eslint-disable-next-line no-param-reassign
         buffer.name = 'foo.js';
         expect(await buffer.name).toMatch('foo.js');
+        // eslint-disable-next-line no-param-reassign
         buffer.name = 'test2.js';
         expect(await buffer.name).toMatch('test2.js');
       })
