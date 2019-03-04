@@ -114,11 +114,13 @@ describe('Buffer API', () => {
 
     it(
       'sets current buffer name to "foo.js"',
-      withBuffer([], async function buffer() {
-        buffer._name = 'foo.js';
-        expect(await buffer._name).toMatch('foo.js');
-        buffer._name = 'test2.js';
-        expect(await buffer._name).toMatch('test2.js');
+      withBuffer([], async buffer => {
+        // eslint-disable-next-line no-param-reassign
+        buffer.name = 'foo.js';
+        expect(await buffer.name).toMatch('foo.js');
+        // eslint-disable-next-line no-param-reassign
+        buffer.name = 'test2.js';
+        expect(await buffer.name).toMatch('test2.js');
       })
     );
 
@@ -139,11 +141,26 @@ describe('Buffer API', () => {
     );
 
     it(
-      'can replace buffer starting at line 1',
-      withBuffer(['test', 'b', 'c', 'd'], async buffer => {
-        buffer.replace(['bar', 'bar', 'bar'], 1);
-        expect(await buffer.lines).toEqual(['test', 'bar', 'bar', 'bar']);
-      })
+      'replaces the right lines',
+      withBuffer(
+        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+        async buffer => {
+          await buffer.replace(['a', 'b', 'c'], 2);
+
+          expect(await buffer.lines).toEqual([
+            '0',
+            '1',
+            'a',
+            'b',
+            'c',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+          ]);
+        }
+      )
     );
 
     it(
@@ -265,17 +282,9 @@ describe('Buffer API', () => {
   });
 
   describe('Chainable API calls', () => {
-    it(
-      'gets the current buffer name using api chaining',
-      withBuffer([], async function buffer() {
-        await (buffer._name = 'test3.js');
-        expect(await buffer._name).toMatch('test3.js');
-
-        await (() => {
-          expect(buffer._name).toMatch('test3.js');
-        });
-      })
-    );
+    it('gets the current buffer name using api chaining', async () => {
+      expect(await nvim.buffer.name).toMatch('test.js');
+    });
 
     it('can chain calls from Base class i.e. getOption', async () => {
       const initial = await nvim.buffer.getOption('copyindent');
@@ -289,46 +298,66 @@ describe('Buffer API', () => {
       expect(await nvim.buffer.getOption('copyindent')).toBe(initial);
     });
 
-    it(
-      'sets current buffer name to "bar.js" using api chaining',
-      withBuffer([], async function buffer() {
-        await (buffer._name = 'bar.js');
-        expect(await buffer._name).toMatch('bar.js');
+    it('sets current buffer name to "bar.js" using api chaining', async () => {
+      await (nvim.buffer.name = 'bar.js');
+      expect(await nvim.buffer.name).toMatch('bar.js');
 
-        await (buffer._name = 'test2.js');
-        expect(await buffer._name).toMatch('test2.js');
+      await (nvim.buffer.name = 'test2.js');
+      expect(await nvim.buffer.name).toMatch('test2.js');
+    });
+
+    it(
+      'can replace first line of nvim.buffer with a string',
+      withBuffer([], async () => {
+        await nvim.buffer.replace('test', 0);
+        expect(await nvim.buffer.lines).toEqual(['test']);
       })
     );
 
     it(
-      'can replace first line of nvim.buffer with a string',
-      withBuffer([], async buffer => {
-        buffer.replace('test', 0);
-        expect(await buffer.lines).toEqual(['test']);
-      })
+      'replaces the right lines',
+      withBuffer(
+        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+        async () => {
+          await nvim.buffer.replace(['a', 'b', 'c'], 2);
+
+          expect(await nvim.buffer.lines).toEqual([
+            '0',
+            '1',
+            'a',
+            'b',
+            'c',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+          ]);
+        }
+      )
     );
 
     it(
       'can insert lines at beginning of buffer',
-      withBuffer(['test'], async buffer => {
-        buffer.insert(['test', 'foo'], 0);
-        expect(await buffer.lines).toEqual(['test', 'foo', 'test']);
+      withBuffer(['test'], async () => {
+        await nvim.buffer.insert(['test', 'foo'], 0);
+        expect(await nvim.buffer.lines).toEqual(['test', 'foo', 'test']);
       })
     );
 
     it(
       'can replace nvim.buffer starting at line 1',
-      withBuffer(['test', 'foo'], async buffer => {
-        await buffer.replace(['bar', 'bar', 'bar'], 1);
-        expect(await buffer.lines).toEqual(['test', 'bar', 'bar', 'bar']);
+      withBuffer(['test', 'foo'], async () => {
+        await nvim.buffer.replace(['bar', 'bar', 'bar'], 1);
+        expect(await nvim.buffer.lines).toEqual(['test', 'bar', 'bar', 'bar']);
       })
     );
 
     it(
       'inserts line at index 2',
-      withBuffer(['test', 'bar', 'bar', 'bar'], async buffer => {
-        await buffer.insert(['foo'], 2);
-        expect(await buffer.lines).toEqual([
+      withBuffer(['test', 'bar', 'bar', 'bar'], async () => {
+        await nvim.buffer.insert(['foo'], 2);
+        expect(await nvim.buffer.lines).toEqual([
           'test',
           'bar',
           'foo',
@@ -340,17 +369,17 @@ describe('Buffer API', () => {
 
     it(
       'removes last 2 lines',
-      withBuffer(['test', 'bar', 'foo', 'a', 'b'], async buffer => {
-        await buffer.remove(-3, -1);
-        expect(await buffer.lines).toEqual(['test', 'bar', 'foo']);
+      withBuffer(['test', 'bar', 'foo', 'a', 'b'], async () => {
+        await nvim.buffer.remove(-3, -1);
+        expect(await nvim.buffer.lines).toEqual(['test', 'bar', 'foo']);
       })
     );
 
     it(
       'append lines to end of buffer',
-      withBuffer(['test', 'bar', 'foo'], async buffer => {
-        await buffer.append(['test', 'test']);
-        expect(await buffer.lines).toEqual([
+      withBuffer(['test', 'bar', 'foo'], async () => {
+        await nvim.buffer.append(['test', 'test']);
+        expect(await nvim.buffer.lines).toEqual([
           'test',
           'bar',
           'foo',
@@ -362,11 +391,11 @@ describe('Buffer API', () => {
 
     it(
       'can clear the buffer',
-      withBuffer(['foo'], async buffer => {
-        await buffer.remove(0, -1);
+      withBuffer(['foo'], async () => {
+        await nvim.buffer.remove(0, -1);
         // One empty line
-        expect(await buffer.length).toEqual(1);
-        expect(await buffer.lines).toEqual(['']);
+        expect(await nvim.buffer.length).toEqual(1);
+        expect(await nvim.buffer.lines).toEqual(['']);
       })
     );
   });
