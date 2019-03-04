@@ -16,6 +16,9 @@ const hasApiMethod = name => {
       'nvim_buf_line_count',
       'nvim_buf_attach',
       'nvim_buf_detach',
+      'nvim_get_hl_by_name',
+      'nvim_get_hl_by_id',
+      'nvim_execute_lua',
     ].includes(name)
   ) {
     return true;
