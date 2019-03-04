@@ -41,11 +41,7 @@ export class Buffer extends BaseApi {
     options: {} = {}
   ): Promise<boolean> => {
     if (this.client.isAttached(this)) return true;
-    return await this.request(`${this.prefix}attach`, [
-      this,
-      sendBuffer,
-      options,
-    ]);
+    return this.request(`${this.prefix}attach`, [this, sendBuffer, options]);
   }
 
   /**
@@ -279,11 +275,15 @@ export class Buffer extends BaseApi {
   /**
    * Listens to buffer for events
    */
-  async listen(eventName: string, cb: Function): Promise<Function|null> {
+  listen(eventName: string, cb: Function): Function {
     if (!this.isAttached) {
-      let attached = await this[ATTACH]();
-      if (!attached) return null;
+      this[ATTACH]().then(attached => {
+        if (!attached) {
+          this.unlisten(eventName, cb);
+        }
+      });
     }
+
     this.client.attachBuffer(this, eventName, cb);
     return () => {
       this.unlisten(eventName, cb);
