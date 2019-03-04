@@ -139,11 +139,26 @@ describe('Buffer API', () => {
     );
 
     it(
-      'can replace buffer starting at line 1',
-      withBuffer(['test', 'b', 'c', 'd'], async buffer => {
-        buffer.replace(['bar', 'bar', 'bar'], 1);
-        expect(await buffer.lines).toEqual(['test', 'bar', 'bar', 'bar']);
-      })
+      'replaces the right lines',
+      withBuffer(
+        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+        async buffer => {
+          await buffer.replace(['a', 'b', 'c'], 2);
+
+          expect(await buffer.lines).toEqual([
+            '0',
+            '1',
+            'a',
+            'b',
+            'c',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+          ]);
+        }
+      )
     );
 
     it(

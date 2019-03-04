@@ -123,7 +123,7 @@ export class Buffer extends BaseApi {
     const lines = typeof _lines === 'string' ? [_lines] : _lines;
     return this.setLines(lines, {
       start,
-      end: start + lines.length + 1,
+      end: start + lines.length,
       strictIndexing: false,
     });
   }
