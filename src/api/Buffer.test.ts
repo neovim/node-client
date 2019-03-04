@@ -452,6 +452,18 @@ describe('Buffer event updates', () => {
     unlisten();
   });
 
+  it('should return attached state', async () => {
+    const buffer = await nvim.buffer;
+    const unlisten = buffer.listen('lines', jest.fn());
+    await wait(30);
+    let attached = buffer.isAttached;
+    expect(attached).toBe(true);
+    unlisten();
+    await wait(30);
+    attached = buffer.isAttached;
+    expect(attached).toBe(false);
+  });
+
   it('only bind once for the same event and handler ', async () => {
     const buffer = await nvim.buffer;
     const mock = jest.fn();

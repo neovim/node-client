@@ -24,7 +24,10 @@ export const ATTACH = Symbol('attachBuffer');
 
 export class Buffer extends BaseApi {
   public prefix: string = Metadata[ExtType.Buffer].prefix;
-  private isAttached: boolean = false;
+
+  public get isAttached(): boolean {
+    return this.client.isAttached(this);
+  }
 
   /**
    * Attach to buffer to listen to buffer events
@@ -33,8 +36,13 @@ export class Buffer extends BaseApi {
    *        `nvim_buf_lines_event`. Otherwise, the first notification will be
    *        a `nvim_buf_changedtick_event`
    */
-  [ATTACH] = (sendBuffer: boolean = false, options: {} = {}) =>
-    this.request(`${this.prefix}attach`, [this, sendBuffer, options]);
+  [ATTACH] = async (
+    sendBuffer: boolean = false,
+    options: {} = {}
+  ): Promise<boolean> => {
+    if (this.client.isAttached(this)) return true;
+    return this.request(`${this.prefix}attach`, [this, sendBuffer, options]);
+  }
 
   /**
    * Detach from buffer to stop listening to buffer events
@@ -269,8 +277,11 @@ export class Buffer extends BaseApi {
    */
   listen(eventName: string, cb: Function): Function {
     if (!this.isAttached) {
-      this[ATTACH]();
-      this.isAttached = true;
+      this[ATTACH]().then(attached => {
+        if (!attached) {
+          this.unlisten(eventName, cb);
+        }
+      });
     }
 
     this.client.attachBuffer(this, eventName, cb);
@@ -279,10 +290,10 @@ export class Buffer extends BaseApi {
     };
   }
 
-  unlisten(eventName: string, cb: Function) {
+  unlisten(eventName: string, cb: Function): void {
+    if (!this.isAttached) return;
     const shouldDetach = this.client.detachBuffer(this, eventName, cb);
     if (!shouldDetach) return;
-    this.isAttached = false;
     this[DETACH]();
   }
 }
