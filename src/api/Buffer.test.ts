@@ -277,8 +277,8 @@ describe('Buffer API', () => {
     );
 
     it('replaces the right lines', withBuffer([], async buffer => {
-        buffer.append([ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ]);
-        buffer.replace([ 'a', 'b', 'c' ], 2)
+        await buffer.append([ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ]);
+        await buffer.replace([ 'a', 'b', 'c' ], 2)
 
         expect(await buffer.lines).toEqual([
             '0', '1', 'a', 'b', 'c', '5', '6', '7', '8', '9' 
