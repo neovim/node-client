@@ -19,6 +19,7 @@ const hasApiMethod = name => {
       'nvim_get_hl_by_name',
       'nvim_get_hl_by_id',
       'nvim_execute_lua',
+      'nvim_open_win',
     ].includes(name)
   ) {
     return true;

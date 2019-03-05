@@ -88,4 +88,20 @@ export class Window extends BaseApi {
   get number(): Promise<number> {
     return this.request(`${this.prefix}get_number`, [this]);
   }
+
+  /**
+   * Closes window
+   *
+   * @param {Boolean} force Force close window
+   */
+  close(force: boolean = false) {
+    return this.request(`${this.prefix}close`, [this, force]);
+  }
+
+  /**
+   * Updates window configuration
+   */
+  config(width: number, height: number, options: object = {}) {
+    return this.request(`${this.prefix}config`, [this, width, height, options]);
+  }
 }

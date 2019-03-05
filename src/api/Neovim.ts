@@ -889,16 +889,11 @@ export class Neovim extends BaseApi {
     height: number,
     options: object = {}
   ) {
-    return this.request(`${this.prefix}win_config`, [
-      window,
-      width,
-      height,
-      options,
-    ]);
+    return window.config(width, height, options);
   }
 
   winClose(window: Window, force: boolean) {
-    return this.request(`${this.prefix}win_close`, [window, force]);
+    return window.close(force);
   }
 
   /**
