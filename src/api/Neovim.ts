@@ -474,6 +474,16 @@ export class Neovim extends BaseApi {
   }
 
   /**
+   * Sets a v: variable, if it is not readonly.
+   *
+   * @param {String} name Variable name
+   * @param {VimValue} value Variable value
+   */
+  setVvar(name: string, value: VimValue) {
+    return this.request(`${this.prefix}set_vvar`, [name, value]);
+  }
+
+  /**
    * Sends input-keys to Nvim, subject to various quirks controlled
    * by `mode` flags. This is a blocking call, unlike |nvim_input()|.
    *
@@ -507,6 +517,51 @@ export class Neovim extends BaseApi {
    */
   input(keys: string): Promise<number> {
     return this.request(`${this.prefix}input`, [keys]);
+  }
+
+  /**
+   * Send mouse event from GUI.
+   *
+   * The call is non-blocking. It doesn't wait on any resulting
+   * action, but queues the event to be processed soon by the event
+   * loop.
+   *
+   * Note:
+   * Currently this doesn't support "scripting" multiple mouse
+   * events by calling it multiple times in a loop: the
+   * intermediate mouse positions will be ignored. It should be
+   * used to implement real-time mouse input in a GUI. The
+   * deprecated pseudokey form ("<LeftMouse><col,row>") of
+   * |nvim_input()| has the same limitiation.
+   *
+   * @param {String} button    Mouse button: one of "left", "right", "middle", "wheel".
+   * @param {String} action    For ordinary buttons, one of "press", "drag", "release".
+   *                           For the wheel, one of "up", "down", "left", "right".
+   * @param {String} modifier  String of modifiers each represented by a
+   *                           single char. The same specifiers are used as
+   *                           for a key press, except that the "-" separator
+   *                           is optional, so "C-A-", "c-a" and "CA" can all
+   *                           be used to specify Ctrl+Alt+click.
+   * @param {String} grid      Grid number if the client uses |ui-multigrid|, else 0.
+   * @param {String} row       Mouse row-position (zero-based, like redraw events)
+   * @param {String} col       Mouse column-position (zero-based, like redraw events)
+   */
+  inputMouse(
+    button: string,
+    action: string,
+    modifier: string,
+    grid: number,
+    row: number,
+    col: number
+  ) {
+    return this.request(`${this.prefix}input_mouse`, [
+      button,
+      action,
+      modifier,
+      grid,
+      row,
+      col,
+    ]);
   }
 
   /**

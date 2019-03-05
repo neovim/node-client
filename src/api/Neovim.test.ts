@@ -161,6 +161,12 @@ describe('Neovim API', () => {
       expect(await nvim.getVvar('ctype')).toBe(initial);
     });
 
+    it('sets v: vars', async () => {
+      await nvim.setVvar('mouse_winid', 2);
+      expect(await nvim.eval('v:mouse_winid')).toBe(2);
+      expect(await nvim.getVvar('mouse_winid')).toBe(2);
+    });
+
     it('gets string width', async () => {
       expect(await nvim.strWidth('string')).toBe(6);
     });
