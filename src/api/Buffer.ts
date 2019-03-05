@@ -267,6 +267,7 @@ export class Buffer extends BaseApi {
    * Deprecated
    */
   clearHighlight(args: BufferClearHighlight = {}) {
+    // eslint-disable-next-line no-console
     console.warn(
       '`clearHighlight` is deprecated, use ``clearNamespace()` instead'
     );
