@@ -19,7 +19,7 @@ try {
 
 describe('Neovim API', () => {
   let proc;
-  let nvim;
+  let nvim: Neovim;
 
   beforeAll(async done => {
     proc = cp.spawn(
@@ -248,6 +248,27 @@ describe('Neovim API', () => {
 
     it('sets clientInfo', async () => {
       expect(() => nvim.setClientInfo('test', {}, '', {}, {})).not.toThrow();
+    });
+
+    it('selects popupmenu item', async () => {
+      await nvim.selectPopupmenuItem(0, true, true);
+    });
+
+    it('creates and closes a floating window', async () => {
+      const numBuffers = (await nvim.buffers).length;
+      const numWindows = (await nvim.windows).length;
+      const buffer = await nvim.createBuffer(false, false);
+      expect(await nvim.buffers).toHaveLength(numBuffers + 1);
+
+      const floatingWindow = await nvim.openWin(buffer, true, 50, 50, {
+        relative: 'editor',
+        row: 5,
+        col: 5,
+      });
+      expect(await nvim.windows).toHaveLength(numWindows + 1);
+
+      await nvim.winClose(floatingWindow, true);
+      expect(await nvim.windows).toHaveLength(numWindows);
     });
   });
 

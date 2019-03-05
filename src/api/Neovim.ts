@@ -58,6 +58,33 @@ export type Command = {
   complete_arg?: any;
 };
 
+export type OpenWindowOptions = {
+  // If set, the window becomes a floating window. The window will be placed with row,col coordinates relative to valueue
+  //        "editor" the global editor grid
+  //        "win"    a window. Use 'win' option below to specify window id,
+  //                 or current window will be used by default.
+  //        "cursor" the cursor position in current window.
+  relative?: 'editor' | 'win' | 'cursor';
+
+  // the corner of the float that the row,col position defines
+  anchor?: 'NW' | 'NE' | 'SW' | 'SE';
+
+  // Whether window can be focused by wincmds and mouse events. Defaults to true. Even if set to false, the window can still be entered using |nvim_set_current_win()| API call.
+  focusable?: boolean;
+
+  // `row`: row position. Screen cell height are used as unit.  Can be floating point.
+  row?: number;
+
+  // `col`: column position. Screen cell width is used as unit. Can be floating point.
+  col?: number;
+
+  // when using relative='win', window id of the window where the position is defined.
+  win?: number;
+
+  // GUI should display the window as an external top-level window. Currently accepts no other positioning options together with this.
+  external?: boolean;
+};
+
 /**
  * Neovim API
  */
@@ -542,9 +569,9 @@ export class Neovim extends BaseApi {
    *                           for a key press, except that the "-" separator
    *                           is optional, so "C-A-", "c-a" and "CA" can all
    *                           be used to specify Ctrl+Alt+click.
-   * @param {String} grid      Grid number if the client uses |ui-multigrid|, else 0.
-   * @param {String} row       Mouse row-position (zero-based, like redraw events)
-   * @param {String} col       Mouse column-position (zero-based, like redraw events)
+   * @param {Number} grid      Grid number if the client uses |ui-multigrid|, else 0.
+   * @param {Number} row       Mouse row-position (zero-based, like redraw events)
+   * @param {Number} col       Mouse column-position (zero-based, like redraw events)
    */
   inputMouse(
     button: string,
@@ -790,6 +817,88 @@ export class Neovim extends BaseApi {
    */
   getNamespaces(): Promise<{ [name: string]: number }> {
     return this.request(`${this.prefix}get_namespaces`);
+  }
+
+  /**
+   * Selects an item in the completion popupmenu.
+   *
+   * If |ins-completion| is not active this API call is silently
+   * ignored. Useful for an external UI using |ui-popupmenu| to
+   * control the popupmenu with the mouse. Can also be used in a
+   * mapping; use <cmd> |:map-cmd| to ensure the mapping doesn't
+   * end completion mode.
+   *
+   * @param {Number}  item     Index (zero-based) of the item to select.
+   *                           Value of -1 selects nothing and restores the original text.
+   * @param {Boolean} insert   Whether the selection should be inserted in the buffer.
+   * @param {Boolean} finish   Finish the completion and dismiss the popupmenu.
+   *                           Implies `insert`.
+   * @param {Object}  opts     Optional parameters. Reserved for future use.
+   */
+  selectPopupmenuItem(
+    item: number,
+    insert: boolean,
+    finish: boolean,
+    opts: object = {}
+  ) {
+    return this.request(`${this.prefix}select_popupmenu_item`, [
+      item,
+      insert,
+      finish,
+      opts,
+    ]);
+  }
+
+  createBuf(listed: boolean, scratch: boolean): Promise<Buffer> {
+    return this.request(`${this.prefix}create_buf`, [listed, scratch]);
+  }
+
+  createBuffer(listed: boolean, scratch: boolean): Promise<Buffer> {
+    return this.createBuf(listed, scratch);
+  }
+
+  /**
+   * Opens a window
+   *
+   * @param {Buffer}  buffer Handle of buffer to be displayed in the window
+   * @param {Boolean} enter  Whether the window should be entered (made the current window)
+   * @param {Number}  width  Width of window (in character cells)
+   * @param {Number}  height Height of window (in character cells)
+   * @Param {Object}  options Options object
+   * @return {Window} returns new window
+   */
+  openWin(
+    buffer: Buffer,
+    enter: boolean,
+    width: number,
+    height: number,
+    options: OpenWindowOptions
+  ): Promise<Window> {
+    return this.request(`${this.prefix}open_win`, [
+      buffer,
+      enter,
+      width,
+      height,
+      options,
+    ]);
+  }
+
+  winConfig(
+    window: Window,
+    width: number,
+    height: number,
+    options: object = {}
+  ) {
+    return this.request(`${this.prefix}win_config`, [
+      window,
+      width,
+      height,
+      options,
+    ]);
+  }
+
+  winClose(window: Window, force: boolean) {
+    return this.request(`${this.prefix}win_close`, [window, force]);
   }
 
   /**
