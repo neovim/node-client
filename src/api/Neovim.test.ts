@@ -246,4 +246,20 @@ describe('Neovim API', () => {
   });
 
   describe.skip('Chainable API calls', () => {});
+
+  describe('Namespaces', () => {
+    it('creates and gets anonymous namespaces', async () => {
+      const id = await nvim.createNamespace();
+      expect(typeof id).toBe('number');
+
+      expect(await nvim.getNamespaces()).toEqual({});
+    });
+
+    it('creates and gets named namespaces', async () => {
+      const foo = await nvim.createNamespace('foo');
+      const bar = await nvim.createNamespace('bar');
+
+      expect(await nvim.getNamespaces()).toEqual({ foo, bar });
+    });
+  });
 });
