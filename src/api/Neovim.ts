@@ -637,6 +637,25 @@ export class Neovim extends BaseApi {
   }
 
   /**
+   * Tell Nvim to resize a grid. Triggers a grid_resize event with
+   * the requested grid size or the maximum size if it exceeds size
+   * limits.
+   *
+   * On invalid grid handle, fails with error.
+   *
+   * @param {Number} grid The handle of the grid to be changed
+   * @param {Number} width The new requested width
+   * @param {Number} height The new requested height
+   */
+  uiTryResizeGrid(grid: number, width: number, height: number): Promise<void> {
+    return this.request(`${this.prefix}ui_try_resize_grid`, [
+      grid,
+      width,
+      height,
+    ]);
+  }
+
+  /**
    * Set UI Option
    */
   uiSetOption(name: string, value: any): Promise<void> {
