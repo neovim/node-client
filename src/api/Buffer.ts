@@ -51,7 +51,7 @@ export class Buffer extends BaseApi {
   ): Promise<boolean> => {
     if (this.client.isAttached(this)) return true;
     return this.request(`${this.prefix}attach`, [this, sendBuffer, options]);
-  }
+  };
 
   /**
    * Detach from buffer to stop listening to buffer events
