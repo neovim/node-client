@@ -28,10 +28,9 @@ build: off
 
 test_script:
   - yarn
-  - yarn link
   - npm install -g . # provider#node#Detect() checks bin/cli.js directly. So symlink does not work (Issue #50)
-  - yarn test-lint
-  - yarn test-build
+  - yarn lerna run test-lint
+  - yarn lerna run test-build
 
 after_test:
   - codecov
