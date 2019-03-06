@@ -24,10 +24,8 @@ matrix:
   allow_failures:
     - language: node_js
       env: TEST_SUITE=test-missing-apis
-    
 
 install:
-  - npm install -g yarn
   - |
     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       curl -LO https://github.com/neovim/neovim/releases/download/nightly/nvim-macos.tar.gz
@@ -44,7 +42,7 @@ install:
   - yarn
 
 before_script:
-  - yarn link
+  - yarn lerna bootstrap
   - npm install -g ./
 
 script:
