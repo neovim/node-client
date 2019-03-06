@@ -26,7 +26,7 @@
   "scripts": {
     "bootstrap": "yarn lerna bootstrap",
     "test": "yarn lerna run test",
-    "test-build": "yarn lerna run test-build",
+    "test-build": "yarn lerna run build && yarn lerna run test-build",
     "test-staged": "yarn lerna run test-staged",
     "test-missing-apis": "yarn lerna run test-missing-apis",
     "test-lint": "yarn lerna run test-lint",
