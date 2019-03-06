@@ -260,15 +260,35 @@ describe('Neovim API', () => {
       const buffer = await nvim.createBuffer(false, false);
       expect(await nvim.buffers).toHaveLength(numBuffers + 1);
 
-      const floatingWindow = await nvim.openWin(buffer, true, 50, 50, {
+      const floatingWindow = await nvim.openWindow(buffer, true, 50, 50, {
         relative: 'editor',
         row: 5,
         col: 5,
       });
       expect(await nvim.windows).toHaveLength(numWindows + 1);
 
-      await nvim.winClose(floatingWindow, true);
+      await nvim.windowClose(floatingWindow, true);
       expect(await nvim.windows).toHaveLength(numWindows);
+    });
+
+    it('resizes a window', async () => {
+      const numWindows = (await nvim.windows).length;
+      const buffer = await nvim.createBuffer(false, false);
+
+      const floatingWindow = await nvim.openWindow(buffer, true, 10, 10, {
+        relative: 'editor',
+        row: 5,
+        col: 5,
+      });
+      expect(await nvim.windows).toHaveLength(numWindows + 1);
+      expect(await floatingWindow.height).toBe(10);
+      expect(await floatingWindow.width).toBe(10);
+
+      await nvim.windowConfig(floatingWindow, 20, 20);
+      expect(await floatingWindow.height).toBe(20);
+      expect(await floatingWindow.width).toBe(20);
+
+      await nvim.windowClose(floatingWindow, true);
     });
   });
 

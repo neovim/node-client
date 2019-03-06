@@ -849,31 +849,52 @@ export class Neovim extends BaseApi {
     ]);
   }
 
-  createBuf(listed: boolean, scratch: boolean): Promise<Buffer> {
+  /**
+   * Creates a new, empty, unnamed buffer.
+   *
+   * @param {Boolean} listed  Controls 'buflisted'
+   * @param {Boolean} scratch Creates a "throwaway" |scratch-buffer| for temporary work (always 'nomodified')
+   * @return {Buffer|Number} Buffer handle, or 0 on error
+   */
+  private createBuf(
+    listed: boolean,
+    scratch: boolean
+  ): Promise<Buffer | number> {
     return this.request(`${this.prefix}create_buf`, [listed, scratch]);
   }
 
-  createBuffer(listed: boolean, scratch: boolean): Promise<Buffer> {
+  /**
+   * Public alias for `createBuf`
+   */
+  createBuffer(listed: boolean, scratch: boolean): Promise<Buffer | number> {
     return this.createBuf(listed, scratch);
   }
 
   /**
-   * Opens a window
+   * Open a new window.
+   * Currently this is used to open floating and external windows.
+   * Floats are windows that are drawn above the split layout, at
+   * some anchor position in some other window. Floats can be draw
+   * internally or by external GUI with the |ui-multigrid|
+   * extension. External windows are only supported with multigrid
+   * GUIs, and are displayed as separate top-level windows.
+   *
+   * Exactly one of `external` and `relative` must be specified.
    *
    * @param {Buffer}  buffer Handle of buffer to be displayed in the window
    * @param {Boolean} enter  Whether the window should be entered (made the current window)
    * @param {Number}  width  Width of window (in character cells)
    * @param {Number}  height Height of window (in character cells)
    * @Param {Object}  options Options object
-   * @return {Window} returns new window
+   * @return {Window|Number} The Window handle or 0 when error
    */
-  openWin(
+  private openWin(
     buffer: Buffer,
     enter: boolean,
     width: number,
     height: number,
     options: OpenWindowOptions
-  ): Promise<Window> {
+  ): Promise<Window | number> {
     return this.request(`${this.prefix}open_win`, [
       buffer,
       enter,
@@ -883,7 +904,39 @@ export class Neovim extends BaseApi {
     ]);
   }
 
-  winConfig(
+  /**
+   * Public alias for `openWin`
+   */
+  openWindow(
+    buffer: Buffer,
+    enter: boolean,
+    width: number,
+    height: number,
+    options: OpenWindowOptions
+  ): Promise<Window | number> {
+    return this.openWin(buffer, enter, width, height, options);
+  }
+
+  /**
+   * Configure window position. Currently this is only used to
+   * configure floating and external windows (including changing a
+   * split window to these types).
+   *
+   * See documentation at |nvim_open_win()|, for the meaning of
+   * parameters. Pass in -1 for 'witdh' and 'height' to keep
+   * exiting size.
+   *
+   * When reconfiguring a floating window, absent option keys will
+   * not be changed. The following restriction apply: `row`, `col`
+   * and `relative` must be reconfigured together. Only changing a
+   * subset of these is an error.
+   *
+   * @param {Window}  window Window handle
+   * @param {Number}  width  Width of window (in character cells)
+   * @param {Number}  height Height of window (in character cells)
+   * @Param {Object}  options Options object
+   */
+  private winConfig(
     window: Window,
     width: number,
     height: number,
@@ -892,8 +945,32 @@ export class Neovim extends BaseApi {
     return window.config(width, height, options);
   }
 
-  winClose(window: Window, force: boolean) {
+  /**
+   * Public Alias for `winConfig`
+   */
+  windowConfig(
+    window: Window,
+    width: number,
+    height: number,
+    options: object = {}
+  ) {
+    return this.winConfig(window, width, height, options);
+  }
+
+  /**
+   * Closes window
+   *
+   * @param {Boolean} force Force close window
+   */
+  private winClose(window: Window, force: boolean) {
     return window.close(force);
+  }
+
+  /**
+   * Public alias for `winClose`
+   */
+  windowClose(window: Window, force: boolean) {
+    return this.winClose(window, force);
   }
 
   /**
