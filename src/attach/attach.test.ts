@@ -48,7 +48,6 @@ describe('Nvim Promise API', () => {
   });
 
   afterAll(() => {
-    nvim.quit();
     if (proc) {
       proc.disconnect();
     }

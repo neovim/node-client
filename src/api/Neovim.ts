@@ -686,6 +686,39 @@ export class Neovim extends BaseApi {
   }
 
   /**
+   * Creates a new namespace, or gets an existing one.
+   *
+   * Namespaces are used for buffer highlights and virtual text,
+   * see |nvim_buf_add_highlight()| and |nvim_buf_set_virtual_text()|.
+   *
+   * Namespaces can be named or anonymous. If `name` matches an
+   * existing namespace, the associated id is returned. If `name`
+   * is an empty string a new, anonymous namespace is created.
+   *
+   * @param {String} name Namespace name or empty string
+   * @return {Number} Namespace id
+   */
+  createNamespace(name: string = ''): Promise<number> {
+    return this.request(`${this.prefix}create_namespace`, [name]);
+  }
+
+  /**
+   * Alias for `getNamespaces()`
+   */
+  get namespaces(): Promise<{ [name: string]: number }> {
+    return this.getNamespaces();
+  }
+
+  /**
+   * Gets existing, non-anonymous namespaces.
+   *
+   * @return {Object} dict that maps from names to namespace ids.
+   */
+  getNamespaces(): Promise<{ [name: string]: number }> {
+    return this.request(`${this.prefix}get_namespaces`);
+  }
+
+  /**
    * Quit nvim
    */
   quit(): void {

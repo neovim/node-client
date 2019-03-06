@@ -278,6 +278,15 @@ describe('Buffer API', () => {
       expect(await nvim.buffer.commands).toEqual({});
     });
 
+    it(
+      'sets virtual text and clears namespace',
+      withBuffer(['test'], async buffer => {
+        const ns = await nvim.createNamespace();
+        await buffer.setVirtualText(ns, 0, [['annotation']]);
+        await buffer.clearNamespace({ nsId: ns });
+      })
+    );
+
     // TODO: How do we run integration tests for add/clear highlights? and get mark
   });
 

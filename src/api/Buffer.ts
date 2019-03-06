@@ -13,11 +13,20 @@ export interface BufferHighlight {
   colEnd?: number;
   srcId?: number;
 }
+
 export interface BufferClearHighlight {
   srcId?: number;
   lineStart?: number;
   lineEnd?: number;
 }
+
+export interface BufferClearNamespace {
+  nsId?: number;
+  lineStart?: number;
+  lineEnd?: number;
+}
+
+export type VirtualTextChunk = [string, string];
 
 export const DETACH = Symbol('detachBuffer');
 export const ATTACH = Symbol('attachBuffer');
@@ -175,7 +184,9 @@ export class Buffer extends BaseApi {
   // return Range(this, start, end)
   // }
 
-  /** Gets keymap */
+  /**
+   * Gets a list of buffer-local |mapping| definitions.
+   */
   getKeymap(mode: string): Promise<Array<object>> {
     return this.request(`${this.prefix}get_keymap`, [this, mode]);
   }
@@ -207,28 +218,30 @@ export class Buffer extends BaseApi {
   }
 
   /**
-    Adds a highlight to buffer.
-
-    This can be used for plugins which dynamically generate
-    highlights to a buffer (like a semantic highlighter or
-    linter). The function adds a single highlight to a buffer.
-    Unlike matchaddpos() highlights follow changes to line
-    numbering (as lines are inserted/removed above the highlighted
-    line), like signs and marks do.
-
-    "src_id" is useful for batch deletion/updating of a set of
-    highlights. When called with src_id = 0, an unique source id
-    is generated and returned. Succesive calls can pass in it as
-    "src_id" to add new highlights to the same source group. All
-    highlights in the same group can then be cleared with
-    nvim_buf_clear_highlight. If the highlight never will be
-    manually deleted pass in -1 for "src_id".
-
-    If "hl_group" is the empty string no highlight is added, but a
-    new src_id is still returned. This is useful for an external
-    plugin to synchrounously request an unique src_id at
-    initialization, and later asynchronously add and clear
-    highlights in response to buffer changes. */
+   * Adds a highlight to buffer.
+   *
+   * Useful for plugins that dynamically generate highlights to a
+   * buffer (like a semantic highlighter or linter). The function
+   * adds a single highlight to a buffer. Unlike |matchaddpos()|
+   * highlights follow changes to line numbering (as lines are
+   * inserted/removed above the highlighted line), like signs and
+   * marks do.
+   *
+   * Namespaces are used for batch deletion/updating of a set of
+   * highlights. To create a namespace, use |nvim_create_namespace|
+   * which returns a namespace id. Pass it in to this function as
+   * `ns_id` to add highlights to the namespace. All highlights in
+   * the same namespace can then be cleared with single call to
+   * |nvim_buf_clear_namespace|. If the highlight never will be
+   * deleted by an API call, pass `ns_id = -1`.
+   *
+   * As a shorthand, `ns_id = 0` can be used to create a new
+   * namespace for the highlight, the allocated id is then
+   * returned. If `hl_group` is the empty string no highlight is
+   * added, but a new `ns_id` is still returned. This is supported
+   * for backwards compatibility, new code should use
+   * |nvim_create_namespace| to create a new empty namespace.
+   */
   addHighlight({
     hlGroup: _hlGroup,
     line,
@@ -250,12 +263,15 @@ export class Buffer extends BaseApi {
     ]);
   }
 
-  /** Clears highlights from a given source group and a range of
-  lines
-
-  To clear a source group in the entire buffer, pass in 1 and -1
-  to lineStart and lineEnd respectively. */
+  /**
+   * Deprecated
+   */
   clearHighlight(args: BufferClearHighlight = {}) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '`clearHighlight` is deprecated, use ``clearNamespace()` instead'
+    );
+
     const defaults = {
       srcId: -1,
       lineStart: 0,
@@ -269,6 +285,78 @@ export class Buffer extends BaseApi {
       srcId,
       lineStart,
       lineEnd,
+    ]);
+  }
+
+  /**
+   * Clears namespaced objects, highlights and virtual text, from a line range
+   *
+   * To clear the namespace in the entire buffer, pass in 0 and -1 to line_start and line_end respectively.
+   *
+   * @param {Number} nsId Namespace to clear, or -1 to clear all namespaces
+   * @param {Number} lineStart Start of range of lines to clear
+   * @param {Number} lineEnd End of range of lines to clear (exclusive) or -1 to clear to end of buffer
+   */
+  clearNamespace(args: BufferClearNamespace): void {
+    const defaults = {
+      nsId: -1,
+      lineStart: 0,
+      lineEnd: -1,
+    };
+
+    const { nsId, lineStart, lineEnd } = Object.assign({}, defaults, args);
+
+    this.request(`${this.prefix}clear_namespace`, [
+      this,
+      nsId,
+      lineStart,
+      lineEnd,
+    ]);
+  }
+
+  /**
+   * Set the virtual text (annotation) for a buffer line.
+   *
+   * By default (and currently the only option) the text will be
+   * placed after the buffer text. Virtual text will never cause
+   * reflow, rather virtual text will be truncated at the end of
+   * the screen line. The virtual text will begin one cell
+   * (|lcs-eol| or space) after the ordinary text.
+   *
+   * Namespaces are used to support batch deletion/updating of
+   * virtual text. To create a namespace, use
+   * |nvim_create_namespace|. Virtual text is cleared using
+   * |nvim_buf_clear_namespace|. The same `ns_id` can be used for
+   * both virtual text and highlights added by
+   * |nvim_buf_add_highlight|, both can then be cleared with a
+   * single call to |nvim_buf_clear_namespace|. If the virtual text
+   * never will be cleared by an API call, pass `ns_id = -1`.
+   *
+   * As a shorthand, `ns_id = 0` can be used to create a new
+   * namespace for the virtual text, the allocated id is then
+   * returned.
+   *
+   * @param
+   * @param {Number} nsId Namespace to use or 0 to create a namespace, or -1 for a ungrouped annotation
+   * @param {Number} line Line to annotate with virtual text (zero-indexed)
+   * @param {VirtualTextChunk[]} chunks  A list of [text, hl_group] arrays, each
+                              representing a text chunk with specified
+                              highlight. `hl_group` element can be omitted for
+                              no highlight.
+   * @param {Object} opts Optional parameters. Currently not used.
+   */
+  setVirtualText(
+    nsId: number,
+    line: number,
+    chunks: VirtualTextChunk[],
+    opts = {}
+  ): Promise<number> {
+    return this.request(`${this.prefix}set_virtual_text`, [
+      this,
+      nsId,
+      line,
+      chunks,
+      opts,
     ]);
   }
 
