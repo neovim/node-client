@@ -32,6 +32,11 @@
     "test-lint": "yarn lerna run test-lint",
     "lint": "yarn eslint packages/**/src/**/*.ts"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "*.{ts,js}": [
       "eslint --fix",
