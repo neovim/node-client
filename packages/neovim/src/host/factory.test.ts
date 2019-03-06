@@ -18,7 +18,6 @@ describe('Plugin Factory (used by host)', () => {
 
   beforeEach(() => {
     pluginObj = loadPlugin('@neovim/example-plugin', null);
-    console.log(pluginObj);
   });
 
   it('should collect the specs from a plugin file', () => {
