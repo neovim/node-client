@@ -32,14 +32,16 @@
   "dependencies": {},
   "devDependencies": {
     "husky": "^0.13.4",
-    "lerna": "^2.11.0",
+    "lerna": "^3.13.1",
     "lint-staged": "^3.6.1",
     "prettier": "^1.12.1",
     "tslint": "^5.4.3",
     "tslint-config-prettier": "^1.1.0",
     "tslint-eslint-rules": "^4.1.1"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "yarn lerna run test"
+  },
   "toolchain": {
     "node": "8.15.1",
     "yarn": "1.13.0"
