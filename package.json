@@ -1,46 +1,35 @@
 {
-  "name": "neovim",
-  "description": "Neovim client API and neovim remote plugin provider",
-  "version": "4.4.0",
+  "private": true,
   "homepage": "https://github.com/neovim/node-client",
-  "authors": [
-    {
-      "name": "Billy Vong",
-      "email": "github@mmo.me"
-    },
-    {
-      "name": "rhysd",
-      "email": "lin90162@yahoo.co.jp"
-    },
-    {
-      "name": "Thiago de Arruda",
-      "email": "tpadilha84@gmail.com"
-    },
-    {
-      "name": "Mike Hartington",
-      "email": "<mikehartington@gmail.com>"
-    }
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/neovim/node-client"
-  },
-  "bugs": {
-    "url": "https://github.com/neovim/node-client/issues"
-  },
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^1.4.2",
+    "@typescript-eslint/parser": "^1.4.2",
+    "eslint": "^5.15.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-prettier": "^3.0.1",
     "husky": "^0.13.4",
     "lerna": "^3.13.1",
     "lint-staged": "^3.6.1",
     "prettier": "^1.12.1",
-    "tslint": "^5.4.3",
-    "tslint-config-prettier": "^1.1.0",
-    "tslint-eslint-rules": "^4.1.1"
+    "typescript": "^3.3.3333"
   },
   "scripts": {
-    "test": "yarn lerna run test"
+    "test": "yarn lerna run test",
+    "test-build": "yarn lerna run test-build",
+    "test-staged": "yarn lerna run test-staged",
+    "test-missing-apis": "yarn lerna run test-missing-apis",
+    "test-lint": "yarn lerna run test-lint",
+    "lint": "yarn eslint packages/**/src/**/*.ts"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix",
+      "yarn run test-staged"
+    ]
   },
   "toolchain": {
     "node": "8.15.1",
