@@ -62,7 +62,7 @@ function makeRequireFunction() {
 }
 
 // @see node/lib/module.js
-function compileInSandbox(sandbox: ISandbox) {
+function compileInSandbox(sandbox: Sandbox) {
   // eslint-disable-next-line
   return function(content: string, filename: string) {
     const require = makeRequireFunction.call(this);
@@ -85,18 +85,18 @@ function createDebugFunction(filename: string) {
   };
 }
 
-export interface ISandbox {
+export interface Sandbox {
   process: NodeJS.Process;
   module: NodeModule;
   require: (p: string) => any;
   console: { [key in keyof Console]?: Function };
 }
 
-function createSandbox(filename: string): ISandbox {
+function createSandbox(filename: string): Sandbox {
   const module = new Module(filename);
   module.paths = Module._nodeModulePaths(filename);
 
-  const sandbox = <ISandbox>vm.createContext({
+  const sandbox = <Sandbox>vm.createContext({
     module,
     console: {},
   });
@@ -160,7 +160,11 @@ function createPlugin(
 
     // Clear module from cache
     if (options && !options.cache) {
-      delete Module._cache[require.resolve(filename)];
+      try {
+        delete Module._cache[require.resolve(filename)];
+      } catch (err) {
+        // possible this doesn't exist in cache, ignore
+      }
     }
 
     // attempt to import plugin

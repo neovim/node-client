@@ -10,5 +10,6 @@
       "ignore": "component-*"
     }
   },
+  "useWorkspaces": true,
   "packages": ["packages/*"]
 }

@@ -1,5 +1,11 @@
 {
   "private": true,
+	"workspaces": [
+    "packages/neovim",
+    "packages/decorators",
+    "packages/example-plugin",
+    "packages/example-plugin-decorators"
+	],
   "homepage": "https://github.com/neovim/node-client",
   "license": "MIT",
   "dependencies": {},
@@ -18,6 +24,7 @@
     "typescript": "^3.3.3333"
   },
   "scripts": {
+    "bootstrap": "yarn lerna bootstrap",
     "test": "yarn lerna run test",
     "test-build": "yarn lerna run test-build",
     "test-staged": "yarn lerna run test-staged",

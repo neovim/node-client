@@ -9,7 +9,7 @@ const {
   Function: NvimFunction,
   Autocmd,
   Command,
-} = require('../../../../../../lib/plugin');
+} = require('@neovim/decorators');
 
 @Plugin
 class Test {

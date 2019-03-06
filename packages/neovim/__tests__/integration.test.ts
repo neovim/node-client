@@ -33,10 +33,15 @@ describe('Node host', () => {
       'q!',
     ];
 
-    const integrationDir = path.resolve(plugdir, 'integration');
+    const integrationDir = path.resolve(plugdir, '..', '..', 'example-plugin');
     process.chdir(plugdir);
 
-    fs.writeFileSync(nvimrc, `set rtp+=${integrationDir}`);
+    fs.writeFileSync(
+      nvimrc,
+      `set rtp+=${integrationDir}
+    let g:node_host_prog = '${path.resolve(plugdir, '../bin/cli')}'
+      `
+    );
     cp.spawnSync('nvim', args);
 
     proc = cp.spawn(

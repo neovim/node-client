@@ -53,13 +53,14 @@
     "@babel/plugin-proposal-class-properties": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
     "@babel/preset-typescript": "^7.3.3",
+    "@neovim/example-plugin": "^1.0.0",
+    "@neovim/example-plugin-decorators": "^1.0.0",
     "@types/jest": "^24.0.9",
     "@types/lodash": "^4.14.108",
     "@types/msgpack-lite": "^0.1.4",
     "@types/node": "^7.0.32",
     "@types/traverse": "^0.6.29",
     "@types/which": "^1.0.28",
-    "@types/winston": "^2.3.3",
     "axios": "^0.18.0",
     "babel-jest": "^24.1.0",
     "jest": "^24.1.0",
@@ -77,8 +78,8 @@
     "lint": "eslint src/**/*.ts && tslint -p tsconfig.json",
     "prep-integration-test": "yarn link && cd __tests__/integration/rplugin/node/test_2 && yarn install && yarn run build",
     "precommit": "lint-staged",
-    "build": "tsc --pretty -p tsconfig.json",
-    "watch": "tsc --pretty -p tsconfig.json --watch true"
+    "build": "tsc --pretty",
+    "watch": "tsc --pretty --watch true"
   },
   "jest": {
     "moduleFileExtensions": [

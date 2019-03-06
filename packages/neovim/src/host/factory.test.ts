@@ -17,7 +17,8 @@ describe('Plugin Factory (used by host)', () => {
   let pluginObj: NvimPlugin;
 
   beforeEach(() => {
-    pluginObj = loadPlugin(path.join(PLUGIN_PATH, 'test'), null);
+    pluginObj = loadPlugin('@neovim/example-plugin', null);
+    console.log(pluginObj);
   });
 
   it('should collect the specs from a plugin file', () => {
@@ -68,7 +69,7 @@ describe('Plugin Factory (used by host)', () => {
 
   it('loads plugin with instance of nvim API', () => {
     const nvim = {};
-    const plugin = loadPlugin(path.join(PLUGIN_PATH, 'test'), nvim, {});
+    const plugin = loadPlugin('@neovim/example-plugin', nvim);
     expect(plugin.nvim).toBe(nvim);
   });
 
@@ -81,7 +82,7 @@ describe('Plugin Factory (decorator api)', () => {
   let pluginObj: NvimPlugin;
 
   beforeEach(() => {
-    pluginObj = loadPlugin(path.join(PLUGIN_PATH, 'test_2'), null);
+    pluginObj = loadPlugin('@neovim/example-plugin-decorators', null);
   });
 
   it('should collect the specs from a plugin file', () => {
@@ -133,25 +134,25 @@ describe('Plugin Factory (decorator api)', () => {
 
   it('loads plugin with instance of nvim API', () => {
     const nvim = {};
-    const plugin = loadPlugin(path.join(PLUGIN_PATH, 'test_2'), nvim, {});
+    const plugin = loadPlugin('@neovim/example-plugin-decorators', nvim, {});
     expect(plugin.nvim).toBe(nvim);
   });
 
   it('cannot call illegal process functions', () => {
     const nvim = {};
-    const plugin = loadPlugin(path.join(PLUGIN_PATH, 'test_2'), nvim, {});
+    const plugin = loadPlugin('@neovim/example-plugin-decorators', nvim, {});
     expect(plugin.functions.Illegal.fn).toThrow();
   });
 
   it('cannot write to process.umask', () => {
     const nvim = {};
-    const plugin = loadPlugin(path.join(PLUGIN_PATH, 'test_2'), nvim, {});
+    const plugin = loadPlugin('@neovim/example-plugin-decorators', nvim, {});
     expect(() => plugin.functions.Umask.fn(123)).toThrow();
   });
 
   it('can read process.umask()', () => {
     const nvim = {};
-    const plugin = loadPlugin(path.join(PLUGIN_PATH, 'test_2'), nvim, {});
+    const plugin = loadPlugin('@neovim/example-plugin-decorators', nvim, {});
     expect(() => plugin.functions.Umask.fn()).not.toThrow();
     expect(plugin.functions.Umask.fn()).toBeDefined();
   });

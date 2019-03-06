@@ -4,16 +4,17 @@
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
-    "build": "tsc --pretty -p tsconfig.json",
-    "watch": "tsc --pretty -p tsconfig.json --watch true"
+    "build": "tsc --pretty",
+    "watch": "tsc --pretty --watch true"
   },
   "keywords": [],
   "author": "Mike Hartington <mikehartington@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^11.10.4",
     "typescript": "^2.8.3"
   },
   "dependencies": {
-    "neovim": "^4.0.1"
+    "neovim": "^4.4.0"
   }
 }
