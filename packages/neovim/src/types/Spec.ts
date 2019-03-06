@@ -1,4 +1,4 @@
-export type Spec = {
+export interface Spec {
   type: 'function' | 'autocmd' | 'command';
   name: string;
   sync: boolean;
@@ -10,4 +10,4 @@ export type Spec = {
     pattern?: string;
     complete?: string;
   };
-};
+}

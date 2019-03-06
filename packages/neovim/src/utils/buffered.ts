@@ -4,7 +4,9 @@ const MIN_SIZE = 8 * 1024;
 
 export default class Buffered extends Transform {
   private chunks: Buffer[] | null;
+
   private timer: number | null;
+
   constructor() {
     super({
       readableHighWaterMark: 10 * 1024 * 1024,

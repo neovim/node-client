@@ -1,15 +1,15 @@
 // Plugin decorator
 
-import { NVIM_SPEC } from './properties';
 import { Neovim, NvimPlugin } from 'neovim';
+import { NVIM_SPEC } from './properties';
 import {
   PluginOptions,
   AutocmdOptions,
   CommandOptions,
-  FunctionOptions
+  FunctionOptions,
 } from './types';
 
-type Spec = {
+interface Spec {
   type: 'function' | 'autocmd' | 'command';
   name: string;
   sync: boolean;
@@ -19,8 +19,7 @@ type Spec = {
     eval?: string;
     pattern?: string;
   };
-};
-
+}
 
 export interface PluginWrapperConstructor {
   new (nvim: Neovim, plugin?: NvimPlugin): PluginWrapperInterface;
@@ -32,6 +31,7 @@ export interface PluginWrapperInterface {
 function wrapper(cls: PluginWrapperConstructor, options?: PluginOptions): any {
   return class WrapperClass extends cls implements PluginWrapperInterface {
     public nvim: Neovim;
+
     constructor(plugin: NvimPlugin) {
       super(plugin.nvim, plugin);
       this.setApi(plugin.nvim);
@@ -50,7 +50,7 @@ function wrapper(cls: PluginWrapperConstructor, options?: PluginOptions): any {
             case 'autocmd':
               const autoCmdOpts: AutocmdOptions = {
                 pattern: spec.opts.pattern,
-                sync: spec.sync
+                sync: spec.sync,
               };
 
               if (typeof spec.opts.eval !== 'undefined') {
@@ -61,7 +61,7 @@ function wrapper(cls: PluginWrapperConstructor, options?: PluginOptions): any {
               break;
             case 'command':
               const cmdOpts: CommandOptions = {
-                sync: spec.sync
+                sync: spec.sync,
               };
 
               if (typeof spec.opts.range !== 'undefined') {
@@ -75,7 +75,7 @@ function wrapper(cls: PluginWrapperConstructor, options?: PluginOptions): any {
               break;
             case 'function':
               const funcOpts: FunctionOptions = {
-                sync: spec.sync
+                sync: spec.sync,
               };
 
               if (typeof spec.opts.range !== 'undefined') {
@@ -93,6 +93,7 @@ function wrapper(cls: PluginWrapperConstructor, options?: PluginOptions): any {
         }
       });
     }
+
     setApi(nvim: Neovim) {
       this.nvim = nvim;
     }

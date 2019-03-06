@@ -11,11 +11,11 @@ export interface ExtTypeConstructor<T> {
   new (...args: any[]): T;
 }
 
-export type MetadataType = {
+export interface MetadataType {
   constructor: ExtTypeConstructor<Buffer | Tabpage | Window>;
   name: string;
   prefix: string;
-};
+}
 
 export const Metadata: MetadataType[] = [
   {

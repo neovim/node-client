@@ -18,7 +18,9 @@ export interface PluginDecoratorOptions {
   dev?: boolean;
 }
 
-export type Constructor<T> = { new (...args: any[]): T };
+export interface Constructor<T> {
+  new (...args: any[]): T;
+}
 
 function wrapper<T extends Constructor<{}>>(
   cls: T,
@@ -28,6 +30,7 @@ function wrapper<T extends Constructor<{}>>(
 
   return class extends cls {
     public nvim: Neovim;
+
     constructor(...args: any[]) {
       const plugin: NvimPlugin = args[0];
       super(plugin.nvim, plugin);
@@ -99,6 +102,7 @@ function wrapper<T extends Constructor<{}>>(
         }
       });
     }
+
     setApi(nvim: Neovim) {
       this.nvim = nvim;
     }

@@ -51,7 +51,7 @@ export class Buffer extends BaseApi {
   ): Promise<boolean> => {
     if (this.client.isAttached(this)) return true;
     return this.request(`${this.prefix}attach`, [this, sendBuffer, options]);
-  }
+  };
 
   /**
    * Detach from buffer to stop listening to buffer events
@@ -71,7 +71,7 @@ export class Buffer extends BaseApi {
   }
 
   /** Get lines in buffer */
-  get lines(): Promise<Array<string>> {
+  get lines(): Promise<string[]> {
     return this.getLines();
   }
 
@@ -80,18 +80,18 @@ export class Buffer extends BaseApi {
     return this.request(`${this.prefix}get_changedtick`, [this]);
   }
 
-  get commands(): Promise<Object> {
+  get commands(): Promise<Record<string, any>> {
     return this.getCommands();
   }
 
-  getCommands(options = {}): Promise<Object> {
+  getCommands(options = {}): Promise<Record<string, any>> {
     return this.request(`${this.prefix}get_commands`, [this, options]);
   }
 
   /** Get specific lines of buffer */
   getLines(
     { start, end, strictIndexing } = { start: 0, end: -1, strictIndexing: true }
-  ): Promise<Array<string>> {
+  ): Promise<string[]> {
     const indexing =
       typeof strictIndexing === 'undefined' ? true : strictIndexing;
     return this.request(`${this.prefix}get_lines`, [
@@ -127,7 +127,7 @@ export class Buffer extends BaseApi {
   }
 
   /** Insert lines at `start` index */
-  insert(lines: Array<string> | string, start: number) {
+  insert(lines: string[] | string, start: number) {
     return this.setLines(lines, {
       start,
       end: start,
@@ -136,7 +136,7 @@ export class Buffer extends BaseApi {
   }
 
   /** Replace lines starting at `start` index */
-  replace(_lines: Array<string> | string, start: number) {
+  replace(_lines: string[] | string, start: number) {
     const lines = typeof _lines === 'string' ? [_lines] : _lines;
     return this.setLines(lines, {
       start,
@@ -151,7 +151,7 @@ export class Buffer extends BaseApi {
   }
 
   /** Append a string or list of lines to end of buffer */
-  append(lines: Array<string> | string) {
+  append(lines: string[] | string) {
     return this.setLines(lines, {
       start: -1,
       end: -1,
@@ -187,7 +187,7 @@ export class Buffer extends BaseApi {
   /**
    * Gets a list of buffer-local |mapping| definitions.
    */
-  getKeymap(mode: string): Promise<Array<object>> {
+  getKeymap(mode: string): Promise<object[]> {
     return this.request(`${this.prefix}get_keymap`, [this, mode]);
   }
 

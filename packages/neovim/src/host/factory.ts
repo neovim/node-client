@@ -22,9 +22,9 @@ export interface IModule {
   _nodeModulePaths: (filename: string) => string[];
 }
 
-export type LoadPluginOptions = {
+export interface LoadPluginOptions {
   cache?: boolean;
-};
+}
 
 const Module: IModule = require('module');
 

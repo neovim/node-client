@@ -1,7 +1,6 @@
 import { NVIM_SYNC, NVIM_SPEC, NVIM_METHOD_NAME } from './properties';
 import { AutocmdOptions } from './types';
 
-
 // Example
 // @autocmd('BufEnter', { pattern: '*.js', eval: 'expand("<afile>")', sync: true })
 export function Autocmd(name: string, options?: AutocmdOptions) {
@@ -10,7 +9,7 @@ export function Autocmd(name: string, options?: AutocmdOptions) {
     const isMethod = typeof methodName === 'string';
     const f = isMethod ? cls[methodName] : cls;
     const opts: AutocmdOptions = {
-      pattern: ''
+      pattern: '',
     };
 
     ['pattern', 'eval'].forEach((option: keyof AutocmdOptions) => {
@@ -23,7 +22,7 @@ export function Autocmd(name: string, options?: AutocmdOptions) {
       options.pattern ? `:${options.pattern}` : ''
     }`;
     Object.defineProperty(f, NVIM_METHOD_NAME, {
-      value: `autocmd:${nameWithPattern}`
+      value: `autocmd:${nameWithPattern}`,
     });
     Object.defineProperty(f, NVIM_SYNC, { value: !!sync });
     Object.defineProperty(f, NVIM_SPEC, {
@@ -31,8 +30,8 @@ export function Autocmd(name: string, options?: AutocmdOptions) {
         type: 'autocmd',
         name,
         sync: !!sync,
-        opts
-      }
+        opts,
+      },
     });
 
     if (isMethod) {

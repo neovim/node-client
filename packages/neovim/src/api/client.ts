@@ -8,9 +8,12 @@ import { Neovim } from './Neovim';
 import { Buffer } from './Buffer';
 
 export class NeovimClient extends Neovim {
-  protected requestQueue: Array<any>;
+  protected requestQueue: any[];
+
   private transportAttached: boolean;
+
   private _channelId: number;
+
   private attachedBuffers: Map<string, Map<string, Function[]>> = new Map();
 
   constructor(options: { transport?: Transport; logger?: ILogger } = {}) {

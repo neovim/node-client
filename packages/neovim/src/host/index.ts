@@ -10,6 +10,7 @@ export interface Response {
 
 export class Host {
   public loaded: { [index: string]: NvimPlugin };
+
   public nvim: any;
 
   constructor() {

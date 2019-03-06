@@ -1,21 +1,21 @@
 /* eslint camelcase:0 */
 export type Parameters = [string, string];
 
-export type FunctionInfo = {
+export interface FunctionInfo {
   parameters: Parameters[];
   method: boolean;
   return_type: string;
   name: string;
   since: number;
-};
+}
 
-export type UiEventInfo = {
+export interface UiEventInfo {
   parameters: Parameters[];
   name: string;
   since: number;
-};
+}
 
-export type ApiInfo = {
+export interface ApiInfo {
   version: {
     major: number;
     minor: number;
@@ -29,4 +29,4 @@ export type ApiInfo = {
   ui_options: string[];
   error_types: object;
   types: object;
-};
+}

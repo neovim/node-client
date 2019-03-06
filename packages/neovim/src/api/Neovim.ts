@@ -6,7 +6,7 @@ import { Window, AsyncWindow } from './Window';
 import { VimValue } from '../types/VimValue';
 import { ApiInfo } from '../types/ApiInfo'; // eslint-disable-line
 
-export type UiAttachOptions = {
+export interface UiAttachOptions {
   rgb?: boolean;
   // eslint-disable-next-line camelcase
   ext_popupmenu?: boolean;
@@ -16,7 +16,7 @@ export type UiAttachOptions = {
   ext_wildmenu?: boolean;
   // eslint-disable-next-line camelcase
   ext_cmdline?: boolean;
-};
+}
 
 export type Ui = UiAttachOptions & {
   height: number;
@@ -24,13 +24,13 @@ export type Ui = UiAttachOptions & {
   chan?: number;
 };
 
-export type Proc = {
+export interface Proc {
   ppid: number;
   name: string;
   pid: number;
-};
+}
 
-export type Channel = {
+export interface Channel {
   id: number;
   stream: string;
   stdio?: object;
@@ -38,9 +38,9 @@ export type Channel = {
   socket?: object;
   job?: any;
   mode?: string;
-};
+}
 
-export type Command = {
+export interface Command {
   bang: boolean;
   nargs: string;
   range: string;
@@ -56,9 +56,9 @@ export type Command = {
   count?: any;
   // eslint-disable-next-line camelcase
   complete_arg?: any;
-};
+}
 
-export type OpenWindowOptions = {
+export interface OpenWindowOptions {
   // If set, the window becomes a floating window. The window will be placed with row,col coordinates relative to valueue
   //        "editor" the global editor grid
   //        "win"    a window. Use 'win' option below to specify window id,
@@ -83,15 +83,18 @@ export type OpenWindowOptions = {
 
   // GUI should display the window as an external top-level window. Currently accepts no other positioning options together with this.
   external?: boolean;
-};
+}
 
 /**
  * Neovim API
  */
 export class Neovim extends BaseApi {
   protected prefix: string = 'nvim_';
+
   public Buffer = Buffer;
+
   public Window = Window;
+
   public Tabpage = Tabpage;
 
   /**
@@ -407,7 +410,7 @@ export class Neovim extends BaseApi {
   /**
    * Executes lua, it's possible neovim client does not support this
    */
-  lua(code: string, args: Array<VimValue> = []): Promise<object> {
+  lua(code: string, args: VimValue[] = []): Promise<object> {
     const _args = Array.isArray(args) ? args : [args];
     return this.request(`${this.prefix}execute_lua`, [code, _args]);
   }
@@ -415,7 +418,7 @@ export class Neovim extends BaseApi {
   /**
    * Alias for `lua()` to be consistent with neovim API
    */
-  executeLua(code: string, args: Array<VimValue> = []): Promise<object> {
+  executeLua(code: string, args: VimValue[] = []): Promise<object> {
     return this.lua(code, args);
   }
 
@@ -427,7 +430,7 @@ export class Neovim extends BaseApi {
   callDictFunction(
     dict: object,
     fname: string,
-    args: VimValue | Array<VimValue> = []
+    args: VimValue | VimValue[] = []
   ): object {
     const _args = Array.isArray(args) ? args : [args];
     return this.request(`${this.prefix}call_dict_function`, [
@@ -442,7 +445,7 @@ export class Neovim extends BaseApi {
    *
    * On execution error: fails with VimL error, does not update v:errmsg.
    */
-  call(fname: string, args: VimValue | Array<VimValue> = []) {
+  call(fname: string, args: VimValue | VimValue[] = []) {
     const _args = Array.isArray(args) ? args : [args];
     return this.request(`${this.prefix}call_function`, [fname, _args]);
   }
@@ -450,7 +453,7 @@ export class Neovim extends BaseApi {
   /**
    * Alias for `call`
    */
-  callFunction(fname: string, args: VimValue | Array<VimValue> = []) {
+  callFunction(fname: string, args: VimValue | VimValue[] = []) {
     return this.call(fname, args);
   }
 
@@ -465,7 +468,7 @@ export class Neovim extends BaseApi {
    *
    *  - To minimize RPC overhead (roundtrips) of a sequence of many requests.
    */
-  callAtomic(calls: Array<VimValue>): Promise<[Array<any>, boolean]> {
+  callAtomic(calls: VimValue[]): Promise<[any[], boolean]> {
     return this.request(`${this.prefix}call_atomic`, [calls]);
   }
 

@@ -1,7 +1,7 @@
 import { createConnection } from 'net';
 import * as child from 'child_process';
 
-import { NeovimClient } from './../api/client';
+import { NeovimClient } from '../api/client';
 import { logger } from '../utils/logger';
 
 export interface Attach {

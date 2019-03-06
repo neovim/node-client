@@ -4,13 +4,13 @@ import { Transport } from '../utils/transport';
 import { logger as loggerModule, ILogger } from '../utils/logger';
 import { VimValue } from '../types/VimValue';
 
-export type BaseConstructorOptions = {
+export interface BaseConstructorOptions {
   transport?: Transport;
   logger?: ILogger;
   data?: Buffer;
   metadata?: any;
   client?: any;
-};
+}
 
 const DO_REQUEST = Symbol('DO_REQUEST');
 
@@ -26,10 +26,16 @@ const DO_REQUEST = Symbol('DO_REQUEST');
 // Only the Neovim API class should use EE though
 export class BaseApi extends EventEmitter {
   protected transport: Transport;
+
   protected _isReady: Promise<boolean>;
+
   protected prefix: string;
+
   public logger: ILogger;
-  public data: Buffer | Number; // Node Buffer
+
+  public data: Buffer | number;
+
+  // Node Buffer
   protected client: any;
 
   constructor({

@@ -25,8 +25,8 @@ export function Command(name: string, options?: CommandOptions) {
         type: 'command',
         name,
         sync: !!sync,
-        opts
-      }
+        opts,
+      },
     });
 
     if (isMethod) {

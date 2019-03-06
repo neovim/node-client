@@ -11,7 +11,9 @@ import { Metadata } from '../api/types';
 
 class Response {
   private requestId: number;
+
   private sent: boolean;
+
   private encoder: NodeJS.WritableStream;
 
   constructor(encoder: NodeJS.WritableStream, requestId: number) {
@@ -37,11 +39,17 @@ class Response {
 
 class Transport extends EventEmitter {
   private pending: Map<number, Function> = new Map();
+
   private nextRequestId: number = 1;
+
   private encodeStream: any;
+
   private decodeStream: any;
+
   private reader: NodeJS.ReadableStream;
+
   private writer: NodeJS.WritableStream;
+
   protected codec: msgpack.Codec;
 
   // Neovim client that holds state

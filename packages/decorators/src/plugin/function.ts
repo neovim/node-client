@@ -22,8 +22,8 @@ export function Function(name: string, options: FunctionOptions = {}) {
         type: 'function',
         name,
         sync: !!sync,
-        opts
-      }
+        opts,
+      },
     });
 
     if (isMethod) {

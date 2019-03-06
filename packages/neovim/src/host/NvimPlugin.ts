@@ -39,7 +39,8 @@ export function callable(fn: [any, Function]): Function;
 export function callable(fn: any): Function {
   if (typeof fn === 'function') {
     return fn;
-  } else if (Array.isArray(fn) && fn.length === 2) {
+  }
+  if (Array.isArray(fn) && fn.length === 2) {
     return function(...args: any[]) {
       return fn[1].apply(fn[0], args);
     };
@@ -50,14 +51,19 @@ export function callable(fn: any): Function {
 
 export class NvimPlugin {
   public filename: string;
+
   public nvim: Neovim;
+
   public instance: any;
 
   public dev: boolean;
+
   public alwaysInit: boolean;
 
   public autocmds: { [index: string]: Handler };
+
   public commands: { [index: string]: Handler };
+
   public functions: { [index: string]: Handler };
 
   constructor(filename: string, plugin: any, nvim: Neovim) {
@@ -93,11 +99,13 @@ export class NvimPlugin {
   }
 
   registerAutocmd(name: string, fn: Function, options: AutocmdOptions): void;
+
   registerAutocmd(
     name: string,
     fn: [any, Function],
     options: AutocmdOptions
   ): void;
+
   registerAutocmd(name: string, fn: any, options?: AutocmdOptions): void {
     if (!options.pattern) {
       logger.error(`registerAutocmd expected pattern option for ${name}`);
@@ -128,11 +136,13 @@ export class NvimPlugin {
   }
 
   registerCommand(name: string, fn: Function, options?: CommandOptions): void;
+
   registerCommand(
     name: string,
     fn: [any, Function],
     options?: CommandOptions
   ): void;
+
   registerCommand(name: string, fn: any, options?: CommandOptions): void {
     const spec: Spec = {
       type: 'command',
@@ -162,11 +172,13 @@ export class NvimPlugin {
     fn: Function,
     options?: NvimFunctionOptions
   ): void;
+
   registerFunction(
     name: string,
     fn: [any, Function],
     options?: NvimFunctionOptions
   ): void;
+
   registerFunction(name: string, fn: any, options?: NvimFunctionOptions): void {
     const spec: Spec = {
       type: 'function',
