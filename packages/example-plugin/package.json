@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "A test fixture",
-  "main": "rplugin/node/index.js",
+  "main": "rplugin/node/test/index.js",
   "license": "MIT",
   "dependencies": {
   }
