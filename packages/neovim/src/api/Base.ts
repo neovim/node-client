@@ -89,7 +89,10 @@ export class BaseApi extends EventEmitter {
     // Not possible for ExtType classes since they are only created after transport is ready
     await this._isReady;
     this.logger.debug(`request -> neovim.api.${name}`);
-    return this[DO_REQUEST](name, args);
+    const promise = this[DO_REQUEST](name, args).catch(err => {
+      this.logger.error(`Error making request to ${name}`, err);
+    });
+    return promise;
   }
 
   _getArgsByPrefix(...args: any[]) {
