@@ -19,7 +19,7 @@ try {
 
 describe('Neovim API', () => {
   let proc;
-  let nvim;
+  let nvim: Neovim;
 
   beforeAll(async done => {
     proc = cp.spawn(
@@ -161,6 +161,12 @@ describe('Neovim API', () => {
       expect(await nvim.getVvar('ctype')).toBe(initial);
     });
 
+    it('sets v: vars', async () => {
+      await nvim.setVvar('mouse_winid', 2);
+      expect(await nvim.eval('v:mouse_winid')).toBe(2);
+      expect(await nvim.getVvar('mouse_winid')).toBe(2);
+    });
+
     it('gets string width', async () => {
       expect(await nvim.strWidth('string')).toBe(6);
     });
@@ -242,6 +248,47 @@ describe('Neovim API', () => {
 
     it('sets clientInfo', async () => {
       expect(() => nvim.setClientInfo('test', {}, '', {}, {})).not.toThrow();
+    });
+
+    it('selects popupmenu item', async () => {
+      await nvim.selectPopupmenuItem(0, true, true);
+    });
+
+    it('creates and closes a floating window', async () => {
+      const numBuffers = (await nvim.buffers).length;
+      const numWindows = (await nvim.windows).length;
+      const buffer = await nvim.createBuffer(false, false);
+      expect(await nvim.buffers).toHaveLength(numBuffers + 1);
+
+      const floatingWindow = await nvim.openWindow(buffer, true, 50, 50, {
+        relative: 'editor',
+        row: 5,
+        col: 5,
+      });
+      expect(await nvim.windows).toHaveLength(numWindows + 1);
+
+      await nvim.windowClose(floatingWindow, true);
+      expect(await nvim.windows).toHaveLength(numWindows);
+    });
+
+    it('resizes a window', async () => {
+      const numWindows = (await nvim.windows).length;
+      const buffer = await nvim.createBuffer(false, false);
+
+      const floatingWindow = await nvim.openWindow(buffer, true, 10, 10, {
+        relative: 'editor',
+        row: 5,
+        col: 5,
+      });
+      expect(await nvim.windows).toHaveLength(numWindows + 1);
+      expect(await floatingWindow.height).toBe(10);
+      expect(await floatingWindow.width).toBe(10);
+
+      await nvim.windowConfig(floatingWindow, 20, 20);
+      expect(await floatingWindow.height).toBe(20);
+      expect(await floatingWindow.width).toBe(20);
+
+      await nvim.windowClose(floatingWindow, true);
     });
   });
 

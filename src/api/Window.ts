@@ -88,4 +88,36 @@ export class Window extends BaseApi {
   get number(): Promise<number> {
     return this.request(`${this.prefix}get_number`, [this]);
   }
+
+  /**
+   * Closes window
+   *
+   * @param {Boolean} force Force close window
+   */
+  close(force: boolean = false) {
+    return this.request(`${this.prefix}close`, [this, force]);
+  }
+
+  /**
+   * Configure window position. Currently this is only used to
+   * configure floating and external windows (including changing a
+   * split window to these types).
+   *
+   * See documentation at |nvim_open_win()|, for the meaning of
+   * parameters. Pass in -1 for 'witdh' and 'height' to keep
+   * exiting size.
+   *
+   * When reconfiguring a floating window, absent option keys will
+   * not be changed. The following restriction apply: `row`, `col`
+   * and `relative` must be reconfigured together. Only changing a
+   * subset of these is an error.
+   *
+   * @param {Window}  window Window handle
+   * @param {Number}  width  Width of window (in character cells)
+   * @param {Number}  height Height of window (in character cells)
+   * @Param {Object}  options Options object
+   */
+  config(width: number, height: number, options: object = {}) {
+    return this.request(`${this.prefix}config`, [this, width, height, options]);
+  }
 }

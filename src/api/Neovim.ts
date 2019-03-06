@@ -58,6 +58,33 @@ export type Command = {
   complete_arg?: any;
 };
 
+export type OpenWindowOptions = {
+  // If set, the window becomes a floating window. The window will be placed with row,col coordinates relative to valueue
+  //        "editor" the global editor grid
+  //        "win"    a window. Use 'win' option below to specify window id,
+  //                 or current window will be used by default.
+  //        "cursor" the cursor position in current window.
+  relative?: 'editor' | 'win' | 'cursor';
+
+  // the corner of the float that the row,col position defines
+  anchor?: 'NW' | 'NE' | 'SW' | 'SE';
+
+  // Whether window can be focused by wincmds and mouse events. Defaults to true. Even if set to false, the window can still be entered using |nvim_set_current_win()| API call.
+  focusable?: boolean;
+
+  // `row`: row position. Screen cell height are used as unit.  Can be floating point.
+  row?: number;
+
+  // `col`: column position. Screen cell width is used as unit. Can be floating point.
+  col?: number;
+
+  // when using relative='win', window id of the window where the position is defined.
+  win?: number;
+
+  // GUI should display the window as an external top-level window. Currently accepts no other positioning options together with this.
+  external?: boolean;
+};
+
 /**
  * Neovim API
  */
@@ -474,6 +501,16 @@ export class Neovim extends BaseApi {
   }
 
   /**
+   * Sets a v: variable, if it is not readonly.
+   *
+   * @param {String} name Variable name
+   * @param {VimValue} value Variable value
+   */
+  setVvar(name: string, value: VimValue) {
+    return this.request(`${this.prefix}set_vvar`, [name, value]);
+  }
+
+  /**
    * Sends input-keys to Nvim, subject to various quirks controlled
    * by `mode` flags. This is a blocking call, unlike |nvim_input()|.
    *
@@ -507,6 +544,51 @@ export class Neovim extends BaseApi {
    */
   input(keys: string): Promise<number> {
     return this.request(`${this.prefix}input`, [keys]);
+  }
+
+  /**
+   * Send mouse event from GUI.
+   *
+   * The call is non-blocking. It doesn't wait on any resulting
+   * action, but queues the event to be processed soon by the event
+   * loop.
+   *
+   * Note:
+   * Currently this doesn't support "scripting" multiple mouse
+   * events by calling it multiple times in a loop: the
+   * intermediate mouse positions will be ignored. It should be
+   * used to implement real-time mouse input in a GUI. The
+   * deprecated pseudokey form ("<LeftMouse><col,row>") of
+   * |nvim_input()| has the same limitiation.
+   *
+   * @param {String} button    Mouse button: one of "left", "right", "middle", "wheel".
+   * @param {String} action    For ordinary buttons, one of "press", "drag", "release".
+   *                           For the wheel, one of "up", "down", "left", "right".
+   * @param {String} modifier  String of modifiers each represented by a
+   *                           single char. The same specifiers are used as
+   *                           for a key press, except that the "-" separator
+   *                           is optional, so "C-A-", "c-a" and "CA" can all
+   *                           be used to specify Ctrl+Alt+click.
+   * @param {Number} grid      Grid number if the client uses |ui-multigrid|, else 0.
+   * @param {Number} row       Mouse row-position (zero-based, like redraw events)
+   * @param {Number} col       Mouse column-position (zero-based, like redraw events)
+   */
+  inputMouse(
+    button: string,
+    action: string,
+    modifier: string,
+    grid: number,
+    row: number,
+    col: number
+  ) {
+    return this.request(`${this.prefix}input_mouse`, [
+      button,
+      action,
+      modifier,
+      grid,
+      row,
+      col,
+    ]);
   }
 
   /**
@@ -637,6 +719,25 @@ export class Neovim extends BaseApi {
   }
 
   /**
+   * Tell Nvim to resize a grid. Triggers a grid_resize event with
+   * the requested grid size or the maximum size if it exceeds size
+   * limits.
+   *
+   * On invalid grid handle, fails with error.
+   *
+   * @param {Number} grid The handle of the grid to be changed
+   * @param {Number} width The new requested width
+   * @param {Number} height The new requested height
+   */
+  uiTryResizeGrid(grid: number, width: number, height: number): Promise<void> {
+    return this.request(`${this.prefix}ui_try_resize_grid`, [
+      grid,
+      width,
+      height,
+    ]);
+  }
+
+  /**
    * Set UI Option
    */
   uiSetOption(name: string, value: any): Promise<void> {
@@ -716,6 +817,160 @@ export class Neovim extends BaseApi {
    */
   getNamespaces(): Promise<{ [name: string]: number }> {
     return this.request(`${this.prefix}get_namespaces`);
+  }
+
+  /**
+   * Selects an item in the completion popupmenu.
+   *
+   * If |ins-completion| is not active this API call is silently
+   * ignored. Useful for an external UI using |ui-popupmenu| to
+   * control the popupmenu with the mouse. Can also be used in a
+   * mapping; use <cmd> |:map-cmd| to ensure the mapping doesn't
+   * end completion mode.
+   *
+   * @param {Number}  item     Index (zero-based) of the item to select.
+   *                           Value of -1 selects nothing and restores the original text.
+   * @param {Boolean} insert   Whether the selection should be inserted in the buffer.
+   * @param {Boolean} finish   Finish the completion and dismiss the popupmenu.
+   *                           Implies `insert`.
+   * @param {Object}  opts     Optional parameters. Reserved for future use.
+   */
+  selectPopupmenuItem(
+    item: number,
+    insert: boolean,
+    finish: boolean,
+    opts: object = {}
+  ) {
+    return this.request(`${this.prefix}select_popupmenu_item`, [
+      item,
+      insert,
+      finish,
+      opts,
+    ]);
+  }
+
+  /**
+   * Creates a new, empty, unnamed buffer.
+   *
+   * @param {Boolean} listed  Controls 'buflisted'
+   * @param {Boolean} scratch Creates a "throwaway" |scratch-buffer| for temporary work (always 'nomodified')
+   * @return {Buffer|Number} Buffer handle, or 0 on error
+   */
+  private createBuf(
+    listed: boolean,
+    scratch: boolean
+  ): Promise<Buffer | number> {
+    return this.request(`${this.prefix}create_buf`, [listed, scratch]);
+  }
+
+  /**
+   * Public alias for `createBuf`
+   */
+  createBuffer(listed: boolean, scratch: boolean): Promise<Buffer | number> {
+    return this.createBuf(listed, scratch);
+  }
+
+  /**
+   * Open a new window.
+   * Currently this is used to open floating and external windows.
+   * Floats are windows that are drawn above the split layout, at
+   * some anchor position in some other window. Floats can be draw
+   * internally or by external GUI with the |ui-multigrid|
+   * extension. External windows are only supported with multigrid
+   * GUIs, and are displayed as separate top-level windows.
+   *
+   * Exactly one of `external` and `relative` must be specified.
+   *
+   * @param {Buffer}  buffer Handle of buffer to be displayed in the window
+   * @param {Boolean} enter  Whether the window should be entered (made the current window)
+   * @param {Number}  width  Width of window (in character cells)
+   * @param {Number}  height Height of window (in character cells)
+   * @Param {Object}  options Options object
+   * @return {Window|Number} The Window handle or 0 when error
+   */
+  private openWin(
+    buffer: Buffer,
+    enter: boolean,
+    width: number,
+    height: number,
+    options: OpenWindowOptions
+  ): Promise<Window | number> {
+    return this.request(`${this.prefix}open_win`, [
+      buffer,
+      enter,
+      width,
+      height,
+      options,
+    ]);
+  }
+
+  /**
+   * Public alias for `openWin`
+   */
+  openWindow(
+    buffer: Buffer,
+    enter: boolean,
+    width: number,
+    height: number,
+    options: OpenWindowOptions
+  ): Promise<Window | number> {
+    return this.openWin(buffer, enter, width, height, options);
+  }
+
+  /**
+   * Configure window position. Currently this is only used to
+   * configure floating and external windows (including changing a
+   * split window to these types).
+   *
+   * See documentation at |nvim_open_win()|, for the meaning of
+   * parameters. Pass in -1 for 'witdh' and 'height' to keep
+   * exiting size.
+   *
+   * When reconfiguring a floating window, absent option keys will
+   * not be changed. The following restriction apply: `row`, `col`
+   * and `relative` must be reconfigured together. Only changing a
+   * subset of these is an error.
+   *
+   * @param {Window}  window Window handle
+   * @param {Number}  width  Width of window (in character cells)
+   * @param {Number}  height Height of window (in character cells)
+   * @Param {Object}  options Options object
+   */
+  private winConfig(
+    window: Window,
+    width: number,
+    height: number,
+    options: object = {}
+  ) {
+    return window.config(width, height, options);
+  }
+
+  /**
+   * Public Alias for `winConfig`
+   */
+  windowConfig(
+    window: Window,
+    width: number,
+    height: number,
+    options: object = {}
+  ) {
+    return this.winConfig(window, width, height, options);
+  }
+
+  /**
+   * Closes window
+   *
+   * @param {Boolean} force Force close window
+   */
+  private winClose(window: Window, force: boolean) {
+    return window.close(force);
+  }
+
+  /**
+   * Public alias for `winClose`
+   */
+  windowClose(window: Window, force: boolean) {
+    return this.winClose(window, force);
   }
 
   /**
