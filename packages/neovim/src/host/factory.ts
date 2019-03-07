@@ -1,4 +1,3 @@
-import Module from 'module';
 import * as path from 'path';
 import * as util from 'util';
 import * as vm from 'vm';
@@ -26,6 +25,9 @@ export interface LoadPluginOptions {
   cache?: boolean;
 }
 
+// eslint-disable-next-line
+const Module: Module = require('module');
+
 const REMOVED_GLOBALS = [
   'reallyExit',
   'abort',
@@ -50,15 +52,15 @@ function removedGlobalStub(name: string): Function {
 
 interface Require {
   (p: string): any;
-  resolve: Function;
+  resolve: (request: string) => any;
   main: any;
-  extensions: any[];
+  extensions: any;
   cache: any;
 }
 
 // @see node/lib/internal/module.js
 function makeRequireFunction(): Require {
-  const require = (p: string): any => this.require(p) as Require;
+  const require = ((p: string): any => this.require(p)) as Require;
   require.resolve = (request: string) => Module._resolveFilename(request, this);
   require.main = process.mainModule;
   // Enable support to add extra extension types
@@ -68,7 +70,7 @@ function makeRequireFunction(): Require {
 }
 
 // @see node/lib/module.js
-function compileInSandbox(sandbox: Sandbox) {
+function compileInSandbox(sandbox: Sandbox): Function {
   // eslint-disable-next-line
   return function(content: string, filename: string) {
     const require = makeRequireFunction.call(this);
