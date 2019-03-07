@@ -65,7 +65,7 @@ describe('Neovim API', () => {
       );
 
       // switch buffers
-      nvim.buffer = buffers[0];
+      [nvim.buffer] = buffers;
       expect(await nvim.buffer.name).toEqual(initialBufferName);
     });
 
@@ -194,8 +194,11 @@ describe('Neovim API', () => {
         expect.objectContaining({
           version: expect.anything(),
           functions: expect.anything(),
+          // eslint-disable-next-line @typescript-eslint/camelcase
           ui_events: expect.anything(),
+          // eslint-disable-next-line @typescript-eslint/camelcase
           ui_options: expect.anything(),
+          // eslint-disable-next-line @typescript-eslint/camelcase
           error_types: expect.anything(),
           types: expect.anything(),
         })

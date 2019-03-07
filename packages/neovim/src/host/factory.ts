@@ -1,4 +1,4 @@
-// import * as Module from 'module';
+import Module from 'module';
 import * as path from 'path';
 import * as util from 'util';
 import * as vm from 'vm';
@@ -11,7 +11,7 @@ import { DevNull } from '../utils/devnull';
 
 import { NvimPlugin } from './NvimPlugin';
 
-export interface IModule {
+export interface Module {
   new (name: string): any;
   _resolveFilename: (file: string, context: any) => string;
   _extensions: {};
@@ -25,8 +25,6 @@ export interface IModule {
 export interface LoadPluginOptions {
   cache?: boolean;
 }
-
-const Module: IModule = require('module');
 
 const REMOVED_GLOBALS = [
   'reallyExit',
@@ -44,15 +42,23 @@ const REMOVED_GLOBALS = [
   'kill',
 ];
 
-function removedGlobalStub(name: string) {
+function removedGlobalStub(name: string): Function {
   return () => {
     throw new Error(`process.${name}() is not allowed in Plugin sandbox`);
   };
 }
 
+interface Require {
+  (p: string): any;
+  resolve: Function;
+  main: any;
+  extensions: any[];
+  cache: any;
+}
+
 // @see node/lib/internal/module.js
-function makeRequireFunction() {
-  const require: any = (p: string) => this.require(p);
+function makeRequireFunction(): Require {
+  const require = (p: string): any => this.require(p) as Require;
   require.resolve = (request: string) => Module._resolveFilename(request, this);
   require.main = process.mainModule;
   // Enable support to add extra extension types
@@ -77,7 +83,7 @@ function compileInSandbox(sandbox: Sandbox) {
   };
 }
 
-function createDebugFunction(filename: string) {
+function createDebugFunction(filename: string): Function {
   return (...args: any[]) => {
     const debugId = path.basename(filename);
     const sout = util.format.apply(null, [`[${debugId}]`].concat(args));
@@ -96,10 +102,10 @@ function createSandbox(filename: string): Sandbox {
   const module = new Module(filename);
   module.paths = Module._nodeModulePaths(filename);
 
-  const sandbox = <Sandbox>vm.createContext({
+  const sandbox = vm.createContext({
     module,
     console: {},
-  });
+  }) as Sandbox;
 
   defaults(sandbox, global);
 
@@ -122,7 +128,7 @@ function createSandbox(filename: string): Sandbox {
 
   // patch `require` in sandbox to run loaded module in sandbox context
   // if you need any of these, it might be worth discussing spawning separate processes
-  sandbox.process = <NodeJS.Process>omit(process, REMOVED_GLOBALS);
+  sandbox.process = omit(process, REMOVED_GLOBALS) as NodeJS.Process;
 
   REMOVED_GLOBALS.forEach(name => {
     sandbox.process[name] = removedGlobalStub(name);
@@ -189,7 +195,7 @@ export function loadPlugin(
   filename: string,
   nvim: Neovim,
   options: LoadPluginOptions = {}
-) {
+): NvimPlugin | null {
   try {
     return createPlugin(filename, nvim, options);
   } catch (err) {

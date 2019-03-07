@@ -103,7 +103,7 @@ function wrapper<T extends Constructor<{}>>(
       });
     }
 
-    setApi(nvim: Neovim) {
+    setApi(nvim: Neovim): void {
       this.nvim = nvim;
     }
   };

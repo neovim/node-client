@@ -138,7 +138,7 @@ describe('Window API', () => {
 
       windows = await nvim.windows;
       // Set to new split
-      nvim.window = windows[1];
+      [, nvim.window] = windows;
 
       win = await nvim.window;
       expect(await win.row).toBe(0);
@@ -146,7 +146,7 @@ describe('Window API', () => {
 
       nvim.command('split');
       windows = await nvim.windows;
-      nvim.window = windows[2];
+      [, , nvim.window] = windows;
 
       win = await nvim.window;
       expect((await win.row) > 0).toBe(true);

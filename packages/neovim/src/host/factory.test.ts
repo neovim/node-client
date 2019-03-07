@@ -1,17 +1,6 @@
 /* eslint-env jest */
-import * as path from 'path';
 import { loadPlugin } from './factory';
 import { NvimPlugin } from './NvimPlugin';
-
-const PLUGIN_PATH = path.join(
-  __dirname,
-  '..',
-  '..',
-  '__tests__',
-  'integration',
-  'rplugin',
-  'node'
-);
 
 describe('Plugin Factory (used by host)', () => {
   let pluginObj: NvimPlugin;

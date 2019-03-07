@@ -178,7 +178,7 @@ export class NeovimClient extends Neovim {
         // Perform sanity check for metadata types
         Object.keys(metadata.types).forEach((name: string) => {
           // @ts-ignore: Declared but its value is never read
-          const metaDataForType = metadata.types[name]; // eslint-disable-line no-unused-vars
+          const metaDataForType = metadata.types[name]; // eslint-disable-line @typescript-eslint/no-unused-vars
           // TODO: check `prefix` and `id`
         });
 

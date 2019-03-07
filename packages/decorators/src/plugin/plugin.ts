@@ -25,7 +25,7 @@ export interface PluginWrapperConstructor {
   new (nvim: Neovim, plugin?: NvimPlugin): PluginWrapperInterface;
 }
 export interface PluginWrapperInterface {
-  new (plugin: NvimPlugin): PluginWrapperInterface;
+  new (plugin: NvimPlugin): PluginWrapperInterface; // eslint-disable-line @typescript-eslint/no-misused-new
   setApi(nvim: Neovim): void;
 }
 function wrapper(cls: PluginWrapperConstructor, options?: PluginOptions): any {
@@ -101,10 +101,15 @@ function wrapper(cls: PluginWrapperConstructor, options?: PluginOptions): any {
 }
 
 // Can decorate a class with options object
+// eslint-disable-next-line import/export
 export function Plugin(
   outter: any
 ): (cls: PluginWrapperConstructor, options?: PluginOptions) => any;
+
+// eslint-disable-next-line import/export
 export function Plugin(outter: any): any;
+
+// eslint-disable-next-line import/export
 export function Plugin(outter: any): any {
   /**
    * Decorator should support

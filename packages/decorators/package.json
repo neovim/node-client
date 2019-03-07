@@ -5,7 +5,7 @@
   "main": "./lib/index.js",
   "scripts": {
     "build": "tsc --pretty",
-    "watch": "tsc --pretty --watch true"
+    "dev": "yarn build --watch true"
   },
   "keywords": [],
   "author": "Mike Hartington <mikehartington@gmail.com>",

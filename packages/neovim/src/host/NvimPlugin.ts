@@ -88,13 +88,13 @@ export class NvimPlugin {
     }
   }
 
-  setOptions(options: NvimPluginOptions) {
+  setOptions(options: NvimPluginOptions): void {
     this.dev = options.dev === undefined ? this.dev : options.dev;
     this.alwaysInit = options.alwaysInit;
   }
 
   // Cache module (in dev mode will clear the require module cache)
-  get shouldCacheModule() {
+  get shouldCacheModule(): boolean {
     return !this.dev;
   }
 

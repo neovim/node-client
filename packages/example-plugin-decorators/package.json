@@ -5,7 +5,8 @@
   "description": "A test fixture",
   "main": "lib/index.js",
   "scripts": {
-    "build": "babel src --out-dir lib"
+    "build": "babel src --out-dir lib",
+    "dev": "yarn build --watch"
   },
   "license": "MIT",
   "devDependencies": {

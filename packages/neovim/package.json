@@ -70,16 +70,16 @@
   "scripts": {
     "doc": "typedoc --out doc --exclude '**/*.test.ts' src",
     "prepublishOnly": "yarn run build",
-    "test": "jest",
+    "test": "yarn jest",
     "test-build": "yarn run build && jest --runInBand --coverage",
-    "test-staged": "jest --bail --no-cache --findRelatedTests",
+    "test-staged": "yarn jest --bail --no-cache --findRelatedTests",
     "test-missing-apis": "yarn build && node scripts/findMissingApi",
     "test-lint": "yarn run lint",
-    "lint": "eslint src/**/*.ts && tslint -p tsconfig.json",
+    "lint": "eslint src/**/*.ts",
     "prep-integration-test": "yarn link && cd yarn install && yarn run build",
     "precommit": "lint-staged",
     "build": "tsc --pretty",
-    "watch": "tsc --pretty --watch true"
+    "dev": "yarn build --watch true"
   },
   "jest": {
     "moduleFileExtensions": [

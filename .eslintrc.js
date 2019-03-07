@@ -31,6 +31,12 @@ module.exports = {
     'no-mixed-operators': 'off',
     'func-names': 'off',
 
+    // For overloading (and typescript throws when dupe members anyway)
+    'no-dupe-class-members': 'off',
+
+    // Causes issues with enums
+    'no-shadow': 'off',
+
     // prettier things
     'prettier/prettier': 'error',
 
@@ -38,6 +44,8 @@ module.exports = {
     'import/prefer-default-export': 'off',
 
     '@typescript-eslint/no-explicit-any': ['off'],
+    '@typescript-eslint/explicit-member-accessibility': ['off'],
+    '@typescript-eslint/no-unused-vars': ['error'],
   },
 
   settings: {
