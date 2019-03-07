@@ -26,14 +26,13 @@
   "scripts": {
     "bootstrap": "yarn lerna bootstrap",
     "build": "yarn lerna run build",
-    "dev":"yarn lerna run --stream --parallel dev",
+    "dev": "yarn lerna run --stream --parallel dev",
     "test": "yarn lerna run test",
-    "test-build": "yarn lerna run build && yarn lerna run test-build",
-    "test-staged": "yarn lerna run test-staged",
-    "test-missing-apis": "yarn lerna run test-missing-apis",
-    "test-lint": "yarn lerna run test-lint",
+    "test-build": "yarn lerna run test-build",
     "test-staged": "yarn lerna run test-staged -- --",
-    "lint": "yarn lerna run lint"
+    "test-missing-apis": "yarn lerna run test-missing-apis",
+    "test-lint": "yarn lint",
+    "lint": "yarn eslint packages/*/src/**/*.ts"
   },
   "husky": {
     "hooks": {

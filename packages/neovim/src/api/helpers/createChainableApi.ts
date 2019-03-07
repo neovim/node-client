@@ -75,7 +75,9 @@ export function createChainableApi(
           (chainCallPromise && chainCallPromise()) ||
           this[`${name}Promise`].then((res: any) => res[prop])
         );
-      } else if (prop in target) {
+      }
+
+      if (prop in target) {
         // Forward rest of requests to Promise
         if (typeof target[prop] === 'function') {
           return target[prop].bind(target);
@@ -90,7 +92,7 @@ export function createChainableApi(
       // eslint-disable-next-line no-param-reassign
       if (
         receiver &&
-        (receiver instanceof Promise || 'then' in <any>receiver)
+        (receiver instanceof Promise || (('then' in receiver) as any))
       ) {
         receiver.then(obj => {
           if (prop in obj) {
