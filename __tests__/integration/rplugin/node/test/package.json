@@ -1,8 +1,0 @@
-{
-  "name": "test.js",
-  "version": "1.0.0",
-  "description": "A test fixture",
-  "main": "lib/index.js",
-  "author": "",
-  "license": "MIT"
-}

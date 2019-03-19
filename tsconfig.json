@@ -2,8 +2,6 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "lib": ["es2015", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
@@ -14,11 +12,9 @@
     "noUnusedParameters": false,
     "suppressImplicitAnyIndexErrors": true,
     "target": "es2015",
-    "types": ["node"],
-    "outDir": "./lib"
+    "types": ["node"]
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "__tests__", "**/*.test.ts", "examples", "lib"],
+  "exclude": ["node_modules"],
   "compileOnSave": false,
   "atom": {
     "rewriteTsconfig": false
