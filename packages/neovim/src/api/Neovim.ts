@@ -83,6 +83,12 @@ export interface OpenWindowOptions {
 
   // GUI should display the window as an external top-level window. Currently accepts no other positioning options together with this.
   external?: boolean;
+
+  // width of the window
+  width: number;
+
+  // height of the window
+  height: number;
 }
 
 /**
@@ -886,25 +892,15 @@ export class Neovim extends BaseApi {
    *
    * @param {Buffer}  buffer Handle of buffer to be displayed in the window
    * @param {Boolean} enter  Whether the window should be entered (made the current window)
-   * @param {Number}  width  Width of window (in character cells)
-   * @param {Number}  height Height of window (in character cells)
    * @Param {Object}  options Options object
    * @return {Window|Number} The Window handle or 0 when error
    */
   private openWin(
     buffer: Buffer,
     enter: boolean,
-    width: number,
-    height: number,
     options: OpenWindowOptions
   ): Promise<Window | number> {
-    return this.request(`${this.prefix}open_win`, [
-      buffer,
-      enter,
-      width,
-      height,
-      options,
-    ]);
+    return this.request(`${this.prefix}open_win`, [buffer, enter, options]);
   }
 
   /**
@@ -913,11 +909,9 @@ export class Neovim extends BaseApi {
   openWindow(
     buffer: Buffer,
     enter: boolean,
-    width: number,
-    height: number,
     options: OpenWindowOptions
   ): Promise<Window | number> {
-    return this.openWin(buffer, enter, width, height, options);
+    return this.openWin(buffer, enter, options);
   }
 
   /**
@@ -939,25 +933,15 @@ export class Neovim extends BaseApi {
    * @param {Number}  height Height of window (in character cells)
    * @Param {Object}  options Options object
    */
-  private winConfig(
-    window: Window,
-    width: number,
-    height: number,
-    options: object = {}
-  ) {
-    return window.config(width, height, options);
+  private winConfig(window: Window, options: object = {}) {
+    return window.config(options);
   }
 
   /**
    * Public Alias for `winConfig`
    */
-  windowConfig(
-    window: Window,
-    width: number,
-    height: number,
-    options: object = {}
-  ) {
-    return this.winConfig(window, width, height, options);
+  windowConfig(window: Window, options: object = {}) {
+    return this.winConfig(window, options);
   }
 
   /**
