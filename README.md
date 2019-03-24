@@ -14,6 +14,7 @@ npm install -g neovim
 ```
 
 A global package is required for neovim to be able to communicate with a plugin.
+test
 
 ## Usage
 This package exports a single `attach()` function which takes a pair of
