@@ -113,11 +113,9 @@ export class Window extends BaseApi {
    * subset of these is an error.
    *
    * @param {Window}  window Window handle
-   * @param {Number}  width  Width of window (in character cells)
-   * @param {Number}  height Height of window (in character cells)
    * @Param {Object}  options Options object
    */
-  config(width: number, height: number, options: object = {}) {
-    return this.request(`${this.prefix}config`, [this, width, height, options]);
+  config(options: object = {}) {
+    return this.request(`${this.prefix}set_config`, [this, options]);
   }
 }
