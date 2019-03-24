@@ -79,24 +79,32 @@ export class BaseApi extends EventEmitter {
           resolve(res);
         }
       });
-      // tslint:disable-next-line
     });
 
-  async request(name: string, args: any[] = []): Promise<any> {
+  async asyncRequest(
+    name: string,
+    args: any[] = [],
+    stack: string
+  ): Promise<any> {
     // `this._isReady` is undefined in ExtType classes (i.e. Buffer, Window, Tabpage)
     // But this is just for Neovim API, since it's possible to call this method from Neovim class
     // before transport is ready.
     // Not possible for ExtType classes since they are only created after transport is ready
     await this._isReady;
+
     this.logger.debug(`request -> neovim.api.${name}`);
-    const promise = this[DO_REQUEST](name, args);
 
-    promise.catch(err => {
-      this.logger.error(`Error making request to ${name}`, err);
+    return this[DO_REQUEST](name, args).catch(err => {
+      const newError = new Error(err.message);
+      newError.stack = stack;
+      this.logger.error(`Error making request to ${name}`, newError);
+      throw newError;
     });
+  }
 
-    // Returns uncaught promise
-    return promise;
+  request(name: string, args: any[] = []): Promise<any> {
+    const error = new Error(`Error making request to ${name}`);
+    return this.asyncRequest(name, args, error.stack);
   }
 
   _getArgsByPrefix(...args: any[]): any[] {
