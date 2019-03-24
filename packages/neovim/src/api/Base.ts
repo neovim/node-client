@@ -57,11 +57,11 @@ export class BaseApi extends EventEmitter {
     }
   }
 
-  protected setTransport(transport: Transport) {
+  protected setTransport(transport: Transport): void {
     this.transport = transport;
   }
 
-  equals(other: BaseApi) {
+  equals(other: BaseApi): boolean {
     try {
       return String(this.data) === String(other.data);
     } catch (e) {
@@ -89,13 +89,17 @@ export class BaseApi extends EventEmitter {
     // Not possible for ExtType classes since they are only created after transport is ready
     await this._isReady;
     this.logger.debug(`request -> neovim.api.${name}`);
-    const promise = this[DO_REQUEST](name, args).catch(err => {
+    const promise = this[DO_REQUEST](name, args);
+
+    promise.catch(err => {
       this.logger.error(`Error making request to ${name}`, err);
     });
+
+    // Returns uncaught promise
     return promise;
   }
 
-  _getArgsByPrefix(...args: any[]) {
+  _getArgsByPrefix(...args: any[]): any[] {
     const _args = [];
 
     // Check if class is Neovim and if so, should not send `this` as first arg
@@ -106,7 +110,7 @@ export class BaseApi extends EventEmitter {
   }
 
   /** Retrieves a scoped variable depending on type (using `this.prefix`) */
-  getVar(name: string): Promise<VimValue> {
+  async getVar(name: string): Promise<VimValue> {
     const args = this._getArgsByPrefix(name);
 
     return this.request(`${this.prefix}get_var`, args).then(
@@ -146,7 +150,7 @@ export class BaseApi extends EventEmitter {
 
   // TODO: Is this necessary?
   /** `request` is basically the same except you can choose to wait forpromise to be resolved */
-  notify(name: string, args: any[]) {
+  notify(name: string, args: any[]): void {
     this.logger.debug(`notify -> neovim.api.${name}`);
     this.transport.notify(name, args);
   }
