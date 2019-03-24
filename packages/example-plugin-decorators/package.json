@@ -1,7 +1,7 @@
 {
   "name": "@neovim/example-plugin-decorators",
   "private": true,
-  "version": "1.0.0",
+  "version": "4.5.0",
   "description": "A test fixture",
   "main": "lib/index.js",
   "scripts": {
@@ -15,6 +15,6 @@
     "babel-plugin-transform-decorators-legacy": "^1.3.4"
   },
   "dependencies": {
-    "@neovim/decorators": "^0.0.0"
+    "@neovim/decorators": "^4.5.0"
   }
 }
