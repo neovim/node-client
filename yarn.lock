@@ -5734,17 +5734,6 @@ needle@^2.2.1:
     iconv-lite "^0.4.4"
     sax "^1.2.4"
 
-neovim@^4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/neovim/-/neovim-4.4.0.tgz#e50b4dae933c9f1548d2a57af27ed227cb4f25a4"
-  integrity sha512-zFsmjUeiK7vJNXsSljaAXt8eUmwKIJ4d7iTn7Mq2PmTEPmtBCuaVEGRpkl5z3AWJKPmOYNzlIu9Lgyq4s4FTew==
-  dependencies:
-    lodash "^4.17.4"
-    msgpack-lite "^0.1.26"
-    semver "^5.6.0"
-    traverse "^0.6.6"
-    winston "^2.3.1"
-
 nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
