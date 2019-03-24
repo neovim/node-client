@@ -11,11 +11,10 @@
   "author": "Mike Hartington <mikehartington@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^11.10.4",
-    "typescript": "^2.8.3"
+    "@types/node": "^11.10.4"
   },
   "dependencies": {
-    "neovim": "^4.4.0"
+    "neovim": "^4.5.0"
   },
   "gitHead": "a937d3c07d9d6800a67b06cdbd7cbf3c31572cf0"
 }
