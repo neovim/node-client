@@ -16,5 +16,6 @@
   },
   "dependencies": {
     "neovim": "^4.4.0"
-  }
+  },
+  "gitHead": "a937d3c07d9d6800a67b06cdbd7cbf3c31572cf0"
 }
