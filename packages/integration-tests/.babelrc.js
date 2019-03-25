@@ -1,1 +1,3 @@
-module.exports = require('../../.babelrc.js');
+module.exports = {
+  extends: '../../.babelrc.js',
+};
