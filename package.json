@@ -3,6 +3,7 @@
   "workspaces": [
     "packages/neovim",
     "packages/decorators",
+    "packages/integration-tests",
     "packages/example-plugin",
     "packages/example-plugin-decorators"
   ],
@@ -32,7 +33,7 @@
     "test-staged": "yarn lerna run test-staged -- --",
     "test-missing-apis": "yarn lerna run test-missing-apis",
     "test-lint": "yarn lint",
-    "lint": "yarn eslint packages/*/src/**/*.ts"
+    "lint": "yarn eslint packages/*/src/**/*.ts packages/*/src/*.ts"
   },
   "husky": {
     "hooks": {

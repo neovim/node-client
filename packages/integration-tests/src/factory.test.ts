@@ -1,6 +1,5 @@
 /* eslint-env jest */
-import { loadPlugin } from './factory';
-import { NvimPlugin } from './NvimPlugin';
+import { NvimPlugin, loadPlugin } from 'neovim';
 
 describe('Plugin Factory (used by host)', () => {
   let pluginObj: NvimPlugin;

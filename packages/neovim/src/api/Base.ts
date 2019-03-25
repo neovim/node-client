@@ -57,11 +57,11 @@ export class BaseApi extends EventEmitter {
     }
   }
 
-  protected setTransport(transport: Transport) {
+  protected setTransport(transport: Transport): void {
     this.transport = transport;
   }
 
-  equals(other: BaseApi) {
+  equals(other: BaseApi): boolean {
     try {
       return String(this.data) === String(other.data);
     } catch (e) {
@@ -79,20 +79,35 @@ export class BaseApi extends EventEmitter {
           resolve(res);
         }
       });
-      // tslint:disable-next-line
     });
 
-  async request(name: string, args: any[] = []): Promise<any> {
+  async asyncRequest(
+    name: string,
+    args: any[] = [],
+    stack: string
+  ): Promise<any> {
     // `this._isReady` is undefined in ExtType classes (i.e. Buffer, Window, Tabpage)
     // But this is just for Neovim API, since it's possible to call this method from Neovim class
     // before transport is ready.
     // Not possible for ExtType classes since they are only created after transport is ready
     await this._isReady;
+
     this.logger.debug(`request -> neovim.api.${name}`);
-    return this[DO_REQUEST](name, args);
+
+    return this[DO_REQUEST](name, args).catch(err => {
+      const newError = new Error(err.message);
+      newError.stack = stack;
+      this.logger.error(`Error making request to ${name}`, newError);
+      throw newError;
+    });
   }
 
-  _getArgsByPrefix(...args: any[]) {
+  request(name: string, args: any[] = []): Promise<any> {
+    const error = new Error(`Error making request to ${name}`);
+    return this.asyncRequest(name, args, error.stack);
+  }
+
+  _getArgsByPrefix(...args: any[]): any[] {
     const _args = [];
 
     // Check if class is Neovim and if so, should not send `this` as first arg
@@ -103,7 +118,7 @@ export class BaseApi extends EventEmitter {
   }
 
   /** Retrieves a scoped variable depending on type (using `this.prefix`) */
-  getVar(name: string): Promise<VimValue> {
+  async getVar(name: string): Promise<VimValue> {
     const args = this._getArgsByPrefix(name);
 
     return this.request(`${this.prefix}get_var`, args).then(
@@ -143,7 +158,7 @@ export class BaseApi extends EventEmitter {
 
   // TODO: Is this necessary?
   /** `request` is basically the same except you can choose to wait forpromise to be resolved */
-  notify(name: string, args: any[]) {
+  notify(name: string, args: any[]): void {
     this.logger.debug(`notify -> neovim.api.${name}`);
     this.transport.notify(name, args);
   }

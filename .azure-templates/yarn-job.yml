@@ -13,6 +13,8 @@ jobs:
     displayName: 'Install Node.js'
   - script: yarn
     displayName: 'yarn install'
+  - script: yarn bootstrap
+    displayName: 'lerna  bootstrap'
   - bash: yarn build
     displayName: 'yarn build'
   - script: yarn lint

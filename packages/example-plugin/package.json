@@ -4,5 +4,9 @@
   "version": "4.5.0",
   "description": "A test fixture",
   "main": "rplugin/node/test/index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "jest-haste-map": "^24.5.0",
+    "jest-resolve": "^24.5.0"
+  }
 }

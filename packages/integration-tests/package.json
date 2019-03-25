@@ -1,0 +1,60 @@
+{
+  "name": "@neovim/integration-tests",
+  "description": "neovim integration tests",
+  "version": "4.5.0",
+  "private": true,
+  "authors": [
+    {
+      "name": "Billy Vong",
+      "email": "github@mmo.me"
+    },
+    {
+      "name": "rhysd",
+      "email": "lin90162@yahoo.co.jp"
+    },
+    {
+      "name": "Thiago de Arruda",
+      "email": "tpadilha84@gmail.com"
+    },
+    {
+      "name": "Mike Hartington",
+      "email": "<mikehartington@gmail.com>"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neovim/node-client"
+  },
+  "bugs": {
+    "url": "https://github.com/neovim/node-client/issues"
+  },
+  "license": "MIT",
+  "main": "./index",
+  "dependencies": {
+    "@neovim/example-plugin": "file:../example-plugin",
+    "neovim": "file:../neovim"
+  },
+  "scripts": {
+    "test": "yarn jest",
+    "build": "tsc --pretty",
+    "dev": "yarn build --watch true"
+  },
+  "toolchain": {
+    "node": "8.15.1",
+    "yarn": "1.13.0"
+  },
+  "keywords": [
+    "neovim",
+    "neovim-client",
+    "node-host",
+    "node-client",
+    "nvim",
+    "nvim-client",
+    "vim"
+  ],
+  "devDependencies": {
+    "jest": "^24.5.0",
+    "jest-haste-map": "^24.5.0",
+    "jest-resolve": "^24.5.0"
+  }
+}
