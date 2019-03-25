@@ -3,6 +3,7 @@
   "workspaces": [
     "packages/neovim",
     "packages/decorators",
+    "packages/integration-tests",
     "packages/example-plugin",
     "packages/example-plugin-decorators"
   ],

@@ -1,13 +1,10 @@
 /* eslint-env jest */
-import axios from 'axios';
 import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as util from 'util';
+import * as http from 'http';
 
-import { attach } from '../src/index';
-
-const sleep = util.promisify(setTimeout);
+import { attach } from 'neovim';
 
 // eslint-disable-next-line
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
@@ -39,7 +36,7 @@ describe('Node host', () => {
     fs.writeFileSync(
       nvimrc,
       `set rtp+=${integrationDir}
-    let g:node_host_prog = '${path.resolve(plugdir, '../bin/cli')}'
+    let g:node_host_prog = '${path.resolve(plugdir, '../../neovim/bin/cli')}'
       `
     );
     cp.spawnSync('nvim', args);
@@ -99,18 +96,33 @@ describe('Node host', () => {
     await nvim.command('e! nvimrc');
   });
 
-  it('spawns a child host if $NVIM_NODE_HOST_DEBUG is set', async () => {
+  it('spawns a child host if $NVIM_NODE_HOST_DEBUG is set', async done => {
     const childHost = cp.spawn(
       process.execPath,
       [path.join(__dirname, '..', 'bin', 'cli.js')],
       { env: { NVIM_NODE_HOST_DEBUG: 1 }, stdio: 'ignore' }
     );
-    await sleep(1000);
-    const debugData = await axios
-      .get('http://127.0.0.1:9229/json/list')
-      .then(res => Promise.resolve(res.data), err => Promise.reject(err));
-    childHost.kill();
-    expect(Array.isArray(debugData) && debugData.length).toBeTruthy();
-    expect(debugData[0].webSocketDebuggerUrl).toMatch('ws://127.0.0.1:9229');
+    setTimeout(function() {
+      http.get('http://127.0.0.1:9229/json/list', res => {
+        let rawData = '';
+        res.on('data', chunk => {
+          rawData += chunk;
+        });
+        res.on('end', () => {
+          try {
+            const debugData = JSON.parse(rawData);
+            childHost.kill();
+            expect(Array.isArray(debugData) && debugData.length).toBeTruthy();
+            expect(debugData[0].webSocketDebuggerUrl).toMatch(
+              'ws://127.0.0.1:9229'
+            );
+            done();
+          } catch (e) {
+            console.error(e.message);
+            throw e;
+          }
+        });
+      });
+    }, 500);
   });
 });
