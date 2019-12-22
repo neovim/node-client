@@ -12,8 +12,7 @@
   "license": "MIT",
   "devDependencies": {
     "jest-haste-map": "^24.9.0",
-    "jest-resolve": "^24.9.0",
-    "typescript": "3.7"
+    "jest-resolve": "^24.9.0"
   },
   "dependencies": {
     "neovim": "^4.5.0"
