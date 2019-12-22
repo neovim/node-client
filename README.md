@@ -165,7 +165,7 @@ require('neovim/scripts/nvim').then((n) => nvim = n);
 nvim.command('vsp');
 ```
 
-The tests and [`scripts`](https://github.com/neovim/node-client/tree/master/scripts) can be consulted for more examples.
+The tests and [`scripts`](https://github.com/neovim/node-client/tree/master/packages/neovim/scripts) can be consulted for more examples.
 
 ## Contributors
 * [@billyvg](https://github.com/billyvg) for rewrite

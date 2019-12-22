@@ -45,10 +45,7 @@ export class Buffer extends BaseApi {
    *        `nvim_buf_lines_event`. Otherwise, the first notification will be
    *        a `nvim_buf_changedtick_event`
    */
-  [ATTACH] = async (
-    sendBuffer: boolean = false,
-    options: {} = {}
-  ): Promise<boolean> => {
+  [ATTACH] = async (sendBuffer = false, options: {} = {}): Promise<boolean> => {
     if (this.client.isAttached(this)) return true;
     return this.request(`${this.prefix}attach`, [this, sendBuffer, options]);
   };
@@ -278,7 +275,7 @@ export class Buffer extends BaseApi {
       lineEnd: -1,
     };
 
-    const { srcId, lineStart, lineEnd } = Object.assign({}, defaults, args);
+    const { srcId, lineStart, lineEnd } = { ...defaults, ...args };
 
     return this.request(`${this.prefix}clear_highlight`, [
       this,
@@ -304,7 +301,7 @@ export class Buffer extends BaseApi {
       lineEnd: -1,
     };
 
-    const { nsId, lineStart, lineEnd } = Object.assign({}, defaults, args);
+    const { nsId, lineStart, lineEnd } = { ...defaults, ...args };
 
     this.request(`${this.prefix}clear_namespace`, [
       this,

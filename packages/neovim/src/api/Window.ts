@@ -94,7 +94,7 @@ export class Window extends BaseApi {
    *
    * @param {Boolean} force Force close window
    */
-  close(force: boolean = false) {
+  close(force = false) {
     return this.request(`${this.prefix}close`, [this, force]);
   }
 

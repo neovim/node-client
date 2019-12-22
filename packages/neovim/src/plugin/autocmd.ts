@@ -25,7 +25,7 @@ export function autocmd(name: string, options?: AutocmdOptions) {
 
     ['pattern', 'eval'].forEach((option: keyof AutocmdOptions) => {
       if (options && typeof options[option] !== 'undefined') {
-        opts[option] = options[option];
+        (opts[option] as any) = options[option];
       }
     });
 

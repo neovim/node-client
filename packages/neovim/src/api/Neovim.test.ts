@@ -42,8 +42,6 @@ describe('Neovim API', () => {
     }
   });
 
-  beforeEach(() => {});
-
   it('sets transport when initialized', () => {
     const transport = {};
     const spy = jest.spyOn(Neovim.prototype, 'setTransport');
@@ -298,8 +296,6 @@ describe('Neovim API', () => {
       await nvim.windowClose(floatingWindow, true);
     });
   });
-
-  describe.skip('Chainable API calls', () => {});
 
   describe('Namespaces', () => {
     it('creates and gets anonymous namespaces', async () => {

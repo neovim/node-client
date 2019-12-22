@@ -11,18 +11,18 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^1.4.2",
-    "@typescript-eslint/parser": "^1.4.2",
-    "eslint": "^5.15.1",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-config-prettier": "^4.1.0",
+    "@typescript-eslint/eslint-plugin": "^2.12.0",
+    "@typescript-eslint/parser": "^2.12.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-prettier": "^3.0.1",
     "husky": "^3.1.0",
     "lerna": "^3.19.0",
     "lint-staged": "^9.5.0",
     "prettier": "^1.12.1",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.7.4"
   },
   "scripts": {
     "bootstrap": "yarn lerna bootstrap",

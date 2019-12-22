@@ -36,6 +36,7 @@
   },
   "scripts": {
     "test": "yarn jest",
+    "test-build": "yarn test --runInBand --coverage",
     "build": "tsc --pretty",
     "dev": "yarn build --watch true"
   },
@@ -53,8 +54,8 @@
     "vim"
   ],
   "devDependencies": {
-    "jest": "^24.5.0",
-    "jest-haste-map": "^24.5.0",
-    "jest-resolve": "^24.5.0"
+    "jest": "^24.9.0",
+    "jest-haste-map": "^24.9.0",
+    "jest-resolve": "^24.9.0"
   }
 }
