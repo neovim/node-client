@@ -48,10 +48,10 @@ export class NeovimClient extends Neovim {
   }
 
   get channelId(): Promise<number> {
-    return new Promise(async resolve => {
+    return (async () => {
       await this._isReady;
-      resolve(this._channelId);
-    });
+      return this._channelId;
+    })();
   }
 
   isAttached(buffer: Buffer): boolean {

@@ -30,6 +30,7 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'no-mixed-operators': 'off',
     'func-names': 'off',
+    'max-classes-per-file': 'off',
 
     // For overloading (and typescript throws when dupe members anyway)
     'no-dupe-class-members': 'off',

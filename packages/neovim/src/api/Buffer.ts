@@ -275,7 +275,7 @@ export class Buffer extends BaseApi {
       lineEnd: -1,
     };
 
-    const { srcId, lineStart, lineEnd } = Object.assign({}, defaults, args);
+    const { srcId, lineStart, lineEnd } = { ...defaults, ...args };
 
     return this.request(`${this.prefix}clear_highlight`, [
       this,
@@ -301,7 +301,7 @@ export class Buffer extends BaseApi {
       lineEnd: -1,
     };
 
-    const { nsId, lineStart, lineEnd } = Object.assign({}, defaults, args);
+    const { nsId, lineStart, lineEnd } = { ...defaults, ...args };
 
     this.request(`${this.prefix}clear_namespace`, [
       this,
