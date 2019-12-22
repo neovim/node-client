@@ -171,7 +171,7 @@ export class NeovimClient extends Neovim {
 
     if (results) {
       try {
-        const [channelId /*, encodedMetadata*/] = results;
+        const [channelId /* , encodedMetadata */] = results;
         // const metadata = encodedMetadata;
         // this.logger.debug(`$$$: ${metadata}`);
 
