@@ -11,9 +11,9 @@
   "author": "Mike Hartington <mikehartington@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^11.10.4",
-    "jest-haste-map": "^24.5.0",
-    "jest-resolve": "^24.5.0"
+    "@types/node": "^12.12.21",
+    "jest-haste-map": "^24.9.0",
+    "jest-resolve": "^24.9.0"
   },
   "dependencies": {
     "neovim": "^4.5.0"
