@@ -99,9 +99,10 @@ describe('Node host', () => {
   it('spawns a child host if $NVIM_NODE_HOST_DEBUG is set', async done => {
     const childHost = cp.spawn(
       process.execPath,
-      [path.join(__dirname, '..', 'bin', 'cli.js')],
+      [path.join(__dirname, '..', '..', 'neovim', 'bin', 'cli.js')],
       { env: { NVIM_NODE_HOST_DEBUG: 1 }, stdio: 'ignore' }
     );
+
     setTimeout(function() {
       http.get('http://127.0.0.1:9229/json/list', res => {
         let rawData = '';
