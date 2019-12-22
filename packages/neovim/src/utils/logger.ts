@@ -16,7 +16,11 @@ if (process.env.NVIM_NODE_LOG_FILE) {
 }
 
 if (process.env.ALLOW_CONSOLE) {
-  logger.add(new winston.transports.Console());
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.simple(),
+    })
+  );
 }
 
 export { logger };
