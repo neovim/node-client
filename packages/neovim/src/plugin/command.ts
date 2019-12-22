@@ -20,7 +20,7 @@ export function command(name: string, options?: CommandOptions) {
 
     ['range', 'nargs', 'complete'].forEach((option: keyof CommandOptions) => {
       if (options && typeof options[option] !== 'undefined') {
-        opts[option] = options[option];
+        (opts[option] as any) = options[option];
       }
     });
 

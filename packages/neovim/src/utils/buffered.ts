@@ -5,7 +5,7 @@ const MIN_SIZE = 8 * 1024;
 export default class Buffered extends Transform {
   private chunks: Buffer[] | null;
 
-  private timer: number | null;
+  private timer: NodeJS.Timer | null;
 
   constructor() {
     super({

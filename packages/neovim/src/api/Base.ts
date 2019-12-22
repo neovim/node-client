@@ -1,12 +1,12 @@
 import { EventEmitter } from 'events';
 
 import { Transport } from '../utils/transport';
-import { logger as loggerModule, ILogger } from '../utils/logger';
+import { logger as loggerModule } from '../utils/logger';
 import { VimValue } from '../types/VimValue';
 
 export interface BaseConstructorOptions {
   transport?: Transport;
-  logger?: ILogger;
+  logger?: typeof loggerModule;
   data?: Buffer;
   metadata?: any;
   client?: any;
@@ -31,7 +31,7 @@ export class BaseApi extends EventEmitter {
 
   protected prefix: string;
 
-  public logger: ILogger;
+  public logger: typeof loggerModule;
 
   public data: Buffer | number;
 

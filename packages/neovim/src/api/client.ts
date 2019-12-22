@@ -1,7 +1,7 @@
 /**
  * Handles attaching transport
  */
-import { ILogger } from '../utils/logger';
+import { logger } from '../utils/logger';
 import { Transport } from '../utils/transport';
 import { VimValue } from '../types/VimValue';
 import { Neovim } from './Neovim';
@@ -16,7 +16,7 @@ export class NeovimClient extends Neovim {
 
   private attachedBuffers: Map<string, Map<string, Function[]>> = new Map();
 
-  constructor(options: { transport?: Transport; logger?: ILogger } = {}) {
+  constructor(options: { transport?: Transport; logger?: typeof logger } = {}) {
     // Neovim has no `data` or `metadata`
     super({
       logger: options.logger,
@@ -171,16 +171,15 @@ export class NeovimClient extends Neovim {
 
     if (results) {
       try {
-        const [channelId, encodedMetadata] = results;
-        const metadata = encodedMetadata;
+        const [channelId /*, encodedMetadata*/] = results;
+        // const metadata = encodedMetadata;
         // this.logger.debug(`$$$: ${metadata}`);
 
         // Perform sanity check for metadata types
-        Object.keys(metadata.types).forEach((name: string) => {
-          // @ts-ignore: Declared but its value is never read
-          const metaDataForType = metadata.types[name]; // eslint-disable-line @typescript-eslint/no-unused-vars
-          // TODO: check `prefix` and `id`
-        });
+        // Object.keys(metadata.types).forEach((name: string) => {
+        // const metaDataForType = metadata.types[name]; // eslint-disable-line @typescript-eslint/no-unused-vars
+        // TODO: check `prefix` and `id`
+        // });
 
         this._channelId = channelId;
 
