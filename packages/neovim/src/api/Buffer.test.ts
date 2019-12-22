@@ -67,8 +67,6 @@ describe('Buffer API', () => {
     }
   });
 
-  beforeEach(() => {});
-
   it(
     'gets the current buffer',
     withBuffer([], async buffer => {
