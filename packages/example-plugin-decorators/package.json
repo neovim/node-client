@@ -1,7 +1,7 @@
 {
   "name": "@neovim/example-plugin-decorators",
   "private": true,
-  "version": "4.5.0",
+  "version": "4.6.0-alpha.0",
   "description": "A test fixture",
   "main": "lib/index.js",
   "scripts": {
@@ -17,6 +17,6 @@
     "jest-resolve": "^24.9.0"
   },
   "dependencies": {
-    "@neovim/decorators": "^4.5.0"
+    "@neovim/decorators": "^4.6.0-alpha.0"
   }
 }
