@@ -1,10 +1,13 @@
 import * as winston from 'winston';
 
-const transports = [];
 const level = process.env.NVIM_NODE_LOG_LEVEL || 'debug';
 
+const logger = winston.createLogger({
+  level,
+});
+
 if (process.env.NVIM_NODE_LOG_FILE) {
-  transports.push(
+  logger.add(
     new winston.transports.File({
       filename: process.env.NVIM_NODE_LOG_FILE,
       level,
@@ -13,12 +16,7 @@ if (process.env.NVIM_NODE_LOG_FILE) {
 }
 
 if (process.env.ALLOW_CONSOLE) {
-  transports.push(winston.transports.Console);
+  logger.add(new winston.transports.Console());
 }
-
-const logger = winston.createLogger({
-  level,
-  transports,
-});
 
 export { logger };
