@@ -39,9 +39,9 @@
     "build": "tsc --pretty",
     "dev": "yarn build --watch true"
   },
-  "toolchain": {
-    "node": "8.15.1",
-    "yarn": "1.13.0"
+  "volta": {
+    "node": "10.18.0",
+    "yarn": "1.21.1"
   },
   "keywords": [
     "neovim",
