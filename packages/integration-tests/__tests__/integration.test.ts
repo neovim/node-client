@@ -107,7 +107,7 @@ describe('Node host', () => {
       http.get('http://127.0.0.1:9229/json/list', res => {
         let rawData = '';
         res.on('data', chunk => {
-          rawData += chunk;
+          rawData = rawData + chunk;
         });
         res.on('end', () => {
           try {
