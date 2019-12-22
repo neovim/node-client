@@ -36,6 +36,7 @@
   },
   "scripts": {
     "test": "yarn jest",
+    "test-build": "yarn test --runInBand --coverage",
     "build": "tsc --pretty",
     "dev": "yarn build --watch true"
   },
