@@ -5,7 +5,7 @@
  */
 
 const cp = require('child_process');
-const attach = require('../').attach;
+const { attach } = require('../');
 // const inspect = require('util').inspect;
 
 module.exports = (async function() {
