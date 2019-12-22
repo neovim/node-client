@@ -95,7 +95,7 @@ export interface OpenWindowOptions {
  * Neovim API
  */
 export class Neovim extends BaseApi {
-  protected prefix: string = 'nvim_';
+  protected prefix = 'nvim_';
 
   public Buffer = Buffer;
 
@@ -365,7 +365,7 @@ export class Neovim extends BaseApi {
    */
   getHighlight(
     nameOrId: string | number,
-    isRgb: boolean = true
+    isRgb = true
   ): Promise<object> | void {
     const functionName = typeof nameOrId === 'string' ? 'by_name' : 'by_id';
     return this.request(`${this.prefix}get_hl_${functionName}`, [
@@ -381,7 +381,7 @@ export class Neovim extends BaseApi {
    * @param {Boolean} isRgb Should export RGB colors
    * @return {Object} Highlight definition map
    */
-  getHighlightByName(name: string, isRgb: boolean = true): Promise<object> {
+  getHighlightByName(name: string, isRgb = true): Promise<object> {
     return this.request(`${this.prefix}get_hl_by_name`, [name, isRgb]);
   }
 
@@ -392,7 +392,7 @@ export class Neovim extends BaseApi {
    * @param {Boolean} isRgb Should export RGB colors
    * @return {Object} Highlight definition map
    */
-  getHighlightById(id: number, isRgb: boolean = true): Promise<object> {
+  getHighlightById(id: number, isRgb = true): Promise<object> {
     return this.request(`${this.prefix}get_hl_by_id`, [id, isRgb]);
   }
 
@@ -808,7 +808,7 @@ export class Neovim extends BaseApi {
    * @param {String} name Namespace name or empty string
    * @return {Number} Namespace id
    */
-  createNamespace(name: string = ''): Promise<number> {
+  createNamespace(name = ''): Promise<number> {
     return this.request(`${this.prefix}create_namespace`, [name]);
   }
 

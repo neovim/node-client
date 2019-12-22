@@ -40,7 +40,7 @@ class Response {
 class Transport extends EventEmitter {
   private pending: Map<number, Function> = new Map();
 
-  private nextRequestId: number = 1;
+  private nextRequestId = 1;
 
   private encodeStream: any;
 
@@ -73,22 +73,20 @@ class Transport extends EventEmitter {
   setupCodec() {
     const codec = msgpack.createCodec();
 
-    Metadata.forEach(
-      ({ constructor }, id: number): void => {
-        codec.addExtPacker(id, constructor, (obj: any) =>
-          msgpack.encode(obj.data)
-        );
-        codec.addExtUnpacker(
-          id,
-          data =>
-            new constructor({
-              transport: this,
-              client: this.client,
-              data: msgpack.decode(data),
-            })
-        );
-      }
-    );
+    Metadata.forEach(({ constructor }, id: number): void => {
+      codec.addExtPacker(id, constructor, (obj: any) =>
+        msgpack.encode(obj.data)
+      );
+      codec.addExtUnpacker(
+        id,
+        data =>
+          new constructor({
+            transport: this,
+            client: this.client,
+            data: msgpack.decode(data),
+          })
+      );
+    });
 
     this.codec = codec;
     return this.codec;
