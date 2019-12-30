@@ -4,9 +4,7 @@
 
 import { EventEmitter } from 'events';
 
-import * as msgpack from 'msgpack-lite';
-
-import Buffered from './buffered';
+import { encode, decode, ExtensionCodec, decodeStream } from '@msgpack/msgpack';
 import { Metadata } from '../api/types';
 
 class Response {
@@ -25,13 +23,16 @@ class Response {
     if (this.sent) {
       throw new Error(`Response to id ${this.requestId} already sent`);
     }
+
+    const encoded = encode([
+      1,
+      this.requestId,
+      isError ? resp : null,
+      !isError ? resp : null,
+    ]);
+
     this.encoder.write(
-      msgpack.encode([
-        1,
-        this.requestId,
-        isError ? resp : null,
-        !isError ? resp : null,
-      ])
+      Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength)
     );
     this.sent = true;
   }
@@ -42,54 +43,43 @@ class Transport extends EventEmitter {
 
   private nextRequestId = 1;
 
-  private encodeStream: any;
-
-  private decodeStream: any;
-
   private reader: NodeJS.ReadableStream;
 
   private writer: NodeJS.WritableStream;
 
-  protected codec: msgpack.Codec;
+  private readonly extensionCodec: ExtensionCodec = this.initializeExtensionCodec();
 
   // Neovim client that holds state
   private client: any;
 
-  constructor() {
-    super();
-
-    const codec = this.setupCodec();
-    this.encodeStream = msgpack.createEncodeStream({ codec });
-    this.decodeStream = msgpack.createDecodeStream({ codec });
-    this.decodeStream.on('data', (msg: any[]) => {
-      this.parseMessage(msg);
-    });
-    this.decodeStream.on('end', () => {
-      this.detach();
-      this.emit('detach');
-    });
-  }
-
-  setupCodec() {
-    const codec = msgpack.createCodec();
+  private initializeExtensionCodec() {
+    const codec = new ExtensionCodec();
 
     Metadata.forEach(({ constructor }, id: number): void => {
-      codec.addExtPacker(id, constructor, (obj: any) =>
-        msgpack.encode(obj.data)
-      );
-      codec.addExtUnpacker(
-        id,
-        data =>
-          new constructor({
+      codec.register({
+        type: id,
+        encode: (input: any) => {
+          if (input instanceof constructor) {
+            return encode(input.data);
+          }
+          return null;
+        },
+        decode: data => {
+          return new constructor({
             transport: this,
             client: this.client,
-            data: msgpack.decode(data),
-          })
-      );
+            data: decode(data),
+          });
+        },
+      });
     });
 
-    this.codec = codec;
-    return this.codec;
+    return codec;
+  }
+
+  private encodeToBuffer(value: unknown) {
+    const encoded = encode(value, { extensionCodec: this.extensionCodec });
+    return Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength);
   }
 
   attach(
@@ -97,31 +87,45 @@ class Transport extends EventEmitter {
     reader: NodeJS.ReadableStream,
     client: any
   ) {
-    this.encodeStream = this.encodeStream.pipe(writer);
-    const buffered = new Buffered();
-    reader.pipe(buffered).pipe(this.decodeStream);
     this.writer = writer;
     this.reader = reader;
     this.client = client;
-  }
 
-  detach() {
-    this.encodeStream.unpipe(this.writer);
-    this.reader.unpipe(this.decodeStream);
+    this.reader.on('end', () => {
+      this.emit('detach');
+    });
+
+    const asyncDecodeGenerator = decodeStream(this.reader as any, {
+      extensionCodec: this.extensionCodec,
+    });
+
+    // naively iterate async generator created via decodeStream.
+    // when runtime / polyfill allows replace to `for await (const val of asyncDecodeGenerator)`
+    // syntax instead.
+    const resolveGeneratorRecursively = (iter: AsyncGenerator) => {
+      iter.next().then(resolved => {
+        if (!resolved.done) {
+          this.parseMessage(resolved.value);
+          return resolveGeneratorRecursively(iter);
+        }
+        return Promise.resolve();
+      });
+    };
+
+    resolveGeneratorRecursively(asyncDecodeGenerator);
   }
 
   request(method: string, args: any[], cb: Function) {
     this.nextRequestId = this.nextRequestId + 1;
-    this.encodeStream.write(
-      msgpack.encode([0, this.nextRequestId, method, args], {
-        codec: this.codec,
-      })
+    this.writer.write(
+      this.encodeToBuffer([0, this.nextRequestId, method, args])
     );
+
     this.pending.set(this.nextRequestId, cb);
   }
 
   notify(method: string, args: any[]) {
-    this.encodeStream.write([2, method, args]);
+    this.writer.write(this.encodeToBuffer([2, method, args]));
   }
 
   parseMessage(msg: any[]) {
@@ -136,7 +140,7 @@ class Transport extends EventEmitter {
         'request',
         msg[2].toString(),
         msg[3],
-        new Response(this.encodeStream, msg[1])
+        new Response(this.writer, msg[1])
       );
     } else if (msgType === 1) {
       // response to a previous request:
@@ -153,7 +157,9 @@ class Transport extends EventEmitter {
       //   - msg[2]: arguments
       this.emit('notification', msg[1].toString(), msg[2]);
     } else {
-      this.encodeStream.write([1, 0, 'Invalid message type', null]);
+      this.writer.write(
+        this.encodeToBuffer([1, 0, 'Invalid message type', null])
+      );
     }
   }
 }
