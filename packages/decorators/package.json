@@ -10,6 +10,9 @@
   "keywords": [],
   "author": "Mike Hartington <mikehartington@gmail.com>",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "jest-haste-map": "^24.9.0",
     "jest-resolve": "^24.9.0"
@@ -17,5 +20,5 @@
   "dependencies": {
     "neovim": "^4.6.0"
   },
-  "gitHead": "a937d3c07d9d6800a67b06cdbd7cbf3c31572cf0"
+  "gitHead": "45c9ebd8b897edf05c055103ecf88c7d1d77e9d9"
 }
