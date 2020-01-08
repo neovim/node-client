@@ -1,12 +1,12 @@
 import { EventEmitter } from 'events';
 
 import { Transport } from '../utils/transport';
-import { logger as loggerModule } from '../utils/logger';
+import { Logger } from '../utils/logger';
 import { VimValue } from '../types/VimValue';
 
 export interface BaseConstructorOptions {
   transport?: Transport;
-  logger?: typeof loggerModule;
+  logger?: Logger;
   data?: Buffer;
   metadata?: any;
   client?: any;
@@ -31,7 +31,7 @@ export class BaseApi extends EventEmitter {
 
   protected prefix: string;
 
-  public logger: typeof loggerModule;
+  public logger: Logger;
 
   public data: Buffer | number;
 
@@ -49,7 +49,8 @@ export class BaseApi extends EventEmitter {
 
     this.setTransport(transport);
     this.data = data;
-    this.logger = logger || loggerModule;
+    // eslint-disable-next-line global-require
+    this.logger = logger || require('../utils/logger').logger;
     this.client = client;
 
     if (metadata) {
