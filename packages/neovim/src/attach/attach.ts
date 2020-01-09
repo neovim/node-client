@@ -2,13 +2,16 @@ import { createConnection } from 'net';
 import * as child from 'child_process';
 
 import { NeovimClient } from '../api/client';
-import { logger } from '../utils/logger';
+import { Logger } from '../utils/logger';
 
 export interface Attach {
   reader?: NodeJS.ReadableStream;
   writer?: NodeJS.WritableStream;
   proc?: NodeJS.Process | child.ChildProcess;
   socket?: string;
+  options?: {
+    logger?: Logger;
+  };
 }
 
 export function attach({
@@ -16,6 +19,7 @@ export function attach({
   writer: _writer,
   proc,
   socket,
+  options = {},
 }: Attach) {
   let writer;
   let reader;
@@ -33,7 +37,9 @@ export function attach({
   }
 
   if (writer && reader) {
-    const neovim = new NeovimClient({ logger });
+    // eslint-disable-next-line global-require
+    const loggerInstance = options.logger || require('../utils/logger').logger; // lazy load to winston only if needed
+    const neovim = new NeovimClient({ logger: loggerInstance });
     neovim.attach({
       writer,
       reader,
