@@ -1,7 +1,7 @@
 {
   "name": "neovim",
   "description": "Neovim client API and neovim remote plugin provider",
-  "version": "4.7.0",
+  "version": "4.8.0",
   "homepage": "https://github.com/neovim/node-client",
   "authors": [
     {
@@ -103,5 +103,5 @@
     "nvim-client",
     "vim"
   ],
-  "gitHead": "45c9ebd8b897edf05c055103ecf88c7d1d77e9d9"
+  "gitHead": "43fb7aff04a7f441209aa0ae3966f2e5ba04cf3a"
 }
