@@ -13,6 +13,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "lib/"
+  ],
   "devDependencies": {
     "jest-haste-map": "^24.9.0",
     "jest-resolve": "^24.9.0"
@@ -20,5 +23,5 @@
   "dependencies": {
     "neovim": "^4.8.0"
   },
-  "gitHead": "45c9ebd8b897edf05c055103ecf88c7d1d77e9d9"
+  "gitHead": "43fb7aff04a7f441209aa0ae3966f2e5ba04cf3a"
 }
