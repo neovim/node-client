@@ -20,5 +20,8 @@
   "dependencies": {
     "neovim": "^4.7.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "gitHead": "45c9ebd8b897edf05c055103ecf88c7d1d77e9d9"
 }
