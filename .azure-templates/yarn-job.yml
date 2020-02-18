@@ -6,10 +6,16 @@ jobs:
 - job: ${{ parameters.name }}
   pool:
     vmImage: ${{ parameters.vmImage }}
+  strategy:
+    matrix:
+      Node10:
+        node.version: '10.x'
+      Node12:
+        node.version: '12.x'
   steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: '10.x'
+      versionSpec: '$(node.version)'
     displayName: 'Install Node.js'
   - script: yarn
     displayName: 'yarn install'
