@@ -39,6 +39,9 @@ describe('Plugin Factory (used by host)', () => {
       await pluginObj.handleRequest('Global', 'function', ['loaded'])
     ).toEqual(true);
     expect(
+      await pluginObj.handleRequest('Global', 'function', ['Buffer'])
+    ).not.toEqual(undefined);
+    expect(
       await pluginObj.handleRequest('Global', 'function', ['process'])
     ).not.toContain(['chdir', 'exit']);
   });
