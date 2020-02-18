@@ -99,6 +99,7 @@ export interface Sandbox {
   module: NodeModule;
   require: (p: string) => any;
   console: { [key in keyof Console]?: Function };
+  Buffer: typeof Buffer;
 }
 
 function createSandbox(filename: string): Sandbox {
@@ -150,6 +151,9 @@ function createSandbox(filename: string): Sandbox {
   sandbox.process.stdin = devNull;
   sandbox.process.stdout = devNull;
   sandbox.process.stderr = devNull;
+
+  // Buffer is no longer an owned property of 'global' variable in Node.js v12 (#141)
+  sandbox.Buffer = global.Buffer;
 
   return sandbox;
 }
