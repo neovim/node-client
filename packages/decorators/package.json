@@ -3,6 +3,9 @@
   "version": "4.8.0",
   "description": "",
   "main": "./lib/index.js",
+  "engines": {
+    "node": ">=10"
+  },
   "scripts": {
     "build": "tsc --pretty",
     "dev": "yarn build --watch true"

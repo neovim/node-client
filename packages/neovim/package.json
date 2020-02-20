@@ -40,6 +40,9 @@
   ],
   "main": "./lib/index",
   "typings": "./lib/index",
+  "engines": {
+    "node": ">=10"
+  },
   "dependencies": {
     "@msgpack/msgpack": "^1.9.3",
     "lodash.defaults": "^4.2.0",
