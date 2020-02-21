@@ -4,7 +4,7 @@
 |----------------------------|----------|-----|--------|
 | [![Build Status](https://dev.azure.com/neovim/node-client/_apis/build/status/neovim.node-client?branchName=master)](https://dev.azure.com/neovim/node-client/_build/latest?definitionId=1&branchName=master) | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] | [![Gitter Badge][]][Gitter] |
 
-Currently tested for node >= 8
+Currently tested for node >= 10
 
 ## Installation
 Install the `neovim` package globally using `npm`.
