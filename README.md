@@ -157,13 +157,11 @@ $ NVIM_LISTEN_ADDRESS=/tmp/nvim nvim
 In another terminal, connect a node REPL to Nvim
 
 ```javascript
-let nvim;
 // `scripts/nvim` will detect if `NVIM_LISTEN_ADDRESS` is set and use that unix socket
 // Otherwise will create an embedded `nvim` instance
 require('neovim/scripts/nvim').then((nvim) => {
   nvim.command('vsp');
 });
-
 ```
 
 The tests and [`scripts`](https://github.com/neovim/node-client/tree/master/packages/neovim/scripts) can be consulted for more examples.
