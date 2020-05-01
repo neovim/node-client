@@ -15,7 +15,7 @@ jobs:
 - template: .azure-templates/yarn-job.yml  # Template reference
   parameters:
     name: 'macOS'
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.14'
 
 - template: .azure-templates/yarn-job.yml  # Template reference
   parameters:
