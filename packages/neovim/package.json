@@ -48,7 +48,7 @@
     "lodash.defaults": "^4.2.0",
     "lodash.omit": "^4.5.0",
     "semver": "^7.1.1",
-    "winston": "3.2.1"
+    "winston": "3.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.3.4",
