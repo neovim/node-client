@@ -8,6 +8,17 @@ import { ApiInfo } from '../types/ApiInfo'; // eslint-disable-line
 
 export interface UiAttachOptions {
   rgb?: boolean;
+  override?: boolean;
+  // eslint-disable-next-line camelcase
+  ext_cmdline?: boolean;
+  // eslint-disable-next-line camelcase
+  ext_hlstate?: boolean;
+  // eslint-disable-next-line camelcase
+  ext_linegrid?: boolean;
+  // eslint-disable-next-line camelcase
+  ext_messages?: boolean;
+  // eslint-disable-next-line camelcase
+  ext_multigrid?: boolean;
   // eslint-disable-next-line camelcase
   ext_popupmenu?: boolean;
   // eslint-disable-next-line camelcase
@@ -15,7 +26,7 @@ export interface UiAttachOptions {
   // eslint-disable-next-line camelcase
   ext_wildmenu?: boolean;
   // eslint-disable-next-line camelcase
-  ext_cmdline?: boolean;
+  ext_termcolors?: boolean;
 }
 
 export type Ui = UiAttachOptions & {
