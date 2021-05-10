@@ -124,7 +124,7 @@ export class Neovim extends BaseApi {
   /**
    * Gets the current list of buffer handles
    *
-   * Includes unlisted (unloaded/deleted) buffers, like `ls!`. Use `Buffer.isLoaded`
+   * Includes unlisted (unloaded/deleted) buffers, like `ls!`. Use `buffer.loaded`
    * to check if a buffer is loaded
    *
    * @return {Buffer[]} List of buffer handles
