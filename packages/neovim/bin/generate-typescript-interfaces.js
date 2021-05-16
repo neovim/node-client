@@ -1,5 +1,5 @@
 const cp = require('child_process');
-const attach = require('../src/attach');
+const { attach } = require('../lib/attach');
 
 const proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {
   cwd: __dirname,
@@ -40,7 +40,7 @@ function metadataToSignature(method) {
 }
 
 async function main() {
-  const nvim = await attach({ proc });
+  const nvim = attach({ proc });
   const interfaces = {
     Neovim: nvim.constructor,
     Buffer: nvim.Buffer,
@@ -62,7 +62,7 @@ async function main() {
   Object.keys(interfaces).forEach(key => {
     let name = key;
     if (key === 'Neovim') {
-      name += ' extends NodeJS.EventEmitter';
+      name = `${name} extends NodeJS.EventEmitter`;
     }
     process.stdout.write(`export interface ${name} {\n`);
     if (key === 'Neovim') {
