@@ -6,7 +6,7 @@
   "main": "rplugin/node/test/index.js",
   "license": "MIT",
   "devDependencies": {
-    "jest-haste-map": "^24.9.0",
-    "jest-resolve": "^24.9.0"
+    "jest-haste-map": "^26.6.2",
+    "jest-resolve": "^26.6.2"
   }
 }
