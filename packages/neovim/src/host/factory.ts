@@ -7,7 +7,7 @@ import omit from 'lodash.omit';
 
 import { Neovim } from '../api/Neovim';
 import { logger } from '../utils/logger';
-import { DevNull } from '../utils/devnull'
+import { DevNull } from '../utils/devnull';
 
 import { NvimPlugin } from './NvimPlugin';
 
