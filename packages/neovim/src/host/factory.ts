@@ -7,7 +7,7 @@ import omit from 'lodash.omit';
 
 import { Neovim } from '../api/Neovim';
 import { logger } from '../utils/logger';
-import { DevNull } from '../utils/devnull';
+import { DevNull } from '../utils/devnull'
 
 import { NvimPlugin } from './NvimPlugin';
 
@@ -138,18 +138,22 @@ function createSandbox(filename: string): Sandbox {
     sandbox.process[name] = removedGlobalStub(name);
   });
 
-  const devNull = new DevNull();
+  const devNull = new DevNull()
 
   // read-only umask
-  sandbox.process.umask = (mask: number) => {
+  // @ts-ignore because umask has two overloads
+  sandbox.process.umask = (mask: string | number) => {
     if (typeof mask !== 'undefined') {
       throw new Error('Cannot use process.umask() to change mask (read-only)');
     }
-    return process.umask();
+    return process.umask(mask);
   };
 
+  // @ts-ignore
   sandbox.process.stdin = devNull;
+  // @ts-ignore
   sandbox.process.stdout = devNull;
+  // @ts-ignore
   sandbox.process.stderr = devNull;
 
   // Buffer is no longer an owned property of 'global' variable in Node.js v12 (#141)
