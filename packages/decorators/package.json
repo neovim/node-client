@@ -20,8 +20,8 @@
     "lib/"
   ],
   "devDependencies": {
-    "jest-haste-map": "^24.9.0",
-    "jest-resolve": "^24.9.0"
+    "jest-haste-map": "^27.2.0",
+    "jest-resolve": "^27.2.0"
   },
   "dependencies": {
     "neovim": "^4.10.0"

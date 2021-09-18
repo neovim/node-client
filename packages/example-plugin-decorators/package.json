@@ -10,11 +10,11 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "babel-cli": "^6.24.1",
+    "babel-cli": "^6.26.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "jest-haste-map": "^24.9.0",
-    "jest-resolve": "^24.9.0"
+    "babel-plugin-transform-decorators-legacy": "^1.3.5",
+    "jest-haste-map": "^27.2.0",
+    "jest-resolve": "^27.2.0"
   },
   "dependencies": {
     "@neovim/decorators": "^4.10.0"
