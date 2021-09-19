@@ -21,7 +21,7 @@ describe('Nvim Promise API', () => {
   let requests;
   let notifications;
 
-  beforeAll(async done => {
+  beforeAll(async () => {
     try {
       proc = cp.spawn(
         'nvim',
@@ -39,8 +39,6 @@ describe('Nvim Promise API', () => {
       nvim.on('notification', (method, args) => {
         notifications.push({ method, args });
       });
-
-      done();
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log(err);
@@ -48,7 +46,7 @@ describe('Nvim Promise API', () => {
   });
 
   afterAll(() => {
-    if (proc) {
+    if (proc && proc.connected) {
       proc.disconnect();
     }
   });
@@ -120,7 +118,7 @@ describe('Nvim Promise API', () => {
     });
 
     // Event doesn't actually emit when we quit nvim, but when the child process is killed
-    if (typeof proc.disconnect === 'function') {
+    if (proc && proc.connected) {
       proc.disconnect();
     }
   });

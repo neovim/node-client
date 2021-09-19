@@ -73,7 +73,7 @@ function makeRequireFunction(): Require {
 // @see node/lib/module.js
 function compileInSandbox(sandbox: Sandbox): Function {
   // eslint-disable-next-line
-  return function (content: string, filename: string) {
+  return function(content: string, filename: string) {
     const require = makeRequireFunction.call(this);
     const dirname = path.dirname(filename);
     // remove shebang
@@ -134,7 +134,7 @@ function createSandbox(filename: string): Sandbox {
   // if you need any of these, it might be worth discussing spawning separate processes
   sandbox.process = omit(process, REMOVED_GLOBALS) as NodeJS.Process;
 
-  REMOVED_GLOBALS.forEach((name) => {
+  REMOVED_GLOBALS.forEach(name => {
     sandbox.process[name] = removedGlobalStub(name);
   });
 

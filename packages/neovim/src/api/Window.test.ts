@@ -20,7 +20,7 @@ describe('Window API', () => {
   let proc;
   let nvim: NeovimClient;
 
-  beforeAll(async done => {
+  beforeAll(async () => {
     proc = cp.spawn(
       'nvim',
       ['-u', 'NONE', '-N', '--embed', '-c', 'set noswapfile', 'test.js'],
@@ -30,13 +30,11 @@ describe('Window API', () => {
     );
 
     nvim = await attach({ proc });
-
-    done();
   });
 
   afterAll(() => {
     nvim.quit();
-    if (proc) {
+    if (proc && proc.connected) {
       proc.disconnect();
     }
   });

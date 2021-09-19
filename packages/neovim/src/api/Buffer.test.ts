@@ -47,7 +47,7 @@ describe('Buffer API', () => {
     };
   }
 
-  beforeAll(async done => {
+  beforeAll(async () => {
     proc = cp.spawn(
       'nvim',
       ['-u', 'NONE', '-N', '--embed', '-c', 'set noswapfile', 'test.js'],
@@ -57,12 +57,11 @@ describe('Buffer API', () => {
     );
 
     nvim = await attach({ proc });
-    done();
   });
 
   afterAll(() => {
     nvim.quit();
-    if (proc) {
+    if (proc && proc.connected) {
       proc.disconnect();
     }
   });
@@ -412,7 +411,7 @@ describe('Buffer event updates', () => {
   let proc;
   let nvim;
 
-  beforeAll(async done => {
+  beforeAll(async () => {
     proc = cp.spawn(
       'nvim',
       ['-u', 'NONE', '-N', '--embed', '-c', 'set noswapfile', 'test.js'],
@@ -422,12 +421,11 @@ describe('Buffer event updates', () => {
     );
 
     nvim = await attach({ proc });
-    done();
   });
 
   afterAll(() => {
     nvim.quit();
-    if (proc) {
+    if (proc && proc.connected) {
       proc.disconnect();
     }
   });
@@ -491,24 +489,27 @@ describe('Buffer event updates', () => {
     expect(mock).toHaveBeenCalledTimes(1);
   });
 
-  it('listens to line updates', async done => {
+  it('listens to line updates', async () => {
     const buffer = await nvim.buffer;
     const bufferName = await buffer.name;
     await buffer.insert(['test', 'foo'], 0);
 
-    const unlisten = buffer.listen(
-      'lines',
-      async (currentBuffer, tick, start, end, data) => {
-        expect(await currentBuffer.name).toBe(bufferName);
-        expect(start).toBe(1);
-        expect(end).toBe(1);
-        expect(data).toEqual(['bar']);
-        unlisten();
-        done();
-      }
-    );
+    const promise = new Promise(resolve => {
+      const unlisten = buffer.listen(
+        'lines',
+        async (currentBuffer, tick, start, end, data) => {
+          expect(await currentBuffer.name).toBe(bufferName);
+          expect(start).toBe(1);
+          expect(end).toBe(1);
+          expect(data).toEqual(['bar']);
+          unlisten();
+          resolve();
+        }
+      );
+    });
 
     await nvim.buffer.insert(['bar'], 1);
+    await promise;
   });
 
   it('has listener on multiple buffers ', async () => {
