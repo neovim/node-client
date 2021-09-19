@@ -4,8 +4,6 @@ import { createChainableApi } from './helpers/createChainableApi';
 import { Tabpage, AsyncTabpage } from './Tabpage';
 import { Buffer, AsyncBuffer } from './Buffer';
 
-export interface AsyncWindow extends Window, Promise<Window> {}
-
 export class Window extends BaseApi {
   public prefix: string = Metadata[ExtType.Window].prefix;
 
@@ -119,3 +117,5 @@ export class Window extends BaseApi {
     return this.request(`${this.prefix}set_config`, [this, options]);
   }
 }
+
+export interface AsyncWindow extends Window, Promise<Window> {}

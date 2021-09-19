@@ -12,7 +12,7 @@ export interface CommandOptions {
 // @command('MyCommand', { complete: 'customlist,MyCustomCompleteListFunc' })
 // @command('MyCommand', { complete: 'dir' })
 export function command(name: string, options?: CommandOptions) {
-  return function(cls: any, methodName: string | null) {
+  return function (cls: any, methodName: string | null) {
     const sync = options && !!options.sync;
     const isMethod = typeof methodName === 'string';
     const f = isMethod ? cls[methodName] : cls;

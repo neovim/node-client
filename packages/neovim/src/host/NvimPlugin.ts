@@ -41,7 +41,7 @@ export function callable(fn: any): Function {
     return fn;
   }
   if (Array.isArray(fn) && fn.length === 2) {
-    return function(...args: any[]) {
+    return function (...args: any[]) {
       return fn[1].apply(fn[0], args);
     };
   }
@@ -230,9 +230,7 @@ export class NvimPlugin {
         handlers = this.functions;
         break;
       default:
-        const errMsg = `No handler for unknown type ${type}: "${name}" in ${
-          this.filename
-        }`;
+        const errMsg = `No handler for unknown type ${type}: "${name}" in ${this.filename}`;
         logger.error(errMsg);
         throw new Error(errMsg);
     }
@@ -249,9 +247,7 @@ export class NvimPlugin {
         throw new Error(err);
       }
     } else {
-      const errMsg = `Missing handler for ${type}: "${name}" in ${
-        this.filename
-      }`;
+      const errMsg = `Missing handler for ${type}: "${name}" in ${this.filename}`;
       logger.error(errMsg);
       throw new Error(errMsg);
     }

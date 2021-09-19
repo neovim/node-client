@@ -49,7 +49,7 @@ export class BaseApi extends EventEmitter {
 
     this.setTransport(transport);
     this.data = data;
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
     this.logger = logger || require('../utils/logger').logger;
     this.client = client;
 

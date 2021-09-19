@@ -47,7 +47,8 @@ class Transport extends EventEmitter {
 
   private writer: NodeJS.WritableStream;
 
-  private readonly extensionCodec: ExtensionCodec = this.initializeExtensionCodec();
+  private readonly extensionCodec: ExtensionCodec =
+    this.initializeExtensionCodec();
 
   // Neovim client that holds state
   private client: any;
@@ -64,13 +65,12 @@ class Transport extends EventEmitter {
           }
           return null;
         },
-        decode: data => {
-          return new constructor({
+        decode: data =>
+          new constructor({
             transport: this,
             client: this.client,
             data: decode(data),
-          });
-        },
+          }),
       });
     });
 

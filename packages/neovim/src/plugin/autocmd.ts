@@ -10,7 +10,7 @@ export interface AutocmdOptions {
 // Example
 // @autocmd('BufEnter', { pattern: '*.js', eval: 'expand("<afile>")', sync: true })
 export function autocmd(name: string, options?: AutocmdOptions) {
-  return function(cls: any, methodName: string | null) {
+  return function (cls: any, methodName: string | null) {
     // const {
     // sync,
     // ...opts,

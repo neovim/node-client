@@ -70,10 +70,19 @@ function makeRequireFunction(): Require {
   return require;
 }
 
+export interface Sandbox {
+  global: any;
+  process: NodeJS.Process;
+  module: NodeModule;
+  require: (p: string) => any;
+  console: { [key in keyof Console]?: Function };
+  Buffer: typeof Buffer;
+}
+
 // @see node/lib/internal/modules/cjs/loader.js
 function compileInSandbox(sandbox: Sandbox): Function {
   // eslint-disable-next-line
-  return function(content: string, filename: string) {
+  return function (content: string, filename: string) {
     const require = makeRequireFunction.call(this);
     const dirname = path.dirname(filename);
     // remove shebang
@@ -92,15 +101,6 @@ function createDebugFunction(filename: string): Function {
     const sout = util.format.apply(null, [`[${debugId}]`].concat(args));
     logger.info(sout);
   };
-}
-
-export interface Sandbox {
-  global: NodeJS.Global;
-  process: NodeJS.Process;
-  module: NodeModule;
-  require: (p: string) => any;
-  console: { [key in keyof Console]?: Function };
-  Buffer: typeof Buffer;
 }
 
 function createSandbox(filename: string): Sandbox {

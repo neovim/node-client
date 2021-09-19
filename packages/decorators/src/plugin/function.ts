@@ -2,7 +2,7 @@ import { NVIM_SYNC, NVIM_SPEC, NVIM_METHOD_NAME } from './properties';
 import { FunctionOptions } from './types';
 
 export function Function(name: string, options: FunctionOptions = {}) {
-  return function(cls: any, methodName: string | null) {
+  return function (cls: any, methodName: string | null) {
     const sync = options && !!options.sync;
     const isMethod = typeof methodName === 'string';
     const f = isMethod ? cls[methodName] : cls;

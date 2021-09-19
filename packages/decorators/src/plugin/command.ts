@@ -6,7 +6,7 @@ import { CommandOptions } from './types';
 // @Command('MyCommand', { complete: 'customlist,MyCustomCompleteListFunc' })
 // @Command('MyCommand', { complete: 'dir' })
 export function Command(name: string, options?: CommandOptions) {
-  return function(cls: any, methodName: string | null) {
+  return function (cls: any, methodName: string | null) {
     const sync = options && !!options.sync;
     const isMethod = typeof methodName === 'string';
     const f = isMethod ? cls[methodName] : cls;
