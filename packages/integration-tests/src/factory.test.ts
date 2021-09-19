@@ -134,12 +134,6 @@ describe('Plugin Factory (decorator api)', () => {
     expect(plugin.functions.Illegal.fn).toThrow();
   });
 
-  it('cannot write to process.umask', () => {
-    const nvim = {} as any;
-    const plugin = loadPlugin('@neovim/example-plugin-decorators', nvim, {});
-    expect(() => plugin.functions.Umask.fn(123)).toThrow();
-  });
-
   it('can read process.umask()', () => {
     const nvim = {} as any;
     const plugin = loadPlugin('@neovim/example-plugin-decorators', nvim, {});
