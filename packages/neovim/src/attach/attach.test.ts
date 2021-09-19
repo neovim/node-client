@@ -23,7 +23,7 @@ describe('Nvim Promise API', () => {
 
   beforeAll(async () => {
     try {
-      proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n'], {
+      proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', '--noplugin'], {
         cwd: __dirname,
       });
 

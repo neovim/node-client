@@ -22,7 +22,7 @@ describe('Neovim API', () => {
   let nvim: Neovim;
 
   beforeAll(async () => {
-    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n'], {
+    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', '--noplugin'], {
       cwd: __dirname,
     });
 
