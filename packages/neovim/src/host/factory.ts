@@ -73,7 +73,7 @@ function makeRequireFunction(): Require {
 // @see node/lib/module.js
 function compileInSandbox(sandbox: Sandbox): Function {
   // eslint-disable-next-line
-  return function(content: string, filename: string) {
+  return function (content: string, filename: string) {
     const require = makeRequireFunction.call(this);
     const dirname = path.dirname(filename);
     // remove shebang
@@ -134,14 +134,16 @@ function createSandbox(filename: string): Sandbox {
   // if you need any of these, it might be worth discussing spawning separate processes
   sandbox.process = omit(process, REMOVED_GLOBALS) as NodeJS.Process;
 
-  REMOVED_GLOBALS.forEach(name => {
+  REMOVED_GLOBALS.forEach((name) => {
     sandbox.process[name] = removedGlobalStub(name);
   });
 
-  const devNull = new DevNull();
+  // stdin/stdout/stderr inherit tty.WriteStream/tty.ReadStream but DevNull only inherits Duplex.
+  // There are some missing methods in DevNull.
+  const devNull = new DevNull() as any;
 
   // read-only umask
-  sandbox.process.umask = (mask: number) => {
+  sandbox.process.umask = (mask?: string | number) => {
     if (typeof mask !== 'undefined') {
       throw new Error('Cannot use process.umask() to change mask (read-only)');
     }
