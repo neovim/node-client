@@ -59,7 +59,7 @@ interface Require {
   cache: any;
 }
 
-// @see node/lib/internal/module.js
+// @see node/lib/internal/modules/cjs/helpers.js
 function makeRequireFunction(): Require {
   const require = ((p: string): any => this.require(p)) as Require;
   require.resolve = (request: string) => Module._resolveFilename(request, this);
@@ -70,7 +70,7 @@ function makeRequireFunction(): Require {
   return require;
 }
 
-// @see node/lib/module.js
+// @see node/lib/internal/modules/cjs/loader.js
 function compileInSandbox(sandbox: Sandbox): Function {
   // eslint-disable-next-line
   return function(content: string, filename: string) {
@@ -95,6 +95,7 @@ function createDebugFunction(filename: string): Function {
 }
 
 export interface Sandbox {
+  global: NodeJS.Global;
   process: NodeJS.Process;
   module: NodeModule;
   require: (p: string) => any;
@@ -124,10 +125,13 @@ function createSandbox(filename: string): Sandbox {
 
   sandbox.require = function sandboxRequire(p) {
     const oldCompile = Module.prototype._compile;
-    Module.prototype._compile = compileInSandbox(sandbox);
-    const moduleExports = sandbox.module.require(p);
-    Module.prototype._compile = oldCompile;
-    return moduleExports;
+    try {
+      Module.prototype._compile = compileInSandbox(sandbox);
+      const moduleExports = sandbox.module.require(p);
+      return moduleExports;
+    } finally {
+      Module.prototype._compile = oldCompile;
+    }
   };
 
   // patch `require` in sandbox to run loaded module in sandbox context
