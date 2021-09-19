@@ -48,13 +48,9 @@ describe('Buffer API', () => {
   }
 
   beforeAll(async () => {
-    proc = cp.spawn(
-      'nvim',
-      ['-u', 'NONE', '-N', '--embed', '-c', 'set noswapfile', 'test.js'],
-      {
-        cwd: __dirname,
-      }
-    );
+    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', 'test.js'], {
+      cwd: __dirname,
+    });
 
     nvim = await attach({ proc });
   });
@@ -412,13 +408,9 @@ describe('Buffer event updates', () => {
   let nvim;
 
   beforeAll(async () => {
-    proc = cp.spawn(
-      'nvim',
-      ['-u', 'NONE', '-N', '--embed', '-c', 'set noswapfile', 'test.js'],
-      {
-        cwd: __dirname,
-      }
-    );
+    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', 'test.js'], {
+      cwd: __dirname,
+    });
 
     nvim = await attach({ proc });
   });

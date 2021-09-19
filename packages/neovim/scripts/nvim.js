@@ -8,14 +8,14 @@ const cp = require('child_process');
 const { attach } = require('../');
 // const inspect = require('util').inspect;
 
-module.exports = (async function() {
+module.exports = (async function () {
   let proc;
   let socket;
 
   if (process.env.NVIM_LISTEN_ADDRESS) {
     socket = process.env.NVIM_LISTEN_ADDRESS;
   } else {
-    proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {
+    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n'], {
       cwd: __dirname,
     });
   }

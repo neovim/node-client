@@ -40,7 +40,7 @@ describe('Node host', () => {
 
     proc = cp.spawn(
       'nvim',
-      ['-u', nvimrc, '-i', 'NONE', '-N', '--headless', '--embed'],
+      ['-u', nvimrc, '-i', 'NONE', '--headless', '--embed', '-n'],
       {}
     );
     nvim = await attach({ proc });
@@ -102,7 +102,7 @@ describe('Node host', () => {
       { env: { NVIM_NODE_HOST_DEBUG: 1 }, stdio: 'ignore' }
     );
 
-    setTimeout(function() {
+    setTimeout(function () {
       http.get('http://127.0.0.1:9229/json/list', res => {
         let rawData = '';
         res.on('data', chunk => {
