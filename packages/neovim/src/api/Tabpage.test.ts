@@ -20,7 +20,7 @@ describe('Tabpage API', () => {
   let nvim;
 
   beforeAll(async () => {
-    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', 'test.js'], {
+    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n'], {
       cwd: __dirname,
     });
 

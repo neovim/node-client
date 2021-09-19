@@ -22,7 +22,7 @@ describe('Neovim API', () => {
   let nvim: Neovim;
 
   beforeAll(async () => {
-    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', 'test.js'], {
+    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n'], {
       cwd: __dirname,
     });
 
@@ -48,17 +48,15 @@ describe('Neovim API', () => {
     it('gets a list of buffers and switches buffers', async () => {
       const buffers = await nvim.buffers;
       expect(buffers.length).toBe(1);
-      const initialBufferName = await buffers[0].name;
+      buffers[0].name = 'hello.txt';
 
-      nvim.command('e test2.js');
+      nvim.command('e! goodbye.txt');
       expect((await nvim.buffers).length).toBe(2);
-      expect(await nvim.buffer.name).toEqual(
-        initialBufferName.replace('test', 'test2')
-      );
+      expect(await nvim.buffer.name).toMatch(/goodbye\.txt$/);
 
       // switch buffers
       [nvim.buffer] = buffers;
-      expect(await nvim.buffer.name).toEqual(initialBufferName);
+      expect(await nvim.buffer.name).toMatch(/hello\.txt$/);
     });
 
     it('can list runtimepaths', async () => {

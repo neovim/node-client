@@ -32,7 +32,7 @@ describe('Buffer API', () => {
   // own buffer
   function withBuffer(lines, test) {
     return async () => {
-      await nvim.command('new');
+      await nvim.command('new!');
 
       const buffer = await nvim.buffer;
 
@@ -48,7 +48,7 @@ describe('Buffer API', () => {
   }
 
   beforeAll(async () => {
-    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', 'test.js'], {
+    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n'], {
       cwd: __dirname,
     });
 
@@ -93,9 +93,10 @@ describe('Buffer API', () => {
       })
     );
 
-    it('gets the current buffer name', async () => {
+    it('sets/gets the current buffer name', async () => {
+      (await nvim.buffers)[0].name = 'hello.txt';
       const name = await (await nvim.buffers)[0].name;
-      expect(name).toMatch('test.js');
+      expect(name).toMatch('hello.txt');
     });
 
     it(
@@ -106,14 +107,14 @@ describe('Buffer API', () => {
     );
 
     it(
-      'sets current buffer name to "foo.js"',
+      'sets current buffer name to "foo.txt"',
       withBuffer([], async buffer => {
         // eslint-disable-next-line no-param-reassign
-        buffer.name = 'foo.js';
-        expect(await buffer.name).toMatch('foo.js');
+        buffer.name = 'foo.txt';
+        expect(await buffer.name).toMatch('foo.txt');
         // eslint-disable-next-line no-param-reassign
-        buffer.name = 'test2.js';
-        expect(await buffer.name).toMatch('test2.js');
+        buffer.name = 'test2.txt';
+        expect(await buffer.name).toMatch('test2.txt');
       })
     );
 
@@ -284,8 +285,9 @@ describe('Buffer API', () => {
   });
 
   describe('Chainable API calls', () => {
-    it('gets the current buffer name using api chaining', async () => {
-      expect(await nvim.buffer.name).toMatch('test.js');
+    it('sets/gets the current buffer name using api chaining', async () => {
+      nvim.buffer.name = 'goodbye.txt';
+      expect(await nvim.buffer.name).toMatch('goodbye.txt');
     });
 
     it('can chain calls from Base class i.e. getOption', async () => {
@@ -408,7 +410,7 @@ describe('Buffer event updates', () => {
   let nvim;
 
   beforeAll(async () => {
-    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', 'test.js'], {
+    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n'], {
       cwd: __dirname,
     });
 
@@ -505,7 +507,7 @@ describe('Buffer event updates', () => {
   });
 
   it('has listener on multiple buffers ', async () => {
-    await nvim.command('new');
+    await nvim.command('new!');
     const buffers = await nvim.buffers;
     const foo = jest.fn();
     const bar = jest.fn();
@@ -524,10 +526,11 @@ describe('Buffer event updates', () => {
 
     buffers[0].unlisten('lines', foo);
     buffers[1].unlisten('lines', bar);
-    await nvim.command('e!');
   });
 
   it('has multiple listeners for same event, on same buffer', async () => {
+    await nvim.command('new!');
+
     const buffer = await nvim.buffer;
     const foo = jest.fn();
     const bar = jest.fn();
@@ -546,10 +549,12 @@ describe('Buffer event updates', () => {
     expect(bar).toHaveBeenCalledTimes(1);
 
     unlisten1();
-    await nvim.command('e!');
+    await nvim.command('q!');
   });
 
   it('has multiple listeners for different events, on same buffer', async () => {
+    await nvim.command('new!');
+
     const buffer = await nvim.buffer;
     const foo = jest.fn();
     const bar = jest.fn();
@@ -568,6 +573,6 @@ describe('Buffer event updates', () => {
     expect(bar).toHaveBeenCalledTimes(1);
 
     unlisten1();
-    await nvim.command('e!');
+    await nvim.command('q!');
   });
 });

@@ -21,7 +21,7 @@ describe('Window API', () => {
   let nvim: NeovimClient;
 
   beforeAll(async () => {
-    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', 'test.js'], {
+    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n'], {
       cwd: __dirname,
     });
 
@@ -76,7 +76,7 @@ describe('Window API', () => {
     });
 
     it('has same cursor position after appending a line to buffer', async () => {
-      win.buffer.append(['test']);
+      await win.buffer.append(['test']);
       expect(await win.buffer.lines).toEqual(['', 'test']);
       expect(await win.cursor).toEqual([1, 0]);
     });
