@@ -41,7 +41,7 @@ export function callable(fn: any): Function {
     return fn;
   }
   if (Array.isArray(fn) && fn.length === 2) {
-    return function(...args: any[]) {
+    return function (...args: any[]) {
       return fn[1].apply(fn[0], args);
     };
   }

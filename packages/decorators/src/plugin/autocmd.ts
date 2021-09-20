@@ -4,7 +4,7 @@ import { AutocmdOptions } from './types';
 // Example
 // @autocmd('BufEnter', { pattern: '*.js', eval: 'expand("<afile>")', sync: true })
 export function Autocmd(name: string, options?: AutocmdOptions) {
-  return function(cls: any, methodName: string | null) {
+  return function (cls: any, methodName: string | null) {
     const sync = options && !!options.sync;
     const isMethod = typeof methodName === 'string';
     const f = isMethod ? cls[methodName] : cls;

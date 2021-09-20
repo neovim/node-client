@@ -1,7 +1,7 @@
 const cp = require('child_process');
 const { attach } = require('../lib/attach');
 
-const proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {
+const proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n'], {
   cwd: __dirname,
 });
 

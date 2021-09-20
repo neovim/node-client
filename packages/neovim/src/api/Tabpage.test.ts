@@ -19,22 +19,17 @@ describe('Tabpage API', () => {
   let proc;
   let nvim;
 
-  beforeAll(async done => {
-    proc = cp.spawn(
-      'nvim',
-      ['-u', 'NONE', '-N', '--embed', '-c', 'set noswapfile', 'test.js'],
-      {
-        cwd: __dirname,
-      }
-    );
+  beforeAll(async () => {
+    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', '--noplugin'], {
+      cwd: __dirname,
+    });
 
     nvim = await attach({ proc });
-    done();
   });
 
   afterAll(() => {
     nvim.quit();
-    if (proc) {
+    if (proc && proc.connected) {
       proc.disconnect();
     }
   });

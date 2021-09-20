@@ -21,12 +21,12 @@ interface Spec {
   };
 }
 
-export interface PluginWrapperConstructor {
-  new (nvim: Neovim, plugin?: NvimPlugin): PluginWrapperInterface;
-}
 export interface PluginWrapperInterface {
   new (plugin: NvimPlugin): PluginWrapperInterface; // eslint-disable-line @typescript-eslint/no-misused-new
   setApi(nvim: Neovim): void;
+}
+export interface PluginWrapperConstructor {
+  new (nvim: Neovim, plugin?: NvimPlugin): PluginWrapperInterface;
 }
 function wrapper(cls: PluginWrapperConstructor, options?: PluginOptions): any {
   return class WrapperClass extends cls implements PluginWrapperInterface {

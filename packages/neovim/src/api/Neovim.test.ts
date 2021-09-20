@@ -21,23 +21,17 @@ describe('Neovim API', () => {
   let proc;
   let nvim: Neovim;
 
-  beforeAll(async done => {
-    proc = cp.spawn(
-      'nvim',
-      ['-u', 'NONE', '-N', '--embed', '-c', 'set noswapfile', 'test.js'],
-      {
-        cwd: __dirname,
-      }
-    );
+  beforeAll(async () => {
+    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', '--noplugin'], {
+      cwd: __dirname,
+    });
 
     nvim = await attach({ proc });
-
-    done();
   });
 
   afterAll(() => {
     nvim.quit();
-    if (proc) {
+    if (proc && proc.connected) {
       proc.disconnect();
     }
   });
@@ -54,17 +48,15 @@ describe('Neovim API', () => {
     it('gets a list of buffers and switches buffers', async () => {
       const buffers = await nvim.buffers;
       expect(buffers.length).toBe(1);
-      const initialBufferName = await buffers[0].name;
+      buffers[0].name = 'hello.txt';
 
-      nvim.command('e test2.js');
+      nvim.command('e! goodbye.txt');
       expect((await nvim.buffers).length).toBe(2);
-      expect(await nvim.buffer.name).toEqual(
-        initialBufferName.replace('test', 'test2')
-      );
+      expect(await nvim.buffer.name).toMatch(/goodbye\.txt$/);
 
       // switch buffers
       [nvim.buffer] = buffers;
-      expect(await nvim.buffer.name).toEqual(initialBufferName);
+      expect(await nvim.buffer.name).toMatch(/hello\.txt$/);
     });
 
     it('can list runtimepaths', async () => {
@@ -192,11 +184,8 @@ describe('Neovim API', () => {
         expect.objectContaining({
           version: expect.anything(),
           functions: expect.anything(),
-          // eslint-disable-next-line @typescript-eslint/camelcase
           ui_events: expect.anything(),
-          // eslint-disable-next-line @typescript-eslint/camelcase
           ui_options: expect.anything(),
-          // eslint-disable-next-line @typescript-eslint/camelcase
           error_types: expect.anything(),
           types: expect.anything(),
         })

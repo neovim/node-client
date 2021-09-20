@@ -59,7 +59,7 @@ interface Require {
   cache: any;
 }
 
-// @see node/lib/internal/module.js
+// @see node/lib/internal/modules/cjs/helpers.js
 function makeRequireFunction(): Require {
   const require = ((p: string): any => this.require(p)) as Require;
   require.resolve = (request: string) => Module._resolveFilename(request, this);
@@ -70,10 +70,19 @@ function makeRequireFunction(): Require {
   return require;
 }
 
-// @see node/lib/module.js
+export interface Sandbox {
+  global: any;
+  process: NodeJS.Process;
+  module: NodeModule;
+  require: (p: string) => any;
+  console: { [key in keyof Console]?: Function };
+  Buffer: typeof Buffer;
+}
+
+// @see node/lib/internal/modules/cjs/loader.js
 function compileInSandbox(sandbox: Sandbox): Function {
   // eslint-disable-next-line
-  return function(content: string, filename: string) {
+  return function (content: string, filename: string) {
     const require = makeRequireFunction.call(this);
     const dirname = path.dirname(filename);
     // remove shebang
@@ -92,14 +101,6 @@ function createDebugFunction(filename: string): Function {
     const sout = util.format.apply(null, [`[${debugId}]`].concat(args));
     logger.info(sout);
   };
-}
-
-export interface Sandbox {
-  process: NodeJS.Process;
-  module: NodeModule;
-  require: (p: string) => any;
-  console: { [key in keyof Console]?: Function };
-  Buffer: typeof Buffer;
 }
 
 function createSandbox(filename: string): Sandbox {
@@ -124,10 +125,13 @@ function createSandbox(filename: string): Sandbox {
 
   sandbox.require = function sandboxRequire(p) {
     const oldCompile = Module.prototype._compile;
-    Module.prototype._compile = compileInSandbox(sandbox);
-    const moduleExports = sandbox.module.require(p);
-    Module.prototype._compile = oldCompile;
-    return moduleExports;
+    try {
+      Module.prototype._compile = compileInSandbox(sandbox);
+      const moduleExports = sandbox.module.require(p);
+      return moduleExports;
+    } finally {
+      Module.prototype._compile = oldCompile;
+    }
   };
 
   // patch `require` in sandbox to run loaded module in sandbox context
@@ -138,10 +142,12 @@ function createSandbox(filename: string): Sandbox {
     sandbox.process[name] = removedGlobalStub(name);
   });
 
-  const devNull = new DevNull();
+  // stdin/stdout/stderr inherit tty.WriteStream/tty.ReadStream but DevNull only inherits Duplex.
+  // There are some missing methods in DevNull.
+  const devNull = new DevNull() as any;
 
   // read-only umask
-  sandbox.process.umask = (mask: number) => {
+  sandbox.process.umask = (mask?: string | number) => {
     if (typeof mask !== 'undefined') {
       throw new Error('Cannot use process.umask() to change mask (read-only)');
     }

@@ -123,25 +123,25 @@ describe('Plugin Factory (decorator api)', () => {
   });
 
   it('loads plugin with instance of nvim API', () => {
-    const nvim = {};
+    const nvim = {} as any;
     const plugin = loadPlugin('@neovim/example-plugin-decorators', nvim, {});
     expect(plugin.nvim).toBe(nvim);
   });
 
   it('cannot call illegal process functions', () => {
-    const nvim = {};
+    const nvim = {} as any;
     const plugin = loadPlugin('@neovim/example-plugin-decorators', nvim, {});
     expect(plugin.functions.Illegal.fn).toThrow();
   });
 
   it('cannot write to process.umask', () => {
-    const nvim = {};
+    const nvim = {} as any;
     const plugin = loadPlugin('@neovim/example-plugin-decorators', nvim, {});
     expect(() => plugin.functions.Umask.fn(123)).toThrow();
   });
 
   it('can read process.umask()', () => {
-    const nvim = {};
+    const nvim = {} as any;
     const plugin = loadPlugin('@neovim/example-plugin-decorators', nvim, {});
     expect(() => plugin.functions.Umask.fn()).not.toThrow();
     expect(plugin.functions.Umask.fn()).toBeDefined();

@@ -4,7 +4,12 @@
 
 import { EventEmitter } from 'events';
 
-import { encode, decode, ExtensionCodec, decodeStream } from '@msgpack/msgpack';
+import {
+  encode,
+  decode,
+  ExtensionCodec,
+  decodeMultiStream,
+} from '@msgpack/msgpack';
 import { Metadata } from '../api/types';
 
 class Response {
@@ -47,7 +52,8 @@ class Transport extends EventEmitter {
 
   private writer: NodeJS.WritableStream;
 
-  private readonly extensionCodec: ExtensionCodec = this.initializeExtensionCodec();
+  private readonly extensionCodec: ExtensionCodec =
+    this.initializeExtensionCodec();
 
   // Neovim client that holds state
   private client: any;
@@ -64,13 +70,12 @@ class Transport extends EventEmitter {
           }
           return null;
         },
-        decode: data => {
-          return new constructor({
+        decode: data =>
+          new constructor({
             transport: this,
             client: this.client,
             data: decode(data),
-          });
-        },
+          }),
       });
     });
 
@@ -95,11 +100,11 @@ class Transport extends EventEmitter {
       this.emit('detach');
     });
 
-    const asyncDecodeGenerator = decodeStream(this.reader as any, {
+    const asyncDecodeGenerator = decodeMultiStream(this.reader as any, {
       extensionCodec: this.extensionCodec,
     });
 
-    // naively iterate async generator created via decodeStream.
+    // naively iterate async generator created via decodeMultiStream.
     // when runtime / polyfill allows replace to `for await (const val of asyncDecodeGenerator)`
     // syntax instead.
     const resolveGeneratorRecursively = (iter: AsyncGenerator) => {

@@ -72,7 +72,7 @@ describe('NvimPlugin', () => {
   });
 
   it('should create functions from callable arrays', () => {
-    const fn = jest.fn(function() {
+    const fn = jest.fn(function () {
       return this;
     });
     expect(callable(fn)).toEqual(fn);
@@ -84,7 +84,7 @@ describe('NvimPlugin', () => {
 
     const plugin = new NvimPlugin('/tmp/filename', () => {}, {});
     const obj = {
-      func: jest.fn(function() {
+      func: jest.fn(function () {
         return this;
       }),
     };

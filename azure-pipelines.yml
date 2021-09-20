@@ -10,12 +10,12 @@ jobs:
 - template: .azure-templates/yarn-job.yml  # Template reference
   parameters:
     name: 'Linux'
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-20.04'
 
 - template: .azure-templates/yarn-job.yml  # Template reference
   parameters:
     name: 'macOS'
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
 
 - template: .azure-templates/yarn-job.yml  # Template reference
   parameters:

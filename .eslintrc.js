@@ -4,7 +4,6 @@ module.exports = {
     'airbnb-base',
     'plugin:@typescript-eslint/recommended',
     'prettier',
-    'prettier/@typescript-eslint',
   ],
   plugins: ['import', 'prettier', '@typescript-eslint'],
   parser: '@typescript-eslint/parser',
@@ -45,11 +44,13 @@ module.exports = {
     'import/extensions': 'off',
     'import/prefer-default-export': 'off',
 
-    '@typescript-eslint/no-explicit-any': ['off'],
-    '@typescript-eslint/explicit-member-accessibility': ['off'],
-    '@typescript-eslint/no-unused-vars': ['error'],
-    '@typescript-eslint/no-empty-function': ['off'],
-    '@typescript-eslint/explicit-function-return-type': ['off'],
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/explicit-member-accessibility': 'off',
+    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/no-empty-function': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/ban-types': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
   },
 
   settings: {

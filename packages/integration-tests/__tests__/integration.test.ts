@@ -6,9 +6,6 @@ import * as http from 'http';
 
 import { attach } from 'neovim';
 
-// eslint-disable-next-line
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
-
 describe('Node host', () => {
   const testdir = process.cwd();
   let proc;
@@ -43,7 +40,7 @@ describe('Node host', () => {
 
     proc = cp.spawn(
       'nvim',
-      ['-u', nvimrc, '-i', 'NONE', '-N', '--headless', '--embed'],
+      ['-u', nvimrc, '-i', 'NONE', '--headless', '--embed', '-n'],
       {}
     );
     nvim = await attach({ proc });
@@ -52,7 +49,9 @@ describe('Node host', () => {
   afterAll(() => {
     process.chdir(testdir);
     nvim.quit();
-    proc.disconnect();
+    if (proc && proc.connected) {
+      proc.disconnect();
+    }
   });
 
   beforeEach(() => {});
@@ -96,14 +95,14 @@ describe('Node host', () => {
     await nvim.command('e! nvimrc');
   });
 
-  it('spawns a child host if $NVIM_NODE_HOST_DEBUG is set', async done => {
+  it('spawns a child host if $NVIM_NODE_HOST_DEBUG is set', done => {
     const childHost = cp.spawn(
       process.execPath,
       [path.join(__dirname, '..', '..', 'neovim', 'bin', 'cli.js')],
       { env: { NVIM_NODE_HOST_DEBUG: 1 }, stdio: 'ignore' }
     );
 
-    setTimeout(function() {
+    setTimeout(function () {
       http.get('http://127.0.0.1:9229/json/list', res => {
         let rawData = '';
         res.on('data', chunk => {

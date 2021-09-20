@@ -8,7 +8,7 @@ export interface NvimFunctionOptions {
 }
 
 export function nvimFunction(name: string, options: NvimFunctionOptions = {}) {
-  return function(cls: any, methodName: string | null) {
+  return function (cls: any, methodName: string | null) {
     // const {
     // sync,
     // ...opts,
