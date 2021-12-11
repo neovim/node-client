@@ -102,7 +102,7 @@ export interface OpenWindowOptions {
   height: number;
   
   // Currently only takes one non-empty value: "minimal". Nvim will display the window with many UI options disabled
-  style?: 'minimal'
+  style?: 'minimal';
 }
 
 /**
