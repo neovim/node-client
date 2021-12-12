@@ -100,6 +100,28 @@ export interface OpenWindowOptions {
 
   // height of the window
   height: number;
+
+  // Places float relative to buffer text (only when relative="win"). Takes a tuple of zero-indexed [line, column].
+  bufpos?: [number, number];
+
+  // Stacking order. floats with higher `zindex` go on top on floats with lower indices. Must be larger than zero
+  zindex?: number;
+
+  // Configure the appearance of the window.
+  style?: 'minimal';
+
+  // Style of (optional) window border. This can either be a string or an array.
+  border?:
+    | 'none'
+    | 'single'
+    | 'double'
+    | 'rounded'
+    | 'solid'
+    | 'shadow'
+    | string[];
+
+  // If true then no buffer-related autocommand events such as |BufEnter|, |BufLeave| or |BufWinEnter| may fire from calling this function.
+  noautocmd?: boolean;
 }
 
 /**
