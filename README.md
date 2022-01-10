@@ -2,7 +2,7 @@
 
 | CI (Linux, macOS, Windows) | Coverage | npm | Gitter |
 |----------------------------|----------|-----|--------|
-| [![Build Status](https://dev.azure.com/neovim/node-client/_apis/build/status/neovim.node-client?branchName=master)](https://dev.azure.com/neovim/node-client/_build/latest?definitionId=1&branchName=master) | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] | [![Gitter Badge][]][Gitter] |
+| [![ci](https://github.com/neovim/node-client/actions/workflows/ci.yml/badge.svg)](https://github.com/neovim/node-client/actions/workflows/ci.yml) | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] | [![Gitter Badge][]][Gitter] |
 
 Currently tested for node >= 10
 
@@ -172,10 +172,6 @@ The tests and [`scripts`](https://github.com/neovim/node-client/tree/master/pack
 * [@fritzy](https://github.com/fritzy) for transferring over the npm package repo `neovim`!
 * [@rhysd](https://github.com/rhysd), [@tarruda](https://github.com/tarruda), [@nhynes](https://github.com/nhynes) on work for the original `node-client`
 
-[Build Status Badge]: https://travis-ci.org/neovim/node-client.svg?branch=master
-[Build Status]: https://travis-ci.org/neovim/node-client
-[Windows Build Status Badge]: https://ci.appveyor.com/api/projects/status/me5ru8ewx35shbq3?svg=true
-[Windows Build Status]: https://ci.appveyor.com/project/rhysd/node-client
 [Coverage Badge]: https://codecov.io/gh/neovim/node-client/branch/master/graph/badge.svg
 [Coverage Report]: https://codecov.io/gh/neovim/node-client
 [npm version]: https://img.shields.io/npm/v/neovim.svg
