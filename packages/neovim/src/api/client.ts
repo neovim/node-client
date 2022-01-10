@@ -7,6 +7,8 @@ import { VimValue } from '../types/VimValue';
 import { Neovim } from './Neovim';
 import { Buffer } from './Buffer';
 
+const REGEX_BUF_EVENT = /nvim_buf_(.*)_event/;
+
 export class NeovimClient extends Neovim {
   protected requestQueue: any[];
 
@@ -86,7 +88,7 @@ export class NeovimClient extends Neovim {
         this.logger.error('Unhandled event: ', method);
         return;
       }
-      const shortName = method.replace(/nvim_buf_(.*)_event/, '$1');
+      const shortName = method.replace(REGEX_BUF_EVENT, '$1');
       const [buffer] = args;
       const bufferKey = `${buffer.data}`;
 
