@@ -1,0 +1,82 @@
+name: ci
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['12', '14', '16']
+        os: ['ubuntu-latest', 'macos-11', 'windows-latest']
+        include:
+        - os: ubuntu-latest
+          NIGHTLY: nvim-linux64.tar.gz
+          NVIM_BIN_PATH: nvim-linux64/bin
+          EXTRACT: tar xzf
+        - os: macos-11
+          NIGHTLY: nvim-macos.tar.gz
+          NVIM_BIN_PATH: nvim-osx64/bin
+          EXTRACT: tar xzf
+        - os: windows-latest
+          NIGHTLY: nvim-win64.zip
+          NVIM_BIN_PATH: Neovim/bin
+          EXTRACT: unzip
+
+    runs-on: ${{ matrix.os }}
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-node@v2
+      with:
+        cache: yarn
+        node-version: ${{ matrix.node }}
+
+    - name: install neovim
+      run: |
+        curl -LO 'https://github.com/neovim/neovim/releases/download/nightly/${{ matrix.NIGHTLY }}'
+        ${{ matrix.EXTRACT }} ${{ matrix.NIGHTLY }}
+        echo '${{ runner.os }}'
+
+    - name: update path (bash)
+      if: runner.os != 'Windows'
+      run: echo "$(pwd)/${{ matrix.NVIM_BIN_PATH }}" >> $GITHUB_PATH
+
+    - name: update path (windows)
+      if: runner.os == 'Windows'
+      run: echo "$(pwd)/${{ matrix.NVIM_BIN_PATH }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - name: yarn install
+      run: yarn install --frozen-lockfile
+
+    - name: bootstrap
+      run: yarn bootstrap
+
+    - name: build
+      run: yarn build
+
+    - name: lint
+      if: runner.os == 'macOS'
+      run: yarn lint
+
+    - name: test
+      run: |
+        echo $PATH
+        which nvim
+        nvim --version
+
+        yarn test-build --stream
+
+    - uses: codecov/codecov-action@v2
+      if: runner.os == 'macOS'
+      with:
+        verbose: true # optional (default = false)
