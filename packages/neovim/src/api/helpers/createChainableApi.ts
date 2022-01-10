@@ -90,10 +90,7 @@ export function createChainableApi(
 
     set: (target: any, prop: string, value: any, receiver: Promise<any>) => {
       // eslint-disable-next-line no-param-reassign
-      if (
-        receiver &&
-        (receiver instanceof Promise || (('then' in receiver) as any))
-      ) {
+      if (receiver && (receiver instanceof Promise || 'then' in receiver)) {
         receiver.then(obj => {
           if (prop in obj) {
             // eslint-disable-next-line no-param-reassign

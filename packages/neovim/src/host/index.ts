@@ -114,12 +114,10 @@ export class Host {
     const nvim = attach({ reader: proc.stdin, writer: proc.stdout });
     this.nvim = nvim;
 
-    if (nvim) {
-      nvim.on('request', this.handler);
-      nvim.on('notification', this.handlePlugin);
-      nvim.on('disconnect', () => {
-        logger.debug('host.disconnected');
-      });
-    }
+    nvim.on('request', this.handler);
+    nvim.on('notification', this.handlePlugin);
+    nvim.on('disconnect', () => {
+      logger.debug('host.disconnected');
+    });
   }
 }
