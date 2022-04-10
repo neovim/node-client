@@ -27,7 +27,7 @@ jobs:
           EXTRACT: tar xzf
         - os: windows-latest
           NIGHTLY: nvim-win64.zip
-          NVIM_BIN_PATH: Neovim/bin
+          NVIM_BIN_PATH: nvim-win64/bin
           EXTRACT: unzip
 
     runs-on: ${{ matrix.os }}
