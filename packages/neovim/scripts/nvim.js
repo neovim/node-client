@@ -12,7 +12,11 @@ module.exports = (async function () {
   let proc;
   let socket;
 
-  if (process.env.NVIM_LISTEN_ADDRESS) {
+  if (process.env.NVIM) {
+    // Nvim 0.8+ https://github.com/neovim/neovim/pull/11009
+    socket = process.env.NVIM;
+  } else if (process.env.NVIM_LISTEN_ADDRESS) {
+    // Nvim 0.7 or older https://github.com/neovim/neovim/pull/11009
     socket = process.env.NVIM_LISTEN_ADDRESS;
   } else {
     proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n'], {
