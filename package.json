@@ -27,7 +27,6 @@
     "jsprim": "1.4.2"
   },
   "scripts": {
-    "bootstrap": "npm run bootstrap --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
     "dev": "npm run --stream --parallel dev --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
