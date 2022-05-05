@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "tsc --pretty",
-    "dev": "yarn build --watch true"
+    "dev": "npm run build --watch true"
   },
   "keywords": [],
   "author": "Mike Hartington <mikehartington@gmail.com>",

@@ -66,14 +66,14 @@
   },
   "scripts": {
     "doc": "typedoc --out doc --exclude '**/*.test.ts' src",
-    "prepublishOnly": "yarn build",
-    "test": "yarn jest",
-    "test-build": "yarn test --runInBand --coverage",
-    "test-staged": "yarn test --bail --no-cache --findRelatedTests",
-    "test-missing-apis": "yarn build && node scripts/findMissingApi",
+    "prepublishOnly": "npm run build",
+    "test": "jest",
+    "test-build": "npm test --runInBand --coverage",
+    "test-staged": "npm test --bail --no-cache --findRelatedTests",
+    "test-missing-apis": "npm run build && node scripts/findMissingApi",
     "precommit": "lint-staged",
     "build": "tsc --pretty",
-    "dev": "yarn build --watch true"
+    "dev": "npm run build --watch true"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -88,10 +88,6 @@
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts$",
     "coverageDirectory": "./coverage/",
     "testURL": "http://localhost"
-  },
-  "volta": {
-    "node": "10.18.0",
-    "yarn": "1.21.1"
   },
   "keywords": [
     "neovim",
