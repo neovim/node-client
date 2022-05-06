@@ -36,10 +36,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
       with:
-        cache: yarn
+        cache: npm
         node-version: ${{ matrix.node }}
+
+    - name: update npm to v8
+      run: npm install -g 'npm@^8.8.0'
 
     - name: install neovim
       run: |
@@ -55,18 +58,15 @@ jobs:
       if: runner.os == 'Windows'
       run: echo "$(pwd)/${{ matrix.NVIM_BIN_PATH }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-    - name: yarn install
-      run: yarn install --frozen-lockfile
-
-    - name: bootstrap
-      run: yarn bootstrap
+    - name: install dependencies
+      run: npm ci
 
     - name: build
-      run: yarn build
+      run: npm run build
 
     - name: lint
       if: runner.os == 'macOS'
-      run: yarn lint
+      run: npm run lint
 
     - name: test
       run: |
@@ -74,7 +74,7 @@ jobs:
         which nvim
         nvim --version
 
-        yarn test-build --stream
+        npm run test-build --stream
 
     - uses: codecov/codecov-action@v2
       if: runner.os == 'macOS'

@@ -6,7 +6,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "babel src --out-dir lib",
-    "dev": "yarn build --watch"
+    "dev": "npm run build --watch"
   },
   "license": "MIT",
   "devDependencies": {

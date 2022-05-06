@@ -35,14 +35,10 @@
     "neovim": "file:../neovim"
   },
   "scripts": {
-    "test": "yarn jest",
-    "test-build": "yarn test --runInBand --coverage",
+    "test": "jest",
+    "test-build": "npm test --runInBand --coverage",
     "build": "tsc --pretty",
-    "dev": "yarn build --watch true"
-  },
-  "volta": {
-    "node": "10.18.0",
-    "yarn": "1.21.1"
+    "dev": "npm run build --watch true"
   },
   "keywords": [
     "neovim",

@@ -1,8 +1,6 @@
 node_modules/
 lib/
 nvimrc
-package-lock.json
 .DS_Store
-yarn-error.log
 *.log
 doc
