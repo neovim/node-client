@@ -4,6 +4,8 @@ name: ci
 # events but only for the master branch
 on:
   push:
+    branches:
+      - master
   pull_request:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -39,8 +41,8 @@ jobs:
         cache: npm
         node-version: ${{ matrix.node }}
 
-    - name: update npm to the latest
-      run: npm install -g npm
+    - name: update npm to v8
+      run: npm install -g 'npm@^8.8.0'
 
     - name: install neovim
       run: |
