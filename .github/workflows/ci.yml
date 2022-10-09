@@ -23,7 +23,7 @@ jobs:
           EXTRACT: tar xzf
         - os: macos-11
           NIGHTLY: nvim-macos.tar.gz
-          NVIM_BIN_PATH: nvim-osx64/bin
+          NVIM_BIN_PATH: nvim-macos/bin
           EXTRACT: tar xzf
         - os: windows-latest
           NIGHTLY: nvim-win64.zip
