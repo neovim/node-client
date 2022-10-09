@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['12', '14', '16']
+        node: ['14', '16', '18']
         os: ['ubuntu-latest', 'macos-11', 'windows-latest']
         include:
         - os: ubuntu-latest
@@ -23,7 +23,7 @@ jobs:
           EXTRACT: tar xzf
         - os: macos-11
           NIGHTLY: nvim-macos.tar.gz
-          NVIM_BIN_PATH: nvim-osx64/bin
+          NVIM_BIN_PATH: nvim-macos/bin
           EXTRACT: tar xzf
         - os: windows-latest
           NIGHTLY: nvim-win64.zip
@@ -34,7 +34,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - uses: actions/setup-node@v3
       with:
@@ -76,7 +76,7 @@ jobs:
 
         npm run test-build --stream
 
-    - uses: codecov/codecov-action@v2
+    - uses: codecov/codecov-action@v3
       if: runner.os == 'macOS'
       with:
         verbose: true # optional (default = false)

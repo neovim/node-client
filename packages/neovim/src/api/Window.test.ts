@@ -89,9 +89,7 @@ describe('Window API', () => {
     it('has correct height after ":split"', async () => {
       const currentHeight = await win.height;
       await nvim.command('split');
-      // XXX: Not sure if this is correct, but guessing after a split we lose a row
-      // due to status bar?
-      expect(await win.height).toEqual(Math.floor(currentHeight / 2) - 1);
+      expect(await win.height).toEqual(Math.floor(currentHeight / 2));
 
       win.height = 5;
       expect(await win.height).toEqual(5);
