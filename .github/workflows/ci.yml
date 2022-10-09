@@ -34,7 +34,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - uses: actions/setup-node@v3
       with:
@@ -76,7 +76,7 @@ jobs:
 
         npm run test-build --stream
 
-    - uses: codecov/codecov-action@v2
+    - uses: codecov/codecov-action@v3
       if: runner.os == 'macOS'
       with:
         verbose: true # optional (default = false)
