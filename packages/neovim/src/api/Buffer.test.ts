@@ -575,4 +575,32 @@ describe('Buffer event updates', () => {
     unlisten1();
     await nvim.command('q!');
   });
+
+  it('creates, gets, and deletes extmarks', async () => {
+    await nvim.command('new!');
+
+    const buf = await nvim.buffer;
+    await buf.replace(['this is test'], 0);
+
+    const ns = await nvim.createNamespace('test');
+    expect(ns).toBeGreaterThan(0);
+
+    const id = await buf.setExtmark(ns, 0, 4);
+    expect(id).toBeGreaterThan(0);
+
+    const mark = await buf.getExtmarkById(ns, id);
+    expect(mark).toEqual([0, 4]);
+
+    const marks = await buf.getExtmarks(ns, [0, 0], [0, 8]);
+    expect(marks).toEqual([[id, 0, 4]]);
+
+    const deleted = await buf.deleteExtmark(ns, id);
+    expect(deleted).toEqual(true);
+
+    const markAfterDel = await buf.getExtmarkById(ns, id);
+    expect(markAfterDel).toEqual([]);
+
+    const marksAfterDel = await buf.getExtmarks(ns, [0, 0], [0, 8]);
+    expect(marksAfterDel).toEqual([]);
+  });
 });

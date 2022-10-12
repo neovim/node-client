@@ -1,4 +1,4 @@
-import snakeCaseKeys = require('snakecase-keys');
+import snakeCaseKeys from 'snakecase-keys';
 import { BaseApi } from './Base';
 import { ExtType, Metadata } from './types';
 
