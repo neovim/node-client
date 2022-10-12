@@ -374,7 +374,7 @@ describe('Buffer API', () => {
     it(
       'removes last 2 lines',
       withBuffer(['test', 'bar', 'foo', 'a', 'b'], async () => {
-        await nvim.buffer.remove(-3, -1);
+        await nvim.buffer.remove(-3, -1, false);
         expect(await nvim.buffer.lines).toEqual(['test', 'bar', 'foo']);
       })
     );
@@ -396,7 +396,7 @@ describe('Buffer API', () => {
     it(
       'can clear the buffer',
       withBuffer(['foo'], async () => {
-        await nvim.buffer.remove(0, -1);
+        await nvim.buffer.remove(0, -1, false);
         // One empty line
         expect(await nvim.buffer.length).toEqual(1);
         expect(await nvim.buffer.lines).toEqual(['']);
@@ -488,7 +488,7 @@ describe('Buffer event updates', () => {
     const bufferName = await buffer.name;
     await buffer.insert(['test', 'foo'], 0);
 
-    const promise = new Promise(resolve => {
+    const promise = new Promise<void>(resolve => {
       const unlisten = buffer.listen(
         'lines',
         async (currentBuffer, tick, start, end, data) => {
