@@ -1,5 +1,6 @@
 import { BaseApi } from './Base';
 import { ExtType, Metadata } from './types';
+import { VimValue } from '../types/VimValue';
 import { createChainableApi } from './helpers/createChainableApi';
 import { Window, AsyncWindow } from './Window';
 
@@ -30,13 +31,17 @@ export class Tabpage extends BaseApi {
   }
 
   /** Invalid */
-  getOption(): void {
-    this.logger.error('Tabpage does not have `getOption`');
+  getOption(): Promise<VimValue> {
+    const message = 'Tabpage does not have `getOption`';
+    this.logger.error(message);
+    return Promise.reject(new Error(message));
   }
 
   /** Invalid */
-  setOption(): void {
-    this.logger.error('Tabpage does not have `setOption`');
+  setOption(): Promise<void> {
+    const message = 'Tabpage does not have `setOption`';
+    this.logger.error(message);
+    return Promise.reject(new Error(message));
   }
 }
 

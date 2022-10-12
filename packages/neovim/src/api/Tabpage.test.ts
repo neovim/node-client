@@ -92,11 +92,16 @@ describe('Tabpage API', () => {
     it('logs an error when calling `getOption`', () => {
       const spy = jest.spyOn(tabpage.logger, 'error');
 
-      tabpage.getOption('option');
+      expect(tabpage.getOption('option')).rejects.toThrow(
+        'Tabpage does not have `getOption`'
+      );
       expect(spy.mock.calls.length).toBe(1);
 
-      tabpage.setOption('option', 'value');
+      expect(tabpage.setOption('option', 'value')).rejects.toThrow(
+        'Tabpage does not have `setOption`'
+      );
       expect(spy.mock.calls.length).toBe(2);
+
       spy.mockClear();
     });
 

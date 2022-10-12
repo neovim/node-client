@@ -146,13 +146,13 @@ export class BaseApi extends EventEmitter {
   }
 
   /** Retrieves a scoped option depending on type of `this` */
-  getOption(name: string): Promise<VimValue> | void {
+  getOption(name: string): Promise<VimValue> {
     const args = this._getArgsByPrefix(name);
     return this.request(`${this.prefix}get_option`, args);
   }
 
   /** Set scoped option */
-  setOption(name: string, value: VimValue): Promise<void> | void {
+  setOption(name: string, value: VimValue): Promise<void> {
     const args = this._getArgsByPrefix(name, value);
     return this.request(`${this.prefix}set_option`, args);
   }
