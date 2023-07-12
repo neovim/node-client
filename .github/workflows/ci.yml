@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - master
-      - get_nvim_from_env
   pull_request:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -53,13 +52,11 @@ jobs:
 
     - name: update path (bash)
       if: runner.os != 'Windows'
-      run: |
-        echo "$(pwd)/${{ matrix.NVIM_BIN_PATH }}" >> $GITHUB_PATH
+      run: echo "$(pwd)/${{ matrix.NVIM_BIN_PATH }}" >> $GITHUB_PATH
 
     - name: update path (windows)
       if: runner.os == 'Windows'
-      run: |
-        echo "$(pwd)/${{ matrix.NVIM_BIN_PATH }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      run: echo "$(pwd)/${{ matrix.NVIM_BIN_PATH }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     - name: install dependencies
       run: npm ci
