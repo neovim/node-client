@@ -1,6 +1,6 @@
 /* eslint-env jest */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import * as which from 'which';
+import which from 'which';
 import { getNvimFromEnv, compareVersions } from './getNvimFromEnv';
 
 try {
@@ -48,6 +48,19 @@ describe('get_nvim_from_env', () => {
 
   it('Get matching nvim from specified min version', () => {
     const nvim = getNvimFromEnv('0.3.0');
+    expect(nvim).toBeTruthy();
+    expect(nvim).toEqual({
+      nvimVersion: expect.any(String),
+      path: expect.any(String),
+      buildType: expect.any(String),
+      luaJitVersion: expect.any(String),
+    });
+    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+    expect(nvim!.nvimVersion).toBeTruthy();
+  });
+
+  it('Get matching nvim without specified min version', () => {
+    const nvim = getNvimFromEnv();
     expect(nvim).toBeTruthy();
     expect(nvim).toEqual({
       nvimVersion: expect.any(String),

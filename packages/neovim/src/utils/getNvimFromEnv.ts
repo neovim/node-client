@@ -101,10 +101,14 @@ export function getNvimFromEnv(minVersion?: string): NvimVersion | null {
       const buildTypeMatch = buildTypeRegex.exec(nvimVersionFull);
       const luaJitVersionMatch = luaJitVersionRegex.exec(nvimVersionFull);
       if (
+        // if all the regexes matched
         nvimVersionMatch &&
         buildTypeMatch &&
         luaJitVersionMatch &&
-        compareVersions(minVersion, nvimVersionMatch[1]) !== 1 &&
+        // and the version is greater than the minimum version or there is no minimum version
+        (minVersion === undefined ||
+          compareVersions(minVersion, nvimVersionMatch[1]) !== 1) &&
+        // and the version is greater than the current highest version or there is no current highest version
         (highestMatchingVersion === null ||
           compareVersions(
             highestMatchingVersion.nvimVersion,
