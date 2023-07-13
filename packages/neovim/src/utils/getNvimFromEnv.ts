@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 import { join, delimiter } from 'path';
-import { existsSync } from 'fs';
+import { constants, existsSync, accessSync } from 'fs';
 
 export interface NvimVersion {
   nvimVersion: string;
@@ -94,33 +94,38 @@ export function getNvimFromEnv(minVersion?: string): NvimVersion | null {
   for (let i = 0; i !== pathLength; i = i + 1) {
     const possibleNvimPath = join(paths[i], windows ? 'nvim.exe' : 'nvim');
     if (existsSync(possibleNvimPath)) {
-      const nvimVersionFull = execSync(
-        `${possibleNvimPath} --version`
-      ).toString();
-      const nvimVersionMatch = nvimVersionRegex.exec(nvimVersionFull);
-      const buildTypeMatch = buildTypeRegex.exec(nvimVersionFull);
-      const luaJitVersionMatch = luaJitVersionRegex.exec(nvimVersionFull);
-      if (
-        // if all the regexes matched
-        nvimVersionMatch &&
-        buildTypeMatch &&
-        luaJitVersionMatch &&
-        // and the version is greater than the minimum version or there is no minimum version
-        (minVersion === undefined ||
-          compareVersions(minVersion, nvimVersionMatch[1]) !== 1) &&
-        // and the version is greater than the current highest version or there is no current highest version
-        (highestMatchingVersion === null ||
-          compareVersions(
-            highestMatchingVersion.nvimVersion,
-            nvimVersionMatch[1]
-          ) === -1)
-      ) {
-        highestMatchingVersion = {
-          nvimVersion: nvimVersionMatch[1],
-          path: possibleNvimPath,
-          buildType: buildTypeMatch[1],
-          luaJitVersion: luaJitVersionMatch[1],
-        };
+      try {
+        accessSync(possibleNvimPath, constants.X_OK);
+        const nvimVersionFull = execSync(
+          `${possibleNvimPath} --version`
+        ).toString();
+        const nvimVersionMatch = nvimVersionRegex.exec(nvimVersionFull);
+        const buildTypeMatch = buildTypeRegex.exec(nvimVersionFull);
+        const luaJitVersionMatch = luaJitVersionRegex.exec(nvimVersionFull);
+        if (
+          // if all the regexes matched
+          nvimVersionMatch &&
+          buildTypeMatch &&
+          luaJitVersionMatch &&
+          // and the version is greater than the minimum version or there is no minimum version
+          (minVersion === undefined ||
+            compareVersions(minVersion, nvimVersionMatch[1]) !== 1) &&
+          // and the version is greater than the current highest version or there is no current highest version
+          (highestMatchingVersion === null ||
+            compareVersions(
+              highestMatchingVersion.nvimVersion,
+              nvimVersionMatch[1]
+            ) === -1)
+        ) {
+          highestMatchingVersion = {
+            nvimVersion: nvimVersionMatch[1],
+            path: possibleNvimPath,
+            buildType: buildTypeMatch[1],
+            luaJitVersion: luaJitVersionMatch[1],
+          };
+        }
+      } catch {
+        // ignore
       }
     }
   }
