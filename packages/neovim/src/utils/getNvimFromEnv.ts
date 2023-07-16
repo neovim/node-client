@@ -2,14 +2,14 @@ import { execSync } from 'child_process';
 import { join, delimiter } from 'path';
 import { constants, existsSync, accessSync } from 'fs';
 
-export interface NvimVersion {
+export type NvimVersion = {
   readonly nvimVersion: string;
   readonly path: string;
   readonly buildType: string;
   readonly luaJitVersion: string;
-}
+};
 
-export interface GetNvimFromEnvOptions {
+export type GetNvimFromEnvOptions = {
   /**
    * The minimum version of nvim to get. This is optional.
    *
@@ -30,16 +30,16 @@ export interface GetNvimFromEnvOptions {
    *   - this is the default.
    */
   readonly orderBy?: 'latest_nvim_first' | 'keep_path';
-}
+};
 
-export interface GetNvimFromEnvError {
+export type GetNvimFromEnvError = {
   /** The executeable path that failed. */
   readonly path: string;
   /** The catched error */
   readonly exception: Readonly<Error>;
-}
+};
 
-export interface GetNvimFromEnvResult {
+export type GetNvimFromEnvResult = {
   /**
    * A list of nvim versions that match the minimum version.
    * This will be empty if no matching versions were found.
@@ -59,7 +59,7 @@ export interface GetNvimFromEnvResult {
    * Unmatched versions are not treated as errors.
    */
   readonly errors: ReadonlyArray<GetNvimFromEnvError>;
-}
+};
 
 const versionRegex = /^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/;
 const nvimVersionRegex = /^NVIM\s+v(.+)$/m;
