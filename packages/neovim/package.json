@@ -61,7 +61,7 @@
     "jest-haste-map": "^27.2.0",
     "jest-resolve": "^27.2.0",
     "typedoc": "^0.24.8",
-    "typescript": "^4.4.3",
+    "typescript": "^5.1.6",
     "which": "^2.0.2"
   },
   "scripts": {

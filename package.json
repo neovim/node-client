@@ -21,7 +21,7 @@
     "husky": "^7.0.4",
     "lint-staged": "^11.1.2",
     "prettier": "^2.4.1",
-    "typescript": "^4.4.3"
+    "typescript": "^5.1.6"
   },
   "resolutions": {
     "jsprim": "1.4.2"
