@@ -61,7 +61,7 @@ export function createChainableApi(
           ((prop in Type.prototype &&
             typeof Type.prototype[prop] === 'function') ||
             (prop in BaseApi.prototype &&
-              typeof BaseApi.prototype[prop] === 'function'))
+              typeof (BaseApi.prototype as any)[prop] === 'function'))
         ) {
           // If property is a method on Type, we need to invoke it with captured args
           return (...args: any[]) =>
