@@ -162,15 +162,18 @@ export function getNvimFromEnv(
         const nvimVersionMatch = nvimVersionRegex.exec(nvimVersionFull);
         const buildTypeMatch = buildTypeRegex.exec(nvimVersionFull);
         const luaJitVersionMatch = luaJitVersionRegex.exec(nvimVersionFull);
-        if (
-          // if all the regexes matched
-          nvimVersionMatch &&
-          buildTypeMatch &&
-          luaJitVersionMatch &&
-          // and the version is greater than the minimum version or there is no minimum version
-          (!('minVersion' in opt) ||
-            compareVersions(opt.minVersion, nvimVersionMatch[1]) !== 1)
-        ) {
+        if (nvimVersionMatch && buildTypeMatch && luaJitVersionMatch) {
+          if (
+            'minVersion' in opt &&
+            compareVersions(opt.minVersion, nvimVersionMatch[1]) === 1
+          ) {
+            unmatchedVersions.push({
+              nvimVersion: nvimVersionMatch[1],
+              path: possibleNvimPath,
+              buildType: buildTypeMatch[1],
+              luaJitVersion: luaJitVersionMatch[1],
+            });
+          }
           matches.push({
             nvimVersion: nvimVersionMatch[1],
             path: possibleNvimPath,
