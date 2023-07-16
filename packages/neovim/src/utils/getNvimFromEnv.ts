@@ -3,10 +3,62 @@ import { join, delimiter } from 'path';
 import { constants, existsSync, accessSync } from 'fs';
 
 export interface NvimVersion {
-  nvimVersion: string;
-  path: string;
-  buildType: string;
-  luaJitVersion: string;
+  readonly nvimVersion: string;
+  readonly path: string;
+  readonly buildType: string;
+  readonly luaJitVersion: string;
+}
+
+export interface GetNvimFromEnvOptions {
+  /**
+   * The minimum version of nvim to get. This is optional.
+   *
+   * - Example: `'0.5.0'`
+   * - Note: This is inclusive.
+   * - Note: If this is not set, then there is no minimum version.
+   */
+  readonly minVersion?: string;
+  /**
+   * The order to return the nvim versions in. This is optional.
+   *
+   * - `latest_nvim_first` - The latest version of nvim will be first. This is the default.
+   *   - Example: `['0.5.0', '0.4.4', '0.4.3']`
+   *   - Note: This will be slower than `latest_nvim_first`.
+   * - `keep_path` - The order of the nvim versions will be the same as the order of the paths in the `PATH` environment variable.
+   *   - Example: `['0.4.4', '0.5.0', '0.4.3']`
+   *   - Note: This will be faster than `latest_nvim_first`.
+   *   - this is the default.
+   */
+  readonly orderBy?: 'latest_nvim_first' | 'keep_path';
+}
+
+export interface GetNvimFromEnvError {
+  /** The executeable path that failed. */
+  readonly path: string;
+  /** The catched error */
+  readonly exception: Readonly<Error>;
+}
+
+export interface GetNvimFromEnvResult {
+  /**
+   * A list of nvim versions that match the minimum version.
+   * This will be empty if no matching versions were found.
+   * This will be sorted in the order specified by `orderBy`.
+   */
+  readonly matches: ReadonlyArray<NvimVersion>;
+  /**
+   * A list of nvim versions that do not match the minimum version.
+   * This will be empty if all versions match the minimum version or if no minimum version was specified.
+   * This will not be sorted (it will be in the order of the paths in the `PATH` environment variable).
+   */
+  readonly unmatchedVersions: ReadonlyArray<NvimVersion>;
+  /**
+   * A list of errors that occurred while trying to get the nvim versions.
+   * This will be empty if no errors occurred.
+   * This will not be sorted (it will be in the order of the paths in the `PATH` environment variable).
+   * Unmatched versions are not treated as errors.
+   */
+  readonly errors: ReadonlyArray<GetNvimFromEnvError>;
 }
 
 const versionRegex = /^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/;
@@ -16,6 +68,10 @@ const luaJitVersionRegex = /^LuaJIT\s+(.+)$/m;
 const windows = process.platform === 'win32';
 
 function parseVersion(version: string): (number | string)[] | null {
+  if (typeof version !== 'string') {
+    throw new Error('Invalid version format: not a string');
+  }
+
   const match = version.match(versionRegex);
   if (match === null) {
     return null;
@@ -87,10 +143,14 @@ export function compareVersions(a: string, b: string): number {
 /**
  * Get the highest matching nvim version from the environment.
  */
-export function getNvimFromEnv(minVersion?: string): NvimVersion | null {
+export function getNvimFromEnv(
+  opt: GetNvimFromEnvOptions = {}
+): Readonly<GetNvimFromEnvResult> {
   const paths = process.env.PATH.split(delimiter);
   const pathLength = paths.length;
-  let highestMatchingVersion: NvimVersion | null = null;
+  const matches = new Array<NvimVersion>();
+  const unmatchedVersions = new Array<NvimVersion>();
+  const errors = new Array<GetNvimFromEnvError>();
   for (let i = 0; i !== pathLength; i = i + 1) {
     const possibleNvimPath = join(paths[i], windows ? 'nvim.exe' : 'nvim');
     if (existsSync(possibleNvimPath)) {
@@ -108,26 +168,32 @@ export function getNvimFromEnv(minVersion?: string): NvimVersion | null {
           buildTypeMatch &&
           luaJitVersionMatch &&
           // and the version is greater than the minimum version or there is no minimum version
-          (minVersion === undefined ||
-            compareVersions(minVersion, nvimVersionMatch[1]) !== 1) &&
-          // and the version is greater than the current highest version or there is no current highest version
-          (highestMatchingVersion === null ||
-            compareVersions(
-              highestMatchingVersion.nvimVersion,
-              nvimVersionMatch[1]
-            ) === -1)
+          (!('minVersion' in opt) ||
+            compareVersions(opt.minVersion, nvimVersionMatch[1]) !== 1)
         ) {
-          highestMatchingVersion = {
+          matches.push({
             nvimVersion: nvimVersionMatch[1],
             path: possibleNvimPath,
             buildType: buildTypeMatch[1],
             luaJitVersion: luaJitVersionMatch[1],
-          };
+          });
         }
-      } catch {
-        // ignore
+      } catch (e) {
+        errors.push({
+          path: possibleNvimPath,
+          exception: e,
+        } as const);
       }
     }
   }
-  return highestMatchingVersion;
+
+  if (matches.length > 1 && opt.orderBy === 'latest_nvim_first') {
+    matches.sort((a, b) => compareVersions(b.nvimVersion, a.nvimVersion));
+  }
+
+  return {
+    matches,
+    unmatchedVersions,
+    errors,
+  } as const;
 }

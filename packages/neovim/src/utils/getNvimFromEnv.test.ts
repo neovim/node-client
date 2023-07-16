@@ -47,28 +47,42 @@ describe('get_nvim_from_env', () => {
   });
 
   it('Get matching nvim from specified min version', () => {
-    const nvim = getNvimFromEnv('0.3.0');
-    expect(nvim).toBeTruthy();
-    expect(nvim).toEqual({
+    const nvimRes = getNvimFromEnv({ minVersion: '0.3.0' });
+    expect(nvimRes).toBeTruthy();
+    expect(nvimRes).toEqual({
+      matches: expect.any(Array),
+      unmatchedVersions: expect.any(Array),
+      errors: expect.any(Array),
+    });
+    expect(nvimRes.matches.length).toBeTruthy();
+    expect(nvimRes.matches.length).toBeGreaterThan(0);
+    expect(nvimRes.matches[0]).toEqual({
       nvimVersion: expect.any(String),
       path: expect.any(String),
       buildType: expect.any(String),
       luaJitVersion: expect.any(String),
     });
-    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    expect(nvim!.nvimVersion).toBeTruthy();
+    expect(nvimRes.unmatchedVersions.length).toEqual(0);
+    expect(nvimRes.errors.length).toEqual(0);
   });
 
   it('Get matching nvim without specified min version', () => {
-    const nvim = getNvimFromEnv();
-    expect(nvim).toBeTruthy();
-    expect(nvim).toEqual({
+    const nvimRes = getNvimFromEnv();
+    expect(nvimRes).toBeTruthy();
+    expect(nvimRes).toEqual({
+      matches: expect.any(Array),
+      unmatchedVersions: expect.any(Array),
+      errors: expect.any(Array),
+    });
+    expect(nvimRes.matches.length).toBeTruthy();
+    expect(nvimRes.matches.length).toBeGreaterThan(0);
+    expect(nvimRes.matches[0]).toEqual({
       nvimVersion: expect.any(String),
       path: expect.any(String),
       buildType: expect.any(String),
       luaJitVersion: expect.any(String),
     });
-    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    expect(nvim!.nvimVersion).toBeTruthy();
+    expect(nvimRes.unmatchedVersions.length).toEqual(0);
+    expect(nvimRes.errors.length).toEqual(0);
   });
 });
