@@ -11,8 +11,8 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": false,
-    "suppressImplicitAnyIndexErrors": true,
     "target": "es2015",
+    "skipLibCheck": true,
     "types": ["node"]
   },
   "exclude": ["node_modules"],

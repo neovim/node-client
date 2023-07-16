@@ -121,7 +121,7 @@ export class NvimPlugin {
 
     ['pattern', 'eval'].forEach((option: keyof AutocmdOptions) => {
       if (options && typeof options[option] !== 'undefined') {
-        spec.opts[option] = options[option];
+        (spec.opts as any)[option] = options[option];
       }
     });
 
@@ -153,7 +153,7 @@ export class NvimPlugin {
 
     ['range', 'nargs', 'complete'].forEach((option: keyof CommandOptions) => {
       if (options && typeof options[option] !== 'undefined') {
-        spec.opts[option] = options[option];
+        (spec.opts as any)[option] = options[option];
       }
     });
 
@@ -189,7 +189,7 @@ export class NvimPlugin {
 
     ['range', 'eval'].forEach((option: keyof NvimFunctionOptions) => {
       if (options && typeof options[option] !== 'undefined') {
-        spec.opts[option] = options[option];
+        (spec.opts as any)[option] = options[option];
       }
     });
 
