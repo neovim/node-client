@@ -12,6 +12,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": false,
     "target": "es2015",
+    "skipLibCheck": true,
     "types": ["node"]
   },
   "exclude": ["node_modules"],
