@@ -33,6 +33,7 @@
     "neovim-node-host": "./bin/cli.js"
   },
   "files": [
+    "README.md",
     "scripts/nvim.js",
     "scripts/api.js",
     "bin/",
