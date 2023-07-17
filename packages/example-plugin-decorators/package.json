@@ -14,7 +14,7 @@
     "@babel/plugin-proposal-class-properties": "^7.16.7",
     "@babel/plugin-proposal-decorators": "^7.16.7",
     "jest-haste-map": "^27.2.0",
-    "jest-resolve": "^27.2.0"
+    "jest-resolve": "^29.6.1"
   },
   "dependencies": {
     "@neovim/decorators": "^4.10.1"
