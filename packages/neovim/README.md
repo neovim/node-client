@@ -166,11 +166,26 @@ require('neovim/scripts/nvim').then((nvim) => {
 
 The tests and [`scripts`](https://github.com/neovim/node-client/tree/master/packages/neovim/scripts) can be consulted for more examples.
 
-## Contributors
+## Contributing
+
+After cloning the repo, run `npm install` to install dev dependencies. The main `neovim` library is in `packages/neovim`.
+
+### Publishing
+
+Current, only the maintainers of the [neovim npm package](https://www.npmjs.com/package/neovim) are able to publish. To publish, change directories to `packages/neovim`, update the version using `npm version <update_type>` where `update_type` is one of patch, minor, or major. Finally, publish with `npm publish`:
+
+```bash
+cd packages/neovim
+npm version <update_type>
+npm run publish:neovim
+```
+
+### Contributors
 * [@billyvg](https://github.com/billyvg) for rewrite
 * [@mhartington](https://github.com/mhartington) for TypeScript rewrite
 * [@fritzy](https://github.com/fritzy) for transferring over the npm package repo `neovim`!
 * [@rhysd](https://github.com/rhysd), [@tarruda](https://github.com/tarruda), [@nhynes](https://github.com/nhynes) on work for the original `node-client`
+* [@justinmk](https://github.com/justinmk) General neovim maintainer
 
 [Coverage Badge]: https://codecov.io/gh/neovim/node-client/branch/master/graph/badge.svg
 [Coverage Report]: https://codecov.io/gh/neovim/node-client
