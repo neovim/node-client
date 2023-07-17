@@ -67,7 +67,7 @@ const buildTypeRegex = /^Build\s+type:\s+(.+)$/m;
 const luaJitVersionRegex = /^LuaJIT\s+(.+)$/m;
 const windows = process.platform === 'win32';
 
-function parseVersion(version: string): (number | string)[] | null {
+export function parseVersion(version: string): (number | string)[] | null {
   if (typeof version !== 'string') {
     throw new Error('Invalid version format: not a string');
   }

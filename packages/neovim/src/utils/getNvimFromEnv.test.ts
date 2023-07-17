@@ -1,7 +1,11 @@
 /* eslint-env jest */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import which from 'which';
-import { getNvimFromEnv, compareVersions } from './getNvimFromEnv';
+import {
+  getNvimFromEnv,
+  compareVersions,
+  parseVersion,
+} from './getNvimFromEnv';
 
 try {
   which.sync('nvim');
@@ -15,6 +19,15 @@ try {
 }
 
 describe('get_nvim_from_env', () => {
+  it('Parse version', () => {
+    const a = parseVersion('0.5.0-dev+1357-g192f89ea1');
+    expect(a).toEqual([0, 5, 0, 'dev+1357-g192f89ea1']);
+    const b = parseVersion('0.5.0-dev+1357-g192f89ea1-Homebrew');
+    expect(b).toEqual([0, 5, 0, 'dev+1357-g192f89ea1-Homebrew']);
+    const c = parseVersion('0.9.1');
+    expect(c).toEqual([0, 9, 1, 'zzz']);
+  });
+
   it('Compare versions', () => {
     expect(compareVersions('0.3.0', '0.3.0')).toBe(0);
     expect(compareVersions('0.3.0', '0.3.1')).toBe(-1);
