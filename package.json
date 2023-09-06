@@ -23,9 +23,6 @@
     "prettier": "^2.4.1",
     "typescript": "^5.1.6"
   },
-  "resolutions": {
-    "jsprim": "1.4.2"
-  },
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "dev": "npm run --stream --parallel dev --workspaces --if-present",
