@@ -1,5 +1,5 @@
 import { BaseApi } from './Base';
-import { ExtType, Metadata } from './types';
+import { ExtType, Metadata, Promisify } from './types';
 
 export interface BufferSetLines {
   start?: number;
@@ -383,4 +383,4 @@ export class Buffer extends BaseApi {
   }
 }
 
-export interface AsyncBuffer extends Buffer, Promise<Buffer> {}
+export interface AsyncBuffer extends Promisify<Buffer>, Promise<Buffer> {}
