@@ -34,3 +34,7 @@ export const Metadata: MetadataType[] = [
     prefix: 'nvim_tabpage_',
   },
 ];
+
+export type Promisify<T> = {
+  [K in keyof T]: Promise<T[K]>;
+};

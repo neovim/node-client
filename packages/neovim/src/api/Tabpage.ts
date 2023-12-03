@@ -1,5 +1,5 @@
 import { BaseApi } from './Base';
-import { ExtType, Metadata } from './types';
+import { ExtType, Metadata, Promisify } from './types';
 import { createChainableApi } from './helpers/createChainableApi';
 import { Window, AsyncWindow } from './Window';
 
@@ -40,4 +40,4 @@ export class Tabpage extends BaseApi {
   }
 }
 
-export interface AsyncTabpage extends Tabpage, Promise<Tabpage> {}
+export interface AsyncTabpage extends Promisify<Tabpage>, Promise<Tabpage> {}
