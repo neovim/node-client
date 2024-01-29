@@ -1,14 +1,30 @@
-# Documentation:
-# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+# Documentation for configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+#
+# Troubleshooting: Insights tab > Dependency Graph > Dependabot
+# https://github.com/neovim/node-client/network/updates
 
 version: 2
 updates:
     - package-ecosystem: 'npm'
       directory: '/' # Location of package manifests.
+      commit-message:
+          prefix: 'deps'
       schedule:
           interval: 'weekly'
+      groups:
+          eslint:
+              patterns:
+                  - '@typescript-eslint/*'
+                  - 'eslint*'
     # Check for updates to GitHub Actions every week
     - package-ecosystem: 'github-actions'
       directory: '/'
+      commit-message:
+          prefix: 'deps'
       schedule:
-          interval: 'weekly'
+          interval: 'daily'
+      groups:
+          github-actions:
+              patterns:
+                  - '*'
