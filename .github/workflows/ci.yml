@@ -65,7 +65,9 @@ jobs:
       run: npm run build
 
     - name: lint
-      if: runner.os == 'macOS'
+      # Don't run on old node, devDependencies may require newish JS features.
+      # TODO: prettier complains about CRLF on on Windows. Skip for now...
+      if: matrix.node != '14' && runner.os != 'Windows'
       run: npm run lint
 
     - name: test

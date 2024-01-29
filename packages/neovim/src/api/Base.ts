@@ -85,7 +85,7 @@ export class BaseApi extends EventEmitter {
   async asyncRequest(
     name: string,
     args: any[] = [],
-    stack: string
+    stack: string | undefined = undefined
   ): Promise<any> {
     // `this._isReady` is undefined in ExtType classes (i.e. Buffer, Window, Tabpage)
     // But this is just for Neovim API, since it's possible to call this method from Neovim class
