@@ -68,12 +68,12 @@ describe('Nvim Promise API', () => {
     const res = await nvim.eval('rpcnotify(1, "notify", 1, 2, 3)');
     expect(res).toEqual(1);
     expect(requests).toEqual([]);
-    return new Promise(resolve =>
+    return new Promise(resolve => {
       setImmediate(() => {
         expect(notifications).toEqual([{ method: 'notify', args: [1, 2, 3] }]);
-        resolve();
-      })
-    );
+        resolve(undefined);
+      });
+    });
   });
 
   it('can deal with custom types', async () => {
