@@ -7,6 +7,6 @@
   "license": "MIT",
   "devDependencies": {
     "jest-haste-map": "^27.2.0",
-    "jest-resolve": "^29.6.1"
+    "jest-resolve": "^29.7.0"
   }
 }
