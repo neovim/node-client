@@ -62,7 +62,7 @@
     "jest-resolve": "^29.6.1",
     "typedoc": "^0.25.7",
     "typescript": "^5.3.3",
-    "which": "^3.0.1"
+    "which": "^4.0.0"
   },
   "scripts": {
     "doc": "typedoc --out doc --exclude '**/*.test.ts' src",
