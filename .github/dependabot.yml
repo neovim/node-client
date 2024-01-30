@@ -17,6 +17,10 @@ updates:
               patterns:
                   - '@typescript-eslint/*'
                   - 'eslint*'
+          babel:
+              patterns:
+                  - '@babel/*'
+                  - 'babel*'
     # Check for updates to GitHub Actions every week
     - package-ecosystem: 'github-actions'
       directory: '/'
