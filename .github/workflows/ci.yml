@@ -78,7 +78,7 @@ jobs:
 
         npm run test-build --stream
 
-    - uses: codecov/codecov-action@v3
+    - uses: codecov/codecov-action@v4
       if: runner.os == 'macOS'
       with:
         verbose: true # optional (default = false)
