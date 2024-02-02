@@ -1,15 +1,27 @@
+# https://docs.codecov.com/docs/common-recipe-list#ease-target-coverage
+
 codecov:
   notify:
     require_ci_to_pass: no
 
 coverage:
   precision: 2
-  round: down
-  range: "70...100"
+  round: nearest
+  # https://docs.codecov.com/docs/coverage-configuration#section-range
+  range: '70...95'
 
   status:
-    project: yes
-    patch: yes
+    project:
+      default:
+        # Adjust based on how flaky your tests are.
+        # This allows a x% drop from the previous base commit coverage.
+        threshold: '1%'
+        target: 80%
+    patch:
+      default:
+        only_pulls: true
+        threshold: '1%'
+        target: 80%
     changes: no
 
 parsers:
@@ -17,3 +29,6 @@ parsers:
     enable_partials: yes
 
 comment: off
+
+github_checks:
+    annotations: true
