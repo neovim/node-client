@@ -2,7 +2,7 @@
  * Some code borrowed from https://github.com/tarruda/node-msgpack5rpc
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 import {
   encode,

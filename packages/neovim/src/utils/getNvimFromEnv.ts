@@ -1,6 +1,6 @@
-import { execSync } from 'child_process';
-import { join, delimiter } from 'path';
-import { constants, existsSync, accessSync } from 'fs';
+import { execSync } from 'node:child_process';
+import { join, delimiter } from 'node:path';
+import { constants, existsSync, accessSync } from 'node:fs';
 
 export type NvimVersion = {
   readonly nvimVersion: string;
@@ -69,7 +69,7 @@ const windows = process.platform === 'win32';
 
 export function parseVersion(version: string): (number | string)[] | null {
   if (typeof version !== 'string') {
-    throw new Error('Invalid version format: not a string');
+    throw new TypeError('Invalid version format: not a string');
   }
 
   const match = version.match(versionRegex);
@@ -80,17 +80,17 @@ export function parseVersion(version: string): (number | string)[] | null {
   const [, major, minor, patch, prerelease] = match;
   const majorNumber = Number(major);
   if (Number.isNaN(majorNumber)) {
-    throw new Error('Invalid version format: major is not a number');
+    throw new TypeError('Invalid version format: major is not a number');
   }
 
   const minorNumber = Number(minor);
   if (Number.isNaN(minorNumber)) {
-    throw new Error('Invalid version format: minor is not a number');
+    throw new TypeError('Invalid version format: minor is not a number');
   }
 
   const patchNumber = Number(patch);
   if (Number.isNaN(patchNumber)) {
-    throw new Error('Invalid version format: patch is not a number');
+    throw new TypeError('Invalid version format: patch is not a number');
   }
 
   const versionParts: Array<number | string> = [

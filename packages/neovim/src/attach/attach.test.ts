@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import * as cp from 'child_process';
+import * as cp from 'node:child_process';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as which from 'which';
 import { attach } from './attach';

@@ -4,7 +4,7 @@ import { Buffer, AsyncBuffer } from './Buffer';
 import { Tabpage, AsyncTabpage } from './Tabpage';
 import { Window, AsyncWindow } from './Window';
 import { VimValue } from '../types/VimValue';
-import { ApiInfo } from '../types/ApiInfo'; // eslint-disable-line
+import { ApiInfo } from '../types/ApiInfo';
 
 export interface UiAttachOptions {
   rgb?: boolean;

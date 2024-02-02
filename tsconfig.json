@@ -13,6 +13,7 @@
     "noUnusedParameters": false,
     "target": "es2015",
     "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "types": ["node"]
   },
   "exclude": ["node_modules"],

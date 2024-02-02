@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import * as cp from 'child_process';
+import * as cp from 'node:child_process';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as which from 'which';
 import { attach } from '../attach';
@@ -65,7 +65,7 @@ describe('Tabpage API', () => {
       const tabpages = await nvim.tabpages;
       expect(tabpages.length).toBe(2);
 
-      nvim.tabpage = tabpages[tabpages.length - 1];
+      nvim.tabpage = tabpages.at(-1);
 
       const newTabPage = await nvim.tabpage;
       expect(await newTabPage.number).toBe(2);
@@ -139,7 +139,7 @@ describe('Tabpage API', () => {
       // TODO
       expect((await nvim.tabpages).length).toBe(2);
 
-      nvim.tabpage = tabpages[tabpages.length - 1];
+      nvim.tabpage = tabpages.at(-1);
 
       expect(await nvim.tabpage.number).toBe(2);
     });

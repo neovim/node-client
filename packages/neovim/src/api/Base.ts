@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 import { Transport } from '../utils/transport';
 import { Logger } from '../utils/logger';
