@@ -16,6 +16,22 @@ module.exports = {
     es2024: true,
   },
 
+  overrides: [
+    {
+      files: ['*.test.ts'],
+      // excludedFiles: ['bin/*.ts', 'lib/*.ts'],
+      rules: {
+        // This rule requires es2022(?) but the CI node14 job runs the tests
+        // in node14, but the test code is not compiled/polyfilled... so the
+        // test code needs to be compatible with node14.
+        // TODO: can the back-compat CI jobs for older node.js versions run
+        // `jest` against the compiled .js results (would require compiling
+        // the test files as well)?
+        'unicorn/prefer-at': 'off',
+      }
+    }
+  ],
+
   rules: {
     curly: 'error', // Enforce braces on "if"/"for"/etc.
     // Avoid accidental use of "==" instead of "===".
