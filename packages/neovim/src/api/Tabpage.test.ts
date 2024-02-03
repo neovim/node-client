@@ -10,7 +10,7 @@ try {
   // eslint-disable-next-line no-console
   console.error(
     'A Neovim installation is required to run the tests',
-    '(see https://github.com/neovim/neovim/wiki/Installing)'
+    '(see https://github.com/neovim/neovim/blob/master/INSTALL.md)'
   );
   process.exit(1);
 }
