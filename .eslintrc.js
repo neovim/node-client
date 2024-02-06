@@ -28,8 +28,8 @@ module.exports = {
         // `jest` against the compiled .js results (would require compiling
         // the test files as well)?
         'unicorn/prefer-at': 'off',
-      }
-    }
+      },
+    },
   ],
 
   rules: {
@@ -61,6 +61,7 @@ module.exports = {
 
     // Causes issues with enums
     'no-shadow': 'off',
+    'prefer-destructuring': 'off',  // Intentionally disabled trash.
 
     // prettier things
     'prettier/prettier': 'error',
