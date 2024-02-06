@@ -1,34 +1,46 @@
 /* eslint-env jest */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import which from 'which';
-import {
-  getNvimFromEnv,
-  compareVersions,
-  parseVersion,
-} from './getNvimFromEnv';
+import { getNvimFromEnv, exportsForTesting } from './getNvimFromEnv';
+
+const parseVersion = exportsForTesting.parseVersion;
+const compareVersions = exportsForTesting.compareVersions;
 
 try {
   which.sync('nvim');
 } catch (e) {
   // eslint-disable-next-line no-console
-  console.error(
-    'A Neovim installation is required to run the tests',
-    '(see https://github.com/neovim/neovim/wiki/Installing)'
+  throw new Error(
+    'Nvim is required to run the tests (see https://github.com/neovim/neovim/wiki/Installing)'
   );
-  process.exit(1);
 }
 
-describe('get_nvim_from_env', () => {
-  it('Parse version', () => {
-    const a = parseVersion('0.5.0-dev+1357-g192f89ea1');
-    expect(a).toEqual([0, 5, 0, 'dev+1357-g192f89ea1']);
-    const b = parseVersion('0.5.0-dev+1357-g192f89ea1-Homebrew');
-    expect(b).toEqual([0, 5, 0, 'dev+1357-g192f89ea1-Homebrew']);
-    const c = parseVersion('0.9.1');
-    expect(c).toEqual([0, 9, 1, 'zzz']);
+describe('getNvimFromEnv', () => {
+  it('parseVersion()', () => {
+    expect(parseVersion('0.5.0-dev+1357-g192f89ea1')).toEqual([
+      0,
+      5,
+      0,
+      'dev+1357-g192f89ea1',
+    ]);
+    expect(parseVersion('0.5.0-dev+1357-g192f89ea1-Homebrew')).toEqual([
+      0,
+      5,
+      0,
+      'dev+1357-g192f89ea1-Homebrew',
+    ]);
+    expect(parseVersion('0.9.1')).toEqual([0, 9, 1, 'zzz']);
+
+    // Failure modes:
+    expect(() => parseVersion(42 as any)).toThrow(TypeError);
+    expect(parseVersion('x.y.z')).toEqual(undefined);
+    expect(parseVersion('1.y.z')).toEqual(undefined);
+    expect(parseVersion('1.2.z')).toEqual(undefined);
+    expect(parseVersion('x.2.3')).toEqual(undefined);
+    expect(parseVersion('1.y.3')).toEqual(undefined);
   });
 
-  it('Compare versions', () => {
+  it('compareVersions()', () => {
     expect(compareVersions('0.3.0', '0.3.0')).toBe(0);
     expect(compareVersions('0.3.0', '0.3.1')).toBe(-1);
     expect(compareVersions('0.3.1', '0.3.0')).toBe(1);
@@ -59,8 +71,8 @@ describe('get_nvim_from_env', () => {
     ).toBe(1);
   });
 
-  it('Get matching nvim from specified min version', () => {
-    const nvimRes = getNvimFromEnv({ minVersion: '0.3.0' });
+  it('gets Nvim matching specified min version', () => {
+    const nvimRes = getNvimFromEnv({ minVersion: '0.3.0', orderBy: 'desc' });
     expect(nvimRes).toBeTruthy();
     expect(nvimRes).toEqual({
       matches: expect.any(Array),
@@ -79,7 +91,7 @@ describe('get_nvim_from_env', () => {
     expect(nvimRes.errors.length).toEqual(0);
   });
 
-  it('Get matching nvim without specified min version', () => {
+  it('gets Nvim without specified min version', () => {
     const nvimRes = getNvimFromEnv();
     expect(nvimRes).toBeTruthy();
     expect(nvimRes).toEqual({

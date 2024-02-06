@@ -19,16 +19,16 @@ export type GetNvimFromEnvOptions = {
   /**
    * (Optional) Sort order of list of `nvim` versions.
    *
-   * - `latest_nvim_first` - Latest Nvim version will be first.
+   * - "desc" - Sort by version in descending order (highest to lowest).
    *   - Example: `['0.5.0', '0.4.4', '0.4.3']`
-   * - `keep_path` - (Default) Order is that of the searched `$PATH` components.
+   * - "none" - (Default) Order is that of the searched `$PATH` components.
    *   - Example: `['0.4.4', '0.5.0', '0.4.3']`
    */
-  readonly orderBy?: 'latest_nvim_first' | 'keep_path';
+  readonly orderBy?: 'desc' | 'none';
 };
 
 export type GetNvimFromEnvError = {
-  /** Executeable path that failed. */
+  /** Executable path that failed. */
   readonly path: string;
   /** Error caught during operation. */
   readonly exception: Readonly<Error>;
@@ -58,31 +58,20 @@ const buildTypeRegex = /^Build\s+type:\s+(.+)$/m;
 const luaJitVersionRegex = /^LuaJIT\s+(.+)$/m;
 const windows = process.platform === 'win32';
 
-export function parseVersion(version: string): (number | string)[] | null {
+function parseVersion(version: string): (number | string)[] | undefined {
   if (typeof version !== 'string') {
     throw new TypeError('Invalid version format: not a string');
   }
 
   const match = version.match(versionRegex);
-  if (match === null) {
-    return null;
+  if (!match) {
+    return undefined;
   }
 
   const [, major, minor, patch, prerelease] = match;
   const majorNumber = Number(major);
-  if (Number.isNaN(majorNumber)) {
-    throw new TypeError('Invalid version format: major is not a number');
-  }
-
   const minorNumber = Number(minor);
-  if (Number.isNaN(minorNumber)) {
-    throw new TypeError('Invalid version format: minor is not a number');
-  }
-
   const patchNumber = Number(patch);
-  if (Number.isNaN(patchNumber)) {
-    throw new TypeError('Invalid version format: patch is not a number');
-  }
 
   const versionParts: Array<number | string> = [
     majorNumber,
@@ -98,17 +87,17 @@ export function parseVersion(version: string): (number | string)[] | null {
 }
 
 /**
- * Compare two versions.
+ * Compares two versions.
  * @param a - The first version to compare.
  * @param b - The second version to compare.
  * @returns -1 if a < b, 0 if a == b, 1 if a > b.
- * @throws {Error} If the versions are not valid.
+ * @throws {TypeError} If the versions are not valid.
  *
  * Format could be:
  * - 0.9.1
  * - 0.10.0-dev-658+g06694203e-Homebrew
  */
-export function compareVersions(a: string, b: string): number {
+function compareVersions(a: string, b: string): number {
   const versionA = parseVersion(a);
   const versionB = parseVersion(b);
   const length = Math.min(versionA.length, versionB.length);
@@ -181,7 +170,7 @@ export function getNvimFromEnv(
     }
   }
 
-  if (matches.length > 1 && opt.orderBy === 'latest_nvim_first') {
+  if (matches.length > 1 && opt.orderBy === 'desc') {
     matches.sort((a, b) => compareVersions(b.nvimVersion, a.nvimVersion));
   }
 
@@ -190,4 +179,16 @@ export function getNvimFromEnv(
     unmatchedVersions,
     errors,
   } as const;
+}
+
+// eslint-disable-next-line import/no-mutable-exports
+export let exportsForTesting: any;
+// jest sets NODE_ENV=test.
+if (process.env.NODE_ENV === 'test') {
+  // These functions are intentionally not exported. After `nvim` is found, clients can use Nvim's
+  // own `vim.version` module, so node-client shouldn't expose a half-baked "semver" implementation.
+  exportsForTesting = {
+    parseVersion,
+    compareVersions,
+  };
 }
