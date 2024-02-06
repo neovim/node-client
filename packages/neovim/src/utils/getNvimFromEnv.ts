@@ -114,7 +114,7 @@ function compareVersions(a: string, b: string): number {
 }
 
 /**
- * Get the highest matching nvim version from the environment.
+ * Tries to find a usable `nvim` binary on the current system.
  */
 export function getNvimFromEnv(
   opt: GetNvimFromEnvOptions = {}

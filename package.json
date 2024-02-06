@@ -26,7 +26,7 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "dev": "npm run --stream --parallel dev --workspaces --if-present",
-    "publish:neovim": "cd packages/neovim && npm publish",
+    "publish:neovim": "cd packages/neovim && cp ../../README.md . && npm publish",
     "test": "npm run test --workspaces --if-present",
     "test-build": "npm run test-build --workspaces --if-present",
     "test-staged": "npm run test-staged --workspaces --if-present -- --",
