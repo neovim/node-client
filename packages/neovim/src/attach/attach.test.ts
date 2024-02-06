@@ -27,7 +27,7 @@ describe('Nvim Promise API', () => {
         cwd: __dirname,
       });
 
-      nvim = await attach({ proc });
+      nvim = attach({ proc });
       nvim.on('request', (method, args, resp) => {
         requests.push({ method, args });
         resp.send(`received ${method}(${args})`);

@@ -52,7 +52,7 @@ describe('Buffer API', () => {
       cwd: __dirname,
     });
 
-    nvim = await attach({ proc });
+    nvim = attach({ proc });
   });
 
   afterAll(() => {
@@ -414,7 +414,7 @@ describe('Buffer event updates', () => {
       cwd: __dirname,
     });
 
-    nvim = await attach({ proc });
+    nvim = attach({ proc });
   });
 
   afterAll(() => {

@@ -25,7 +25,7 @@ describe('Window API', () => {
       cwd: __dirname,
     });
 
-    nvim = await attach({ proc });
+    nvim = attach({ proc });
   });
 
   afterAll(() => {

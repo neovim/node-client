@@ -29,7 +29,7 @@ const nvim_proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {});
 
 // Attach to neovim process
 (async function() {
-  const nvim = await attach({ proc: nvim_proc });
+  const nvim = attach({ proc: nvim_proc });
   nvim.command('vsp');
   nvim.command('vsp');
   nvim.command('vsp');
