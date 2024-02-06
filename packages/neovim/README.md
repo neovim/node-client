@@ -1,20 +1,22 @@
 # neovim-client
 
-| CI (node >= 14, Linux/macOS/Windows) | Coverage | npm |
-|----------------------------|----------|-----|
-| [![ci](https://github.com/neovim/node-client/actions/workflows/ci.yml/badge.svg)](https://github.com/neovim/node-client/actions/workflows/ci.yml) | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] |
+| CI (Linux, macOS, Windows) | Coverage | npm | Gitter |
+|----------------------------|----------|-----|--------|
+| [![ci](https://github.com/neovim/node-client/actions/workflows/ci.yml/badge.svg)](https://github.com/neovim/node-client/actions/workflows/ci.yml) | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] | [![Gitter Badge][]][Gitter] |
+
+Currently tested for node >= 10
 
 ## Installation
 Install the `neovim` package globally using `npm`.
 
-```bash
+```sh
 npm install -g neovim
 ```
 
 A global package is required for neovim to be able to communicate with a plugin.
 
 ## Usage
-The `neovim` package exports a single `attach()` function which takes a pair of
+This package exports a single `attach()` function which takes a pair of
 write/read streams and invokes a callback with a Nvim API object.
 
 ### `attach`
@@ -189,3 +191,5 @@ npm run publish:neovim
 [Coverage Report]: https://codecov.io/gh/neovim/node-client
 [npm version]: https://img.shields.io/npm/v/neovim.svg
 [npm package]: https://www.npmjs.com/package/neovim
+[Gitter Badge]: https://badges.gitter.im/neovim/node-client.svg
+[Gitter]: https://gitter.im/neovim/node-client?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
