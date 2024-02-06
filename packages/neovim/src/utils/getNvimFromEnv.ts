@@ -11,52 +11,43 @@ export type NvimVersion = {
 
 export type GetNvimFromEnvOptions = {
   /**
-   * The minimum version of nvim to get. This is optional.
+   * (Optional) Minimum `nvim` version (inclusive) to search for.
    *
    * - Example: `'0.5.0'`
-   * - Note: This is inclusive.
-   * - Note: If this is not set, then there is no minimum version.
    */
   readonly minVersion?: string;
   /**
-   * The order to return the nvim versions in. This is optional.
+   * (Optional) Sort order of list of `nvim` versions.
    *
-   * - `latest_nvim_first` - The latest version of nvim will be first. This is the default.
+   * - `latest_nvim_first` - Latest Nvim version will be first.
    *   - Example: `['0.5.0', '0.4.4', '0.4.3']`
-   *   - Note: This will be slower than `latest_nvim_first`.
-   * - `keep_path` - The order of the nvim versions will be the same as the order of the paths in the `PATH` environment variable.
+   * - `keep_path` - (Default) Order is that of the searched `$PATH` components.
    *   - Example: `['0.4.4', '0.5.0', '0.4.3']`
-   *   - Note: This will be faster than `latest_nvim_first`.
-   *   - this is the default.
    */
   readonly orderBy?: 'latest_nvim_first' | 'keep_path';
 };
 
 export type GetNvimFromEnvError = {
-  /** The executeable path that failed. */
+  /** Executeable path that failed. */
   readonly path: string;
-  /** The catched error */
+  /** Error caught during operation. */
   readonly exception: Readonly<Error>;
 };
 
 export type GetNvimFromEnvResult = {
   /**
-   * A list of nvim versions that match the minimum version.
-   * This will be empty if no matching versions were found.
-   * This will be sorted in the order specified by `orderBy`.
+   * List of satisfying `nvim` versions found on the current system.
+   * Empty if no matching versions were found.
+   * Sorted in the order specified by `orderBy`.
    */
   readonly matches: ReadonlyArray<NvimVersion>;
   /**
-   * A list of nvim versions that do not match the minimum version.
-   * This will be empty if all versions match the minimum version or if no minimum version was specified.
-   * This will not be sorted (it will be in the order of the paths in the `PATH` environment variable).
+   * List of invalid `nvim` versions found (if any), in order of searched `$PATH` components.
    */
   readonly unmatchedVersions: ReadonlyArray<NvimVersion>;
   /**
-   * A list of errors that occurred while trying to get the nvim versions.
-   * This will be empty if no errors occurred.
-   * This will not be sorted (it will be in the order of the paths in the `PATH` environment variable).
-   * Unmatched versions are not treated as errors.
+   * List of errors collected while trying to get the nvim versions (if any), in order of searched
+   * `$PATH` components. Unmatched versions are not treated as errors.
    */
   readonly errors: ReadonlyArray<GetNvimFromEnvError>;
 };

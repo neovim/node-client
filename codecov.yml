@@ -31,4 +31,4 @@ parsers:
 comment: off
 
 github_checks:
-    annotations: true
+  annotations: true
