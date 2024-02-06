@@ -1,4 +1,4 @@
-import * as util from 'util';
+import * as util from 'node:util';
 import { attach } from '../attach';
 import { logger } from '../utils/logger';
 import { loadPlugin, LoadPluginOptions } from './factory';

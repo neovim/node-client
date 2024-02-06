@@ -9,7 +9,6 @@
   ],
   "homepage": "https://github.com/neovim/node-client",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
@@ -18,6 +17,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-unicorn": "^50.0.1",
     "husky": "^9.0.7",
     "lint-staged": "^15.2.0",
     "prettier": "^3.2.4",
@@ -31,7 +31,7 @@
     "test-staged": "npm run test-staged --workspaces --if-present -- --",
     "test-missing-apis": "npm run test-missing-apis --workspaces --if-present",
     "test-lint": "npm run lint",
-    "lint": "eslint packages/*/src/**/*.ts packages/*/src/*.ts"
+    "lint": "eslint --format=unix packages/*/src/**/*.ts packages/*/src/*.ts"
   },
   "husky": {
     "hooks": {

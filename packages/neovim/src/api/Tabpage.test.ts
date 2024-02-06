@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import * as cp from 'child_process';
+import * as cp from 'node:child_process';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as which from 'which';
 import { attach } from '../attach';
@@ -10,7 +10,7 @@ try {
   // eslint-disable-next-line no-console
   console.error(
     'A Neovim installation is required to run the tests',
-    '(see https://github.com/neovim/neovim/wiki/Installing)'
+    '(see https://github.com/neovim/neovim/blob/master/INSTALL.md)'
   );
   process.exit(1);
 }

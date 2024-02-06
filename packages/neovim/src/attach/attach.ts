@@ -1,5 +1,5 @@
-import { createConnection } from 'net';
-import * as child from 'child_process';
+import { createConnection } from 'node:net';
+import * as child from 'node:child_process';
 
 import { NeovimClient } from '../api/client';
 import { Logger } from '../utils/logger';

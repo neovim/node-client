@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from 'node:path';
 import Module = require('module');
 
 import { Neovim } from '../api/Neovim';
