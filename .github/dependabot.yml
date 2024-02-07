@@ -12,6 +12,9 @@ updates:
           prefix: 'deps'
       schedule:
           interval: 'weekly'
+      ignore:
+          # @types/node should match our minimum supported node.js version ("engine").
+          - dependency-name: '@types/node'
       groups:
           eslint:
               patterns:
@@ -24,6 +27,8 @@ updates:
           types:
               patterns:
                   - '@types/*'
+              exclude-patterns:
+                  - '@types/node'
           jest:
               patterns:
                   - 'jest*'
