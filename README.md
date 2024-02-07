@@ -185,21 +185,21 @@ Maintenance tasks:
 
 ### Release
 
-Only maintainers of the [neovim NPM package](https://www.npmjs.com/package/neovim) can publish a release.
-
-Follow these steps to publish a release (where `update_type` is one of `patch`, `minor`, or `major`):
+Only maintainers of the [neovim NPM package](https://www.npmjs.com/package/neovim) can publish a release. Follow these steps to publish a release:
 
 ```bash
 cd packages/neovim
-npm version <update_type>
+# Choose major/minor/patch as needed.
+npm version patch
 cd -
 # Note: this copies the top-level README.md to packages/neovim.
 npm run publish:neovim
 
 # Post-relase
+export _VERSION=$(grep -o 'version": "[^"]\+' packages/neovim/package.json | sed 's/.*"//')
+git tag "v${_VERSION}"
 cd packages/neovim/
 npm version --no-git-tag-version prerelease --preid dev && git add package*.json && git commit -m bump
-git tag v4.11.0
 git push --follow-tags
 ```
 
