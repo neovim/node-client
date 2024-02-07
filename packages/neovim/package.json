@@ -1,9 +1,13 @@
 {
   "name": "neovim",
-  "description": "Neovim client API and neovim remote plugin provider",
-  "version": "4.10.1",
+  "description": "Nvim msgpack API client and remote plugin provider",
+  "version": "4.11.0",
   "homepage": "https://github.com/neovim/node-client",
   "authors": [
+    {
+      "name": "Justin M. Keyes",
+      "email": "justinkz@gmail.com"
+    },
     {
       "name": "Billy Vong",
       "email": "github@mmo.me"
@@ -23,7 +27,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/neovim/node-client"
+    "url": "git+https://github.com/neovim/node-client.git"
   },
   "bugs": {
     "url": "https://github.com/neovim/node-client/issues"
@@ -89,7 +93,10 @@
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts$",
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
-    "coverageReporters": ["json", "html"],
+    "coverageReporters": [
+      "json",
+      "html"
+    ],
     "testEnvironmentOptions": {
       "url": "http://localhost"
     }

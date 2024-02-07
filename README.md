@@ -179,10 +179,6 @@ For debugging and configuring logging, you can set the following environment var
 
 See the tests and [`scripts`](https://github.com/neovim/node-client/tree/master/packages/neovim/scripts) for more examples.
 
-## Contributing
-
-After cloning the repo, run `npm install` to install dev dependencies. The main `neovim` library is in `packages/neovim`.
-
 ## Maintain
 
 Maintenance tasks:
@@ -196,6 +192,7 @@ Follow these steps to publish a release (where `update_type` is one of `patch`, 
 ```bash
 cd packages/neovim
 npm version <update_type>
+cd -
 # Note: this copies the top-level README.md to packages/neovim.
 npm run publish:neovim
 ```
@@ -218,7 +215,12 @@ git commit
 git push origin HEAD:gh-pages
 ```
 
-## Contributors
+## Contributing
+
+After cloning the repo, run `npm install` to install dev dependencies. The main `neovim` library is in `packages/neovim`.
+
+### Contributors
+
 * [@billyvg](https://github.com/billyvg) for rewrite
 * [@mhartington](https://github.com/mhartington) for TypeScript rewrite
 * [@fritzy](https://github.com/fritzy) for transferring over the npm package repo `neovim`!
