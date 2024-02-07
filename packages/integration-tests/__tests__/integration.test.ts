@@ -43,7 +43,7 @@ describe('Node host', () => {
       ['-u', nvimrc, '-i', 'NONE', '--headless', '--embed', '-n'],
       {}
     );
-    nvim = await attach({ proc });
+    nvim = attach({ proc });
   });
 
   afterAll(() => {
@@ -60,7 +60,7 @@ describe('Node host', () => {
 
   // it.skip('should return specs', async done => {
   // const proc = cp.spawn('nvim', args.concat(['--embed']));
-  // const nvim = await attach({ proc });
+  // const nvim = attach({ proc });
   // nvim.command('UpdateRemotePlugins');
   // done();
   // });

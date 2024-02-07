@@ -3,10 +3,16 @@ import { join, delimiter } from 'node:path';
 import { constants, existsSync, accessSync } from 'node:fs';
 
 export type NvimVersion = {
-  readonly nvimVersion: string;
+  /** Path to `nvim` executable. */
   readonly path: string;
-  readonly buildType: string;
-  readonly luaJitVersion: string;
+  /** Nvim version, or undefined if there was an error. */
+  readonly nvimVersion?: string;
+  /** Nvim build type, or undefined if there was an error. */
+  readonly buildType?: string;
+  /** Nvim LuaJIT version, or undefined if there was an error. */
+  readonly luaJitVersion?: string;
+  /** Error caught while attempting to access or run Nvim at the given path. */
+  readonly error?: Readonly<Error>;
 };
 
 export type GetNvimFromEnvOptions = {
@@ -27,29 +33,16 @@ export type GetNvimFromEnvOptions = {
   readonly orderBy?: 'desc' | 'none';
 };
 
-export type GetNvimFromEnvError = {
-  /** Executable path that failed. */
-  readonly path: string;
-  /** Error caught during operation. */
-  readonly exception: Readonly<Error>;
-};
-
 export type GetNvimFromEnvResult = {
   /**
-   * List of satisfying `nvim` versions found on the current system.
-   * Empty if no matching versions were found.
-   * Sorted in the order specified by `orderBy`.
+   * List of satisfying `nvim` versions found (if any) on the current system, sorted in the order
+   * specified by `orderBy`.
    */
   readonly matches: ReadonlyArray<NvimVersion>;
   /**
-   * List of invalid `nvim` versions found (if any), in order of searched `$PATH` components.
+   * List of invalid or failed `nvim` versions found (if any), in order of searched `$PATH` components.
    */
-  readonly unmatchedVersions: ReadonlyArray<NvimVersion>;
-  /**
-   * List of errors collected while trying to get the nvim versions (if any), in order of searched
-   * `$PATH` components. Unmatched versions are not treated as errors.
-   */
-  readonly errors: ReadonlyArray<GetNvimFromEnvError>;
+  readonly invalid: ReadonlyArray<NvimVersion>;
 };
 
 const versionRegex = /^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/;
@@ -88,8 +81,8 @@ function parseVersion(version: string): (number | string)[] | undefined {
 
 /**
  * Compares two versions.
- * @param a - The first version to compare.
- * @param b - The second version to compare.
+ * @param a - First version to compare.
+ * @param b - Second version to compare.
  * @returns -1 if a < b, 0 if a == b, 1 if a > b.
  * @throws {TypeError} If the versions are not valid.
  *
@@ -129,8 +122,7 @@ export function getNvimFromEnv(
   const paths = process.env.PATH.split(delimiter);
   const pathLength = paths.length;
   const matches = new Array<NvimVersion>();
-  const unmatchedVersions = new Array<NvimVersion>();
-  const errors = new Array<GetNvimFromEnvError>();
+  const invalid = new Array<NvimVersion>();
   for (let i = 0; i !== pathLength; i = i + 1) {
     const possibleNvimPath = join(paths[i], windows ? 'nvim.exe' : 'nvim');
     if (existsSync(possibleNvimPath)) {
@@ -147,37 +139,37 @@ export function getNvimFromEnv(
             'minVersion' in opt &&
             compareVersions(opt.minVersion, nvimVersionMatch[1]) === 1
           ) {
-            unmatchedVersions.push({
+            invalid.push({
+              nvimVersion: nvimVersionMatch[1],
+              path: possibleNvimPath,
+              buildType: buildTypeMatch[1],
+              luaJitVersion: luaJitVersionMatch[1],
+            });
+          } else {
+            matches.push({
               nvimVersion: nvimVersionMatch[1],
               path: possibleNvimPath,
               buildType: buildTypeMatch[1],
               luaJitVersion: luaJitVersionMatch[1],
             });
           }
-          matches.push({
-            nvimVersion: nvimVersionMatch[1],
-            path: possibleNvimPath,
-            buildType: buildTypeMatch[1],
-            luaJitVersion: luaJitVersionMatch[1],
-          });
         }
       } catch (e) {
-        errors.push({
+        invalid.push({
           path: possibleNvimPath,
-          exception: e,
-        } as const);
+          error: e,
+        });
       }
     }
   }
 
-  if (matches.length > 1 && opt.orderBy === 'desc') {
+  if (opt.orderBy === 'desc') {
     matches.sort((a, b) => compareVersions(b.nvimVersion, a.nvimVersion));
   }
 
   return {
     matches,
-    unmatchedVersions,
-    errors,
+    invalid,
   } as const;
 }
 
