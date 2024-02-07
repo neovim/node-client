@@ -5,3 +5,5 @@ nvimrc
 .DS_Store
 *.log
 doc
+# Copied from top-level README.md by the docs generation task.
+packages/neovim/README.md

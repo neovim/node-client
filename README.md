@@ -1,71 +1,95 @@
-# neovim-client
+# Neovim node.js client
 
 | CI (node >= 14, Linux/macOS/Windows) | Coverage | npm |
 |----------------------------|----------|-----|
 | [![ci](https://github.com/neovim/node-client/actions/workflows/ci.yml/badge.svg)](https://github.com/neovim/node-client/actions/workflows/ci.yml) | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] |
 
-## Installation
-Install the `neovim` package globally using `npm`.
+## Install
+
+For "remote plugins", the Nvim [Node.js provider](https://neovim.io/doc/user/provider.html#provider-nodejs) expects the `neovim` package to be globally installed:
 
 ```bash
 npm install -g neovim
 ```
 
-A global package is required for neovim to be able to communicate with a plugin.
+Or for non-plugin purposes, `neovim` works like any other NPM package.
+See below for a quickstart example that you can copy and run immediately.
 
 ## Usage
-The `neovim` package exports a single `attach()` function which takes a pair of
-write/read streams and invokes a callback with a Nvim API object.
 
-### `attach`
+The `neovim` package exposes these functions:
+
+- `getNvimFromEnv`: Tries to find a usable `nvim` binary on the current system.
+- `attach`: The primary interface. Takes a process, socket, or pair of write/read streams and returns a `NeovimClient` connected to the `nvim` server.
+
+### Quickstart: connect to Nvim
+
+Following is a complete example. Paste it into `demo.mjs` file and run it with `node demo.mjs`:
 
 ```js
-const cp = require('child_process');
-const attach = require('neovim').attach;
+import * as child_process from 'node:child_process'
+import * as assert from 'node:assert'
+import { attach, getNvimFromEnv } from 'neovim'
 
-const nvim_proc = cp.spawn('nvim', ['-u', 'NONE', '-N', '--embed'], {});
-
-// Attach to neovim process
+// Find `nvim` on the system and open a channel to it.
 (async function() {
-  const nvim = await attach({ proc: nvim_proc });
-  nvim.command('vsp');
-  nvim.command('vsp');
-  nvim.command('vsp');
-  const windows = await nvim.windows;
+  const found = getNvimFromEnv({ orderBy: 'desc', minVersion: '0.9.0' })
+  console.log(found);
+  const nvim_proc = child_process.spawn(found.matches[0].path, ['--clean', '--embed'], {});
 
-  // expect(windows.length).toEqual(4);
-  // expect(windows[0] instanceof nvim.Window).toEqual(true);
-  // expect(windows[1] instanceof nvim.Window).toEqual(true);
+  const nvim = attach({ proc: nvim_proc });
+  nvim.command('vsp | vsp | vsp');
+
+  const windows = await nvim.windows;
+  assert.deepStrictEqual(windows.length, 4);
+  assert.ok(windows[0] instanceof nvim.Window);
 
   nvim.window = windows[2];
   const win = await nvim.window;
-
-  // expect(win).not.toEqual(windows[0]);
-  // expect(win).toEqual(windows[2]);
+  assert.ok(win.id !== windows[0].id);
+  assert.deepStrictEqual(win.id, windows[2].id);
 
   const buf = await nvim.buffer;
-  // expect(buf instanceof nvim.Buffer).toEqual(true);
-
+  assert.ok(buf instanceof nvim.Buffer);
   const lines = await buf.lines;
-  // expect(lines).toEqual(['']);
+  assert.deepStrictEqual(lines, []);
 
   await buf.replace(['line1', 'line2'], 0);
   const newLines = await buf.lines;
-  // expect(newLines).toEqual(['line1', 'line2']);
+  assert.deepStrictEqual(newLines, ['line1', 'line2']);
 
+  // console.log('%O', nvim_proc);
+  if (nvim_proc.disconnect) {
+    nvim_proc.disconnect();
+  }
   nvim.quit();
-  nvim_proc.disconnect();
+  while (nvim_proc.exitCode === null) {
+    await new Promise(resolve => setTimeout(resolve, 100))
+    console.log('waiting for Nvim (pid %d) to exit', nvim_proc.pid);
+  }
+  console.log('Nvim exit code: %d', nvim_proc.exitCode);
 })();
 ```
 
-## Writing a Plugin
-A plugin can either be a file or folder in the `rplugin/node` directory. If the plugin is a folder, the `main` script from `package.json` will be loaded.
+### Create a remote plugin
 
-The plugin should export a function which takes a `NvimPlugin` object as its only parameter. You may then register autocmds, commands and functions by calling methods on the `NvimPlugin` object. You should not do any heavy initialisation or start any async functions at this stage, as nvim may only be collecting information about your plugin without wishing to actually use it. You should wait for one of your autocmds, commands or functions to be called before starting any processing.
+Neovim supports [remote plugins](https://neovim.io/doc/user/remote_plugin.html), which are plugins implemented as Nvim API clients.
+This package contains both the "API client" (which talks to nvim) and "remote plugin host" (which discovers and runs Nvim node.js remote plugins).
 
-`console` has been replaced by a `winston` interface and `console.log` will call `winston.info`.
+You can define a remote plugin as a file or folder in an `rplugin/node/` directory on Nvim's ['runtimepath'](https://neovim.io/doc/user/options.html#'runtimepath').
+If the plugin is a folder, the `main` script from `package.json` will be loaded.
 
-### API
+The plugin must export a function which takes a `NvimPlugin` object as its only parameter. You may then register autocmds, commands and functions by calling methods on the `NvimPlugin` object.
+**Avoid heavy initialisation or async functions at this stage,** because Nvim may only be collecting information about your plugin without wishing to actually use it.
+Instead, wait for one of your autocmds, commands or functions to be called before starting any processing.
+
+The host replaces `console` with a `winston` interface, so `console.log` will call `winston.info`.
+
+### Remote plugin examples
+
+See [`examples/`](https://github.com/neovim/node-client/tree/master/examples) for remote plugin examples.
+
+### Remote plugin API
 
 ```ts
   NvimPlugin.nvim
@@ -128,57 +152,73 @@ Registers a command named by `name`, calling function `fn` with `options`. This 
 
 Registers a function with name `name`, calling function `fn` with `options`. This will be invoked from nvim by entering eg `:call name()` in normal mode.
 
-### Examples
+## Debug / troubleshoot
 
-Examples of how to write plugins can be seen in the [`examples`](https://github.com/neovim/node-client/tree/master/examples) directory.
+For debugging and configuring logging, you can set the following environment variables which are used by the `neovim` package (or `nvim` itself where noted):
 
-## Debugging / troubleshooting
-Here are a few env vars you can set while starting `neovim`, that can help debugging and configuring logging:
+- `NVIM_NODE_HOST_DEBUG`: Spawns the node process that calls `neovim-client-host` with `--inspect-brk` so you can have a debugger.
+  Pair that with this [Node Inspector Manager Chrome plugin](https://chrome.google.com/webstore/detail/nodejs-v8-inspector-manag/gnhhdgbaldcilmgcpfddgdbkhjohddkj?hl=en)
+- Logging: Logging is done using `winston` through the `logger` module. Plugins have `console` replaced with this interface.
+    - `NVIM_NODE_LOG_LEVEL`: Sets the logging level for winston. Default is `debug`.
+      Available levels: `{ error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }`
+    - `NVIM_NODE_LOG_FILE`: Sets the log file path.
+- Usage through node REPL
+    - `NVIM_LISTEN_ADDRESS`:
+        1. Start Nvim with a known address (or use the $NVIM_LISTEN_ADDRESS of a running instance):
+           ```
+           $ NVIM_LISTEN_ADDRESS=/tmp/nvim nvim
+           ```
+        2. In another terminal, connect a node REPL to Nvim
+           ```javascript
+           // `scripts/nvim` will detect if `NVIM_LISTEN_ADDRESS` is set and use that unix socket
+           // Otherwise will create an embedded `nvim` instance
+           require('neovim/scripts/nvim').then((nvim) => {
+             nvim.command('vsp');
+           });
+           ```
 
-#### `NVIM_NODE_HOST_DEBUG`
-Will spawn the node process that calls `neovim-client-host` with `--inspect-brk` so you can have a debugger. Pair that with this [Node Inspector Manager Chrome plugin](https://chrome.google.com/webstore/detail/nodejs-v8-inspector-manag/gnhhdgbaldcilmgcpfddgdbkhjohddkj?hl=en)
-
-### Logging
-Logging is done using `winston` through the `logger` module. Plugins have `console` replaced with this interface.
-
-#### `NVIM_NODE_LOG_LEVEL`
-Sets the logging level for winston. Default is `debug`, available levels are `{ error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }`
-
-#### `NVIM_NODE_LOG_FILE`
-Sets the log file path
-
-### Usage through node REPL
-#### `NVIM_LISTEN_ADDRESS`
-First, start Nvim with a known address (or use the $NVIM_LISTEN_ADDRESS of a running instance):
-
-$ NVIM_LISTEN_ADDRESS=/tmp/nvim nvim
-In another terminal, connect a node REPL to Nvim
-
-```javascript
-// `scripts/nvim` will detect if `NVIM_LISTEN_ADDRESS` is set and use that unix socket
-// Otherwise will create an embedded `nvim` instance
-require('neovim/scripts/nvim').then((nvim) => {
-  nvim.command('vsp');
-});
-```
-
-The tests and [`scripts`](https://github.com/neovim/node-client/tree/master/packages/neovim/scripts) can be consulted for more examples.
+See the tests and [`scripts`](https://github.com/neovim/node-client/tree/master/packages/neovim/scripts) for more examples.
 
 ## Contributing
 
 After cloning the repo, run `npm install` to install dev dependencies. The main `neovim` library is in `packages/neovim`.
 
-### Publishing
+## Maintain
 
-Current, only the maintainers of the [neovim npm package](https://www.npmjs.com/package/neovim) are able to publish. To publish, change directories to `packages/neovim`, update the version using `npm version <update_type>` where `update_type` is one of patch, minor, or major. Finally, publish with `npm publish`:
+Maintenance tasks:
+
+### Release
+
+Only maintainers of the [neovim NPM package](https://www.npmjs.com/package/neovim) can publish a release.
+
+Follow these steps to publish a release (where `update_type` is one of `patch`, `minor`, or `major`):
 
 ```bash
 cd packages/neovim
 npm version <update_type>
+# Note: this copies the top-level README.md to packages/neovim.
 npm run publish:neovim
 ```
 
-### Contributors
+### Regenerate documentation website
+
+The docs website is currently not automated. Follow these steps to regenerate it:
+
+```bash
+npm run doc -w packages/neovim
+git checkout gh-pages
+mv -f packages/neovim/doc/assets/* assets/
+mv -f packages/neovim/doc/classes/* classes/
+mv -f packages/neovim/doc/functions/* functions/
+mv -f packages/neovim/doc/types/* types/
+mv packages/neovim/doc/* .
+rm -r packages/
+git add *
+git commit
+git push origin HEAD:gh-pages
+```
+
+## Contributors
 * [@billyvg](https://github.com/billyvg) for rewrite
 * [@mhartington](https://github.com/mhartington) for TypeScript rewrite
 * [@fritzy](https://github.com/fritzy) for transferring over the npm package repo `neovim`!
