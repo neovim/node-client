@@ -116,9 +116,9 @@ always get called on each invocation of your plugin's command.
   NvimPlugin.registerAutocmd(name: string, fn: [any, Function], options: AutocmdOptions): void;
 
   interface AutocmdOptions {
-    pattern: string;
-    eval?: string;
-    sync?: boolean;
+    pattern: string;  // See `:help autocmd-pattern`.
+    eval?: string;    // Vimscript expression evaluated by the Nvim peer.
+    sync?: boolean;   // Force blocking (non-async) behavior.
   }
 ```
 
@@ -131,9 +131,9 @@ By default autocmds, commands and functions are all treated as asynchronous and 
   NvimPlugin.registerCommand(name: string, fn: [any, Function], options?: CommandOptions): void;
 
   interface CommandOptions {
-    sync?: boolean;
-    range?: string;
-    nargs?: string;
+    sync?: boolean;   // Force blocking (non-async) behavior.
+    range?: string;   // See `:help :range`.
+    nargs?: string;   // See `:help :command-nargs`.
   }
 ```
 
@@ -144,9 +144,9 @@ Registers a command named by `name`, calling function `fn` with `options`. This 
   NvimPlugin.registerFunction(name: string, fn: [any, Function], options?: NvimFunctionOptions): void;
 
   interface NvimFunctionOptions {
-    sync?: boolean;
-    range?: string;
-    eval?: string;
+    sync?: boolean;   // Force blocking (non-async) behavior.
+    range?: string;   // See `:help :range`.
+    eval?: string;    // Vimscript expression evaluated by the Nvim peer.
   }
 ```
 
