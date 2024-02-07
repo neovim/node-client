@@ -24,7 +24,16 @@ The `neovim` package exposes these functions:
 
 ### Quickstart: connect to Nvim
 
-Following is a complete example. Paste it into `demo.mjs` file and run it with `node demo.mjs`:
+Following is a complete, working example.
+
+1. Install the `neovim` package _locally_ (i.e. without `-g`. Node will fail with `ERR_MODULE_NOT_FOUND` if a script tries to import a _globally_ installed package).
+   ```bash
+   npm install neovim
+   ```
+2. Paste the script below into a `demo.mjs` file and run it!
+   ```
+   node demo.mjs
+   ```
 
 ```js
 import * as child_process from 'node:child_process'
