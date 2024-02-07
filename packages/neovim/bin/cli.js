@@ -2,7 +2,6 @@
 const { Host } = require('../lib/host');
 const { logger } = require('../lib/utils/logger');
 const { spawnSync } = require('child_process');
-const semver = require('semver');
 
 // node <current script> <rest of args>
 const [, , ...args] = process.argv;
@@ -15,9 +14,13 @@ if (args[0] === '--version') {
   process.exit(0);
 }
 
+// "21.6.1" => "21"
+const nodeMajorVersionStr = process.versions.node.replace(/\..*/, '')
+const nodeMajorVersion = Number.parseInt(nodeMajorVersionStr ?? '0')
+
 if (
   process.env.NVIM_NODE_HOST_DEBUG &&
-  semver.satisfies(process.version, '>=7.6.0 || >=6.12.0 <7.0.0') &&
+  nodeMajorVersion >= 8 &&
   process.execArgv.every(token => token !== '--inspect-brk')
 ) {
   const childHost = spawnSync(
