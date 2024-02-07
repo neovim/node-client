@@ -195,6 +195,12 @@ npm version <update_type>
 cd -
 # Note: this copies the top-level README.md to packages/neovim.
 npm run publish:neovim
+
+# Post-relase
+cd packages/neovim/
+npm version --no-git-tag-version prerelease --preid dev && git add package*.json && git commit -m bump
+git tag v4.11.0
+git push --follow-tags
 ```
 
 ### Regenerate documentation website
