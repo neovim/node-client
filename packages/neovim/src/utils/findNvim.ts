@@ -15,7 +15,7 @@ export type NvimVersion = {
   readonly error?: Readonly<Error>;
 };
 
-export type GetNvimFromEnvOptions = {
+export type FindNvimOptions = {
   /**
    * (Optional) Minimum `nvim` version (inclusive) to search for.
    *
@@ -25,15 +25,15 @@ export type GetNvimFromEnvOptions = {
   /**
    * (Optional) Sort order of list of `nvim` versions.
    *
-   * - "desc" - Sort by version in descending order (highest to lowest).
+   * - "desc" - (Default) Sort by version in descending order (highest to lowest).
    *   - Example: `['0.5.0', '0.4.4', '0.4.3']`
-   * - "none" - (Default) Order is that of the searched `$PATH` components.
+   * - "none" - Order is that of the searched `$PATH` components.
    *   - Example: `['0.4.4', '0.5.0', '0.4.3']`
    */
   readonly orderBy?: 'desc' | 'none';
 };
 
-export type GetNvimFromEnvResult = {
+export type FindNvimResult = {
   /**
    * List of satisfying `nvim` versions found (if any) on the current system, sorted in the order
    * specified by `orderBy`.
@@ -115,10 +115,11 @@ function compareVersions(a: string, b: string): number {
 
 /**
  * Tries to find a usable `nvim` binary on the current system.
+ *
+ * @param opt.minVersion See {@link FindNvimOptions.minVersion}
+ * @param opt.orderBy See {@link FindNvimOptions.orderBy}
  */
-export function getNvimFromEnv(
-  opt: GetNvimFromEnvOptions = {}
-): Readonly<GetNvimFromEnvResult> {
+export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
   const paths = process.env.PATH.split(delimiter);
   const pathLength = paths.length;
   const matches = new Array<NvimVersion>();
@@ -163,7 +164,7 @@ export function getNvimFromEnv(
     }
   }
 
-  if (opt.orderBy === 'desc') {
+  if (opt.orderBy === undefined || opt.orderBy === 'desc') {
     matches.sort((a, b) => compareVersions(b.nvimVersion, a.nvimVersion));
   }
 

@@ -19,14 +19,14 @@ See below for a quickstart example that you can copy and run immediately.
 
 The `neovim` package exposes these functions:
 
-- `getNvimFromEnv`: Tries to find a usable `nvim` binary on the current system.
-- `attach`: The primary interface. Takes a process, socket, or pair of write/read streams and returns a `NeovimClient` connected to the `nvim` server.
+- `findNvim`: Tries to find a usable `nvim` binary on the current system.
+- `attach`: The primary interface. Takes a process, socket, or pair of write/read streams and returns a `NeovimClient` connected to an `nvim` process.
 
 ### Quickstart: connect to Nvim
 
 Following is a complete, working example.
 
-1. Install the `neovim` package _locally_ (i.e. without `-g`. Node will fail with `ERR_MODULE_NOT_FOUND` if a script tries to import a _globally_ installed package).
+1. Install the `neovim` package _locally_ (i.e. without `-g`. Node throws `ERR_MODULE_NOT_FOUND` if a script imports a _globally_ installed package).
    ```bash
    npm install neovim
    ```
@@ -38,11 +38,11 @@ Following is a complete, working example.
 ```js
 import * as child_process from 'node:child_process'
 import * as assert from 'node:assert'
-import { attach, getNvimFromEnv } from 'neovim'
+import { attach, findNvim } from 'neovim'
 
 // Find `nvim` on the system and open a channel to it.
 (async function() {
-  const found = getNvimFromEnv({ orderBy: 'desc', minVersion: '0.9.0' })
+  const found = findNvim({ orderBy: 'desc', minVersion: '0.9.0' })
   console.log(found);
   const nvim_proc = child_process.spawn(found.matches[0].path, ['--clean', '--embed'], {});
 
@@ -190,27 +190,28 @@ See the tests and [`scripts`](https://github.com/neovim/node-client/tree/master/
 
 ## Maintain
 
-Maintenance tasks:
-
 ### Release
 
 Only maintainers of the [neovim NPM package](https://www.npmjs.com/package/neovim) can publish a release. Follow these steps to publish a release:
 
-```bash
-cd packages/neovim
-# Choose major/minor/patch as needed.
-npm version patch
-cd -
-# Note: this copies the top-level README.md to packages/neovim.
-npm run publish:neovim
-
-# Post-relase
-export _VERSION=$(grep -o 'version": "[^"]\+' packages/neovim/package.json | sed 's/.*"//')
-git tag "v${_VERSION}"
-cd packages/neovim/
-npm version --no-git-tag-version prerelease --preid dev && git add package*.json && git commit -m bump
-git push --follow-tags
-```
+1. Update `CHANGELOG.md`.
+2. Update version. Build and publish the package. Tag the release and push.
+   ```bash
+   # Choose major/minor/patch as needed.
+   npm version -w packages/neovim/ patch
+   # Note: this copies the top-level README.md to packages/neovim.
+   npm run publish:neovim
+   export _VERSION=$(grep -o 'version": "[^"]\+' packages/neovim/package.json | sed 's/.*"//')
+   git tag "v${_VERSION}"
+   git push --follow-tags
+   ```
+3. Post-release tasks:
+   ```bash
+   cd packages/neovim/
+   npm version -w packages/neovim/ --no-git-tag-version prerelease --preid dev
+   git add package*.json && git commit -m bump
+   git push
+   ```
 
 ### Regenerate documentation website
 
