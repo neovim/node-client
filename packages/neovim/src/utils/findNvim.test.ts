@@ -1,11 +1,7 @@
 /* eslint-env jest */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import which from 'which';
-import {
-  getNvimFromEnv,
-  exportsForTesting,
-  GetNvimFromEnvResult,
-} from './getNvimFromEnv';
+import { findNvim, exportsForTesting, FindNvimResult } from './findNvim';
 
 const parseVersion = exportsForTesting.parseVersion;
 const compareVersions = exportsForTesting.compareVersions;
@@ -19,7 +15,7 @@ try {
   );
 }
 
-describe('getNvimFromEnv', () => {
+describe('findNvim', () => {
   it('parseVersion()', () => {
     expect(parseVersion('0.5.0-dev+1357-g192f89ea1')).toEqual([
       0,
@@ -76,7 +72,7 @@ describe('getNvimFromEnv', () => {
   });
 
   /** Asserts that >=1 nvim binaries were found. */
-  function assertOneOrMore(nvimRes: Readonly<GetNvimFromEnvResult>) {
+  function assertOneOrMore(nvimRes: Readonly<FindNvimResult>) {
     expect(nvimRes).toEqual({
       matches: expect.any(Array),
       invalid: expect.any(Array),
@@ -93,17 +89,17 @@ describe('getNvimFromEnv', () => {
   }
 
   it('gets Nvim satisfying given min version', () => {
-    const nvimRes = getNvimFromEnv({ minVersion: '0.3.0', orderBy: 'desc' });
+    const nvimRes = findNvim({ minVersion: '0.3.0', orderBy: 'desc' });
     assertOneOrMore(nvimRes);
   });
 
   it('gets Nvim without specified min version', () => {
-    const nvimRes = getNvimFromEnv();
+    const nvimRes = findNvim();
     assertOneOrMore(nvimRes);
   });
 
   it('collects invalid matches separately', () => {
-    const nvimRes = getNvimFromEnv({ minVersion: '9999.0.0' });
+    const nvimRes = findNvim({ minVersion: '9999.0.0' });
     expect(nvimRes).toEqual({
       matches: [],
       invalid: expect.any(Array),
