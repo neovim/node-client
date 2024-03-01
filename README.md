@@ -17,7 +17,9 @@ See below for a quickstart example that you can copy and run immediately.
 
 ## Usage
 
-The `neovim` package exposes these functions:
+### Functions
+
+The `neovim` package provides these functions:
 
 - `findNvim`: Tries to find a usable `nvim` binary on the current system.
 - `attach`: The primary interface. Takes a process, socket, or pair of write/read streams and returns a `NeovimClient` connected to an `nvim` process.
@@ -26,7 +28,7 @@ The `neovim` package exposes these functions:
 
 Following is a complete, working example.
 
-1. Install the `neovim` package _locally_ (i.e. without `-g`. Node throws `ERR_MODULE_NOT_FOUND` if a script imports a _globally_ installed package).
+1. Install the `neovim` package _locally_ in any directory (i.e. without `-g`. Node throws `ERR_MODULE_NOT_FOUND` if a script imports a _globally_ installed package).
    ```bash
    npm install neovim
    ```
@@ -226,7 +228,7 @@ mv -f packages/neovim/doc/types/* types/
 mv packages/neovim/doc/* .
 rm -r packages/
 git add *
-git commit
+git commit -m 'publish docs'
 git push origin HEAD:gh-pages
 ```
 
@@ -240,7 +242,7 @@ After cloning the repo, run `npm install` to install dev dependencies. The main 
 * [@mhartington](https://github.com/mhartington) for TypeScript rewrite
 * [@fritzy](https://github.com/fritzy) for transferring over the npm package repo `neovim`!
 * [@rhysd](https://github.com/rhysd), [@tarruda](https://github.com/tarruda), [@nhynes](https://github.com/nhynes) on work for the original `node-client`
-* [@justinmk](https://github.com/justinmk) General neovim maintainer
+* [@justinmk](https://github.com/justinmk) Neovim maintainer
 
 [Coverage Badge]: https://codecov.io/gh/neovim/node-client/branch/master/graph/badge.svg
 [Coverage Report]: https://codecov.io/gh/neovim/node-client
