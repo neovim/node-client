@@ -207,9 +207,8 @@ Only maintainers of the [neovim NPM package](https://www.npmjs.com/package/neovi
    ```
 3. Post-release tasks:
    ```bash
-   cd packages/neovim/
    npm version -w packages/neovim/ --no-git-tag-version prerelease --preid dev
-   git add package*.json && git commit -m bump
+   git add packages/*/package.json package*.json && git commit -m bump
    git push
    ```
 
