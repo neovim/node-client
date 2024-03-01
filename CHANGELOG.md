@@ -1,5 +1,10 @@
 # Changes
 
+## [5.0.0](https://github.com/neovim/node-client/compare/v4.11.0...v5.0.0) (2024-03-01)
+
+- Renamed `getNvimFromEnv` to `findNvim`
+- fix: `findNvim()` fails if path has spaces. #319
+
 ## [4.11.0](https://github.com/neovim/node-client/compare/v4.10.0...v4.11.0) (2024-02-07)
 
 - `getNvimFromEnv` provides a way to easily find `nvim` on the user's system. (Currently depends on `$PATH` #267)
