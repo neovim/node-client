@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { join, delimiter } from 'node:path';
 import { constants, existsSync, accessSync } from 'node:fs';
 
@@ -125,13 +125,13 @@ export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
   const matches = new Array<NvimVersion>();
   const invalid = new Array<NvimVersion>();
   for (let i = 0; i !== pathLength; i = i + 1) {
-    const possibleNvimPath = join(paths[i], windows ? 'nvim.exe' : 'nvim');
-    if (existsSync(possibleNvimPath)) {
+    const nvimPath = join(paths[i], windows ? 'nvim.exe' : 'nvim');
+    if (existsSync(nvimPath)) {
       try {
-        accessSync(possibleNvimPath, constants.X_OK);
-        const nvimVersionFull = execSync(
-          `${possibleNvimPath} --version`
-        ).toString();
+        accessSync(nvimPath, constants.X_OK);
+        const nvimVersionFull = execFileSync(nvimPath, [
+          '--version',
+        ]).toString();
         const nvimVersionMatch = nvimVersionRegex.exec(nvimVersionFull);
         const buildTypeMatch = buildTypeRegex.exec(nvimVersionFull);
         const luaJitVersionMatch = luaJitVersionRegex.exec(nvimVersionFull);
@@ -142,14 +142,14 @@ export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
           ) {
             invalid.push({
               nvimVersion: nvimVersionMatch[1],
-              path: possibleNvimPath,
+              path: nvimPath,
               buildType: buildTypeMatch[1],
               luaJitVersion: luaJitVersionMatch[1],
             });
           } else {
             matches.push({
               nvimVersion: nvimVersionMatch[1],
-              path: possibleNvimPath,
+              path: nvimPath,
               buildType: buildTypeMatch[1],
               luaJitVersion: luaJitVersionMatch[1],
             });
@@ -157,7 +157,7 @@ export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
         }
       } catch (e) {
         invalid.push({
-          path: possibleNvimPath,
+          path: nvimPath,
           error: e,
         });
       }
