@@ -31,6 +31,13 @@ function setupWinstonLogger(): Logger {
     logger.add(new winston.transports.Console({ silent: true }));
   }
 
+  // Monkey-patch `console` so that it does not write to the RPC (stdio) channel.
+  Object.keys(console).forEach((k: keyof Console) => {
+    (console as any)[k] = function () {
+      (logger as any)[k === 'log' ? 'info' : k].apply(logger, arguments);
+    };
+  });
+
   return logger;
 }
 

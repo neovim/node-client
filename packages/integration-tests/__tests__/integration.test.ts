@@ -65,6 +65,14 @@ describe('Node host', () => {
   // done();
   // });
 
+  it('console.log is monkey-patched to logger.info #329', async () => {
+    const spy = jest.spyOn(nvim.logger, 'info');
+    console.log('log message');
+    expect(spy).toHaveBeenCalledWith('log message');
+    // Still alive?
+    expect(await nvim.eval('1+1')).toEqual(2);
+  });
+
   it('can run a command from plugin', async () => {
     await nvim.command('JSHostTestCmd');
     const line = await nvim.line;
