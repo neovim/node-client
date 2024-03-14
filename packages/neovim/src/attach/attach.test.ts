@@ -38,21 +38,16 @@ describe('Nvim API', () => {
   }
 
   beforeAll(async () => {
-    try {
-      proc = startNvim();
+    proc = startNvim();
 
-      nvim = attach({ proc });
-      nvim.on('request', (method, args, resp) => {
-        requests.push({ method, args });
-        resp.send(`received ${method}(${args})`);
-      });
-      nvim.on('notification', (method, args) => {
-        notifications.push({ method, args });
-      });
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log(err);
-    }
+    nvim = attach({ proc });
+    nvim.on('request', (method, args, resp) => {
+      requests.push({ method, args });
+      resp.send(`received ${method}(${args})`);
+    });
+    nvim.on('notification', (method, args) => {
+      notifications.push({ method, args });
+    });
   });
 
   afterAll(() => {
