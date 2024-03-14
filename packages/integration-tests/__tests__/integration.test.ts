@@ -4,13 +4,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as http from 'http';
 
-import { attach } from 'neovim';
+import { NeovimClient, attach } from 'neovim';
 
 describe('Node host', () => {
   const testdir = process.cwd();
-  let proc;
+  let proc: cp.ChildProcessWithoutNullStreams;
   let args;
-  let nvim;
+  let nvim: NeovimClient;
 
   beforeAll(async () => {
     const plugdir = path.resolve(__dirname);

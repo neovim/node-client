@@ -1,9 +1,7 @@
 /* eslint-env jest */
-import * as cp from 'node:child_process';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as which from 'which';
-import { attach } from '../attach';
-import { NeovimClient } from './client';
+import * as testUtil from '../testUtil';
 
 try {
   which.sync('nvim');
@@ -17,22 +15,15 @@ try {
 }
 
 describe('Window API', () => {
-  let proc;
-  let nvim: NeovimClient;
+  let nvim: ReturnType<typeof testUtil.getNvim>;
 
   beforeAll(async () => {
-    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', '--noplugin'], {
-      cwd: __dirname,
-    });
-
-    nvim = attach({ proc });
+    testUtil.startNvim2();
+    nvim = testUtil.getNvim();
   });
 
   afterAll(() => {
-    nvim.quit();
-    if (proc && proc.connected) {
-      proc.disconnect();
-    }
+    testUtil.stopNvim2();
   });
 
   beforeEach(() => {});

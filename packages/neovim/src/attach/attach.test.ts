@@ -1,10 +1,9 @@
 /* eslint-env jest */
-import * as cp from 'node:child_process';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as which from 'which';
 import { attach } from './attach';
-import { Logger, logger } from '../utils/logger';
-import { NeovimClient } from '../api/client';
+import { Logger } from '../utils/logger';
+import * as testUtil from '../testUtil';
 
 try {
   which.sync('nvim');
@@ -18,29 +17,14 @@ try {
 }
 
 describe('Nvim API', () => {
-  let proc;
-  let nvim;
+  let nvim: ReturnType<typeof testUtil.getNvim>;
   let requests;
   let notifications;
 
-  function startNvim() {
-    return cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', '--noplugin'], {
-      cwd: __dirname,
-    });
-  }
-
-  function stopNvim(proc_: cp.ChildProcessWithoutNullStreams | NeovimClient) {
-    if (proc_ instanceof NeovimClient) {
-      proc_.command('qa!');
-    } else if (proc_ && proc_.connected) {
-      proc_.disconnect();
-    }
-  }
-
   beforeAll(async () => {
-    proc = startNvim();
+    testUtil.startNvim2();
+    nvim = testUtil.getNvim();
 
-    nvim = attach({ proc });
     nvim.on('request', (method, args, resp) => {
       requests.push({ method, args });
       resp.send(`received ${method}(${args})`);
@@ -51,8 +35,7 @@ describe('Nvim API', () => {
   });
 
   afterAll(() => {
-    stopNvim(nvim);
-    stopNvim(proc);
+    testUtil.stopNvim2();
   });
 
   beforeEach(() => {
@@ -62,6 +45,7 @@ describe('Nvim API', () => {
 
   it('console.log is monkey-patched to logger.info #329', async () => {
     const spy = jest.spyOn(nvim.logger, 'info');
+    // eslint-disable-next-line no-console
     console.log('log message');
     expect(spy).toHaveBeenCalledWith('log message');
     // Still alive?
@@ -69,13 +53,14 @@ describe('Nvim API', () => {
   });
 
   it('console.log NOT monkey-patched if custom logger passed to attach()', async () => {
-    const proc2 = startNvim();
+    const [proc2] = testUtil.startNvim(false);
     const logged: string[] = [];
+    let logger2 = {};
     const fakeLog = (msg: any) => {
       logged.push(msg);
       return logger2;
-    }
-    const logger2 = {
+    };
+    logger2 = {
       info: fakeLog,
       warn: fakeLog,
       debug: fakeLog,
@@ -84,20 +69,21 @@ describe('Nvim API', () => {
     const nvim2 = attach({ proc: proc2, options: { logger: logger2 } });
 
     const spy = jest.spyOn(nvim2.logger, 'info');
+    // eslint-disable-next-line no-console
     console.log('message 1');
     // console.log was NOT patched.
     expect(spy).toHaveBeenCalledTimes(0);
     // Custom logger did NOT get the message.
-    expect(logged).toEqual([])
+    expect(logged).toEqual([]);
 
     // Custom logger can be called explicitly.
-    nvim2.logger.info('message 2')
-    expect(logged).toEqual(['message 2'])
+    nvim2.logger.info('message 2');
+    expect(logged).toEqual(['message 2']);
 
     // Still alive?
     expect(await nvim2.eval('1+1')).toEqual(2);
 
-    stopNvim(nvim2);
+    testUtil.stopNvim(nvim2);
   });
 
   it('can send requests and receive response', async () => {
@@ -152,6 +138,7 @@ describe('Nvim API', () => {
   });
 
   it('emits "disconnect" after quit', done => {
+    const proc = testUtil.getNvimProc();
     const disconnectMock = jest.fn();
     nvim.on('disconnect', disconnectMock);
     nvim.quit();

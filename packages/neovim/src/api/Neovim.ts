@@ -1,5 +1,5 @@
 import { BaseApi } from './Base';
-import { createChainableApi } from './helpers/createChainableApi';
+import { createChainableApi } from './utils/createChainableApi';
 import { Buffer, AsyncBuffer } from './Buffer';
 import { Tabpage, AsyncTabpage } from './Tabpage';
 import { Window, AsyncWindow } from './Window';
