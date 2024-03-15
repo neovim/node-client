@@ -1,20 +1,7 @@
 /* eslint-env jest */
 import * as path from 'node:path';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as which from 'which';
 import { Neovim } from './Neovim';
 import * as testUtil from '../testUtil';
-
-try {
-  which.sync('nvim');
-} catch (e) {
-  // eslint-disable-next-line no-console
-  console.error(
-    'A Neovim installation is required to run the tests',
-    '(see https://github.com/neovim/neovim/wiki/Installing)'
-  );
-  process.exit(1);
-}
 
 describe('Neovim API', () => {
   let nvim: ReturnType<typeof testUtil.getNvim>;

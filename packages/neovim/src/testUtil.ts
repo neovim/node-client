@@ -1,6 +1,7 @@
 import * as cp from 'node:child_process';
 import { NeovimClient } from './api/client';
 import { attach } from './attach';
+import { findNvim } from './utils/findNvim';
 
 let proc: cp.ChildProcessWithoutNullStreams;
 let nvim: NeovimClient;
@@ -47,6 +48,15 @@ export function startNvim2(): void {
 export function stopNvim2(): void {
   stopNvim(proc);
   stopNvim(nvim);
+}
+
+export function findNvimOrFail() {
+  const minVersion = '0.9.5';
+  const found = findNvim({ minVersion });
+  if (found.matches.length === 0) {
+    throw new Error(`nvim ${minVersion} not found`);
+  }
+  return found.matches[0].path;
 }
 
 // beforeAll(async () => {

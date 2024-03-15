@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as http from 'http';
 
-import { NeovimClient, attach } from 'neovim';
+import { NeovimClient, attach, findNvim } from 'neovim';
 
 describe('Node host', () => {
   const testdir = process.cwd();
@@ -36,10 +36,18 @@ describe('Node host', () => {
     let g:node_host_prog = '${path.resolve(plugdir, '../../neovim/bin/cli')}'
       `
     );
-    cp.spawnSync('nvim', args);
+
+    const minVersion = '0.9.5'
+    const nvimInfo = findNvim({ minVersion: minVersion });
+    const nvimPath = nvimInfo.matches[0]?.path;
+    if (!nvimPath) {
+      throw new Error(`nvim ${minVersion} not found`)
+    }
+
+    cp.spawnSync(nvimPath, args);
 
     proc = cp.spawn(
-      'nvim',
+      nvimPath,
       ['-u', nvimrc, '-i', 'NONE', '--headless', '--embed', '-n'],
       {}
     );
