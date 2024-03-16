@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import * as testSetup from '../testSetup';
+import * as testUtil from '../testUtil';
 
 function wait(ms: number): Promise<void> {
   return new Promise(resolve => {
@@ -10,7 +10,7 @@ function wait(ms: number): Promise<void> {
 }
 
 describe('Buffer API', () => {
-  let nvim: ReturnType<typeof testSetup.getNvim>;
+  let nvim: ReturnType<typeof testUtil.startNvim>[1];
 
   // utility to allow each test to be run in its
   // own buffer
@@ -32,7 +32,11 @@ describe('Buffer API', () => {
   }
 
   beforeAll(async () => {
-    nvim = testSetup.getNvim();
+    [, nvim] = testUtil.startNvim();
+  });
+
+  afterAll(() => {
+    testUtil.stopNvim();
   });
 
   it(
@@ -379,10 +383,14 @@ describe('Buffer API', () => {
 });
 
 describe('Buffer event updates', () => {
-  let nvim: ReturnType<typeof testSetup.getNvim>;
+  let nvim: ReturnType<typeof testUtil.startNvim>[1];
 
   beforeAll(async () => {
-    nvim = testSetup.getNvim();
+    [, nvim] = testUtil.startNvim();
+  });
+
+  afterAll(() => {
+    testUtil.stopNvim();
   });
 
   beforeEach(async () => {

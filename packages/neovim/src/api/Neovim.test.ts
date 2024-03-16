@@ -1,13 +1,17 @@
 /* eslint-env jest */
 import * as path from 'node:path';
 import { Neovim } from './Neovim';
-import * as testSetup from '../testSetup';
+import * as testUtil from '../testUtil';
 
 describe('Neovim API', () => {
-  let nvim: ReturnType<typeof testSetup.getNvim>;
+  let nvim: ReturnType<typeof testUtil.startNvim>[1];
 
   beforeAll(async () => {
-    nvim = testSetup.getNvim();
+    [, nvim] = testUtil.startNvim();
+  });
+
+  afterAll(() => {
+    testUtil.stopNvim();
   });
 
   it('sets transport when initialized', () => {
@@ -24,7 +28,7 @@ describe('Neovim API', () => {
       expect(buffers.length).toBe(1);
       buffers[0].name = 'hello.txt';
 
-      nvim.command('e! goodbye.txt');
+      nvim.command('noswapfile e! goodbye.txt');
       expect((await nvim.buffers).length).toBe(2);
       expect(await nvim.buffer.name).toMatch(/goodbye\.txt$/);
 

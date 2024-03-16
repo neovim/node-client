@@ -98,14 +98,21 @@ export class BaseApi extends EventEmitter {
     return this[DO_REQUEST](name, args).catch(err => {
       const newError = new Error(err.message);
       newError.stack = stack;
-      this.logger.error(`failed request to "%s": %s: %s`, name, newError.name, newError.message);
+      this.logger.error(
+        `failed request to "%s": %s: %s`,
+        name,
+        newError.name,
+        newError.message
+      );
       throw newError;
     });
   }
 
   request(name: string, args: any[] = []): Promise<any> {
     // Dummy error, to get stacktrace.
-    const error = new Error(`failed request to "${name}" (see $NVIM_NODE_LOG_FILE for details, if it was set)`);
+    const error = new Error(
+      `failed request to "${name}" (see $NVIM_NODE_LOG_FILE for details, if it was set)`
+    );
 
     return this.asyncRequest(name, args, error.stack);
   }

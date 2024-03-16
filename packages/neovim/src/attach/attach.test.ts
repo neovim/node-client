@@ -2,15 +2,15 @@
 import { attach } from './attach';
 import { Logger } from '../utils/logger';
 import * as testUtil from '../testUtil';
-import * as testSetup from '../testSetup';
 
 describe('Nvim API', () => {
-  let nvim: ReturnType<typeof testSetup.getNvim>;
-  let requests;
-  let notifications;
+  let proc: ReturnType<typeof testUtil.startNvim>[0];
+  let nvim: ReturnType<typeof testUtil.startNvim>[1];
+  let requests: { method: string; args: number[] }[];
+  let notifications: { method: string; args: number[] }[];
 
   beforeAll(async () => {
-    nvim = testSetup.getNvim();
+    [proc, nvim] = testUtil.startNvim();
 
     nvim.on('request', (method, args, resp) => {
       requests.push({ method, args });
@@ -19,6 +19,10 @@ describe('Nvim API', () => {
     nvim.on('notification', (method, args) => {
       notifications.push({ method, args });
     });
+  });
+
+  afterAll(() => {
+    testUtil.stopNvim();
   });
 
   beforeEach(() => {
@@ -48,8 +52,11 @@ describe('Nvim API', () => {
       warn: fakeLog,
       debug: fakeLog,
       error: fakeLog,
-    } as Logger;
-    const nvim2 = attach({ proc: proc2, options: { logger: logger2 } });
+    };
+    const nvim2 = attach({
+      proc: proc2,
+      options: { logger: logger2 as Logger },
+    });
 
     const spy = jest.spyOn(nvim2.logger, 'info');
     // eslint-disable-next-line no-console
@@ -112,16 +119,23 @@ describe('Nvim API', () => {
     const buf = await nvim.buffer;
     expect(buf instanceof nvim.Buffer).toEqual(true);
 
-    const lines = await buf.getLines({ start: 0, end: -1 });
+    const lines = await buf.getLines({
+      start: 0,
+      end: -1,
+      strictIndexing: true,
+    });
     expect(lines).toEqual([]);
 
     buf.setLines(['line1', 'line2'], { start: 0, end: 1 });
-    const newLines = await buf.getLines({ start: 0, end: -1 });
+    const newLines = await buf.getLines({
+      start: 0,
+      end: -1,
+      strictIndexing: true,
+    });
     expect(newLines).toEqual(['line1', 'line2']);
   });
 
   it('emits "disconnect" after quit', done => {
-    const proc = testSetup.getNvimProc();
     const disconnectMock = jest.fn();
     nvim.on('disconnect', disconnectMock);
     nvim.quit();
