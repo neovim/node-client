@@ -1,18 +1,13 @@
 /* eslint-env jest */
 import * as path from 'node:path';
 import { Neovim } from './Neovim';
-import * as testUtil from '../testUtil';
+import * as testSetup from '../testSetup';
 
 describe('Neovim API', () => {
-  let nvim: ReturnType<typeof testUtil.getNvim>;
+  let nvim: ReturnType<typeof testSetup.getNvim>;
 
   beforeAll(async () => {
-    testUtil.startNvim2();
-    nvim = testUtil.getNvim();
-  });
-
-  afterAll(() => {
-    testUtil.stopNvim2();
+    nvim = testSetup.getNvim();
   });
 
   it('sets transport when initialized', () => {

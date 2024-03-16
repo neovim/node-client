@@ -2,15 +2,15 @@
 import { attach } from './attach';
 import { Logger } from '../utils/logger';
 import * as testUtil from '../testUtil';
+import * as testSetup from '../testSetup';
 
 describe('Nvim API', () => {
-  let nvim: ReturnType<typeof testUtil.getNvim>;
+  let nvim: ReturnType<typeof testSetup.getNvim>;
   let requests;
   let notifications;
 
   beforeAll(async () => {
-    testUtil.startNvim2();
-    nvim = testUtil.getNvim();
+    nvim = testSetup.getNvim();
 
     nvim.on('request', (method, args, resp) => {
       requests.push({ method, args });
@@ -19,10 +19,6 @@ describe('Nvim API', () => {
     nvim.on('notification', (method, args) => {
       notifications.push({ method, args });
     });
-  });
-
-  afterAll(() => {
-    testUtil.stopNvim2();
   });
 
   beforeEach(() => {
@@ -125,7 +121,7 @@ describe('Nvim API', () => {
   });
 
   it('emits "disconnect" after quit', done => {
-    const proc = testUtil.getNvimProc();
+    const proc = testSetup.getNvimProc();
     const disconnectMock = jest.fn();
     nvim.on('disconnect', disconnectMock);
     nvim.quit();

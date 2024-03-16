@@ -1,19 +1,12 @@
 /* eslint-env jest */
-import * as testUtil from '../testUtil';
+import * as testSetup from '../testSetup';
 
 describe('Window API', () => {
-  let nvim: ReturnType<typeof testUtil.getNvim>;
+  let nvim: ReturnType<typeof testSetup.getNvim>;
 
   beforeAll(async () => {
-    testUtil.startNvim2();
-    nvim = testUtil.getNvim();
+    nvim = testSetup.getNvim();
   });
-
-  afterAll(() => {
-    testUtil.stopNvim2();
-  });
-
-  beforeEach(() => {});
 
   it('gets the current Window', async () => {
     const win = await nvim.window;

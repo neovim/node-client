@@ -3,20 +3,9 @@ import { NeovimClient } from './api/client';
 import { attach } from './attach';
 import { findNvim } from './utils/findNvim';
 
-let proc: cp.ChildProcessWithoutNullStreams;
-let nvim: NeovimClient;
-
-/**
- * Gets the current Nvim client being used in the current test.
- */
-export function getNvim(): NeovimClient {
-  return nvim;
-}
-
-export function getNvimProc(): cp.ChildProcessWithoutNullStreams {
-  return proc;
-}
-
+export function startNvim(): [cp.ChildProcessWithoutNullStreams, NeovimClient]
+export function startNvim(doAttach: false): [cp.ChildProcessWithoutNullStreams, undefined]
+export function startNvim(doAttach: true): [cp.ChildProcessWithoutNullStreams, NeovimClient]
 export function startNvim(
   doAttach: boolean = true
 ): [cp.ChildProcessWithoutNullStreams, NeovimClient | undefined] {
@@ -33,21 +22,13 @@ export function startNvim(
 export function stopNvim(
   proc_: cp.ChildProcessWithoutNullStreams | NeovimClient
 ) {
-  if (proc_ instanceof NeovimClient) {
+  if (!proc_) {
+    return;
+  } else if (proc_ instanceof NeovimClient) {
     proc_.quit();
   } else if (proc_ && proc_.connected) {
     proc_.disconnect();
   }
-}
-
-export function startNvim2(): void {
-  [proc, nvim] = startNvim();
-}
-
-// TODO: use jest beforeAll/afterAll instead of requiring the tests to do this explicitly.
-export function stopNvim2(): void {
-  stopNvim(proc);
-  stopNvim(nvim);
 }
 
 export function findNvimOrFail() {
@@ -58,7 +39,3 @@ export function findNvimOrFail() {
   }
   return found.matches[0].path;
 }
-
-// beforeAll(async () => {
-//   [proc, nvim] = testUtil.startNvim();
-// });
