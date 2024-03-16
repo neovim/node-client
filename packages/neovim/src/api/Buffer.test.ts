@@ -1,9 +1,5 @@
 /* eslint-env jest */
-import * as cp from 'node:child_process';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as which from 'which';
-import { attach } from '../attach';
-import { NeovimClient } from './client';
+import * as testUtil from '../testUtil';
 
 function wait(ms: number): Promise<void> {
   return new Promise(resolve => {
@@ -13,20 +9,8 @@ function wait(ms: number): Promise<void> {
   });
 }
 
-try {
-  which.sync('nvim');
-} catch (e) {
-  // eslint-disable-next-line no-console
-  console.error(
-    'A Neovim installation is required to run the tests',
-    '(see https://github.com/neovim/neovim/wiki/Installing)'
-  );
-  process.exit(1);
-}
-
 describe('Buffer API', () => {
-  let proc;
-  let nvim: NeovimClient;
+  let nvim: ReturnType<typeof testUtil.startNvim>[1];
 
   // utility to allow each test to be run in its
   // own buffer
@@ -48,18 +32,11 @@ describe('Buffer API', () => {
   }
 
   beforeAll(async () => {
-    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', '--noplugin'], {
-      cwd: __dirname,
-    });
-
-    nvim = attach({ proc });
+    [, nvim] = testUtil.startNvim();
   });
 
   afterAll(() => {
-    nvim.quit();
-    if (proc && proc.connected) {
-      proc.disconnect();
-    }
+    testUtil.stopNvim();
   });
 
   it(
@@ -406,22 +383,14 @@ describe('Buffer API', () => {
 });
 
 describe('Buffer event updates', () => {
-  let proc;
-  let nvim;
+  let nvim: ReturnType<typeof testUtil.startNvim>[1];
 
   beforeAll(async () => {
-    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', '--noplugin'], {
-      cwd: __dirname,
-    });
-
-    nvim = attach({ proc });
+    [, nvim] = testUtil.startNvim();
   });
 
   afterAll(() => {
-    nvim.quit();
-    if (proc && proc.connected) {
-      proc.disconnect();
-    }
+    testUtil.stopNvim();
   });
 
   beforeEach(async () => {

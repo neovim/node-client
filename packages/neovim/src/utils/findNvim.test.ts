@@ -1,19 +1,8 @@
 /* eslint-env jest */
-// eslint-disable-next-line import/no-extraneous-dependencies
-import which from 'which';
 import { findNvim, exportsForTesting, FindNvimResult } from './findNvim';
 
 const parseVersion = exportsForTesting.parseVersion;
 const compareVersions = exportsForTesting.compareVersions;
-
-try {
-  which.sync('nvim');
-} catch (e) {
-  // eslint-disable-next-line no-console
-  throw new Error(
-    'Nvim is required to run the tests (see https://github.com/neovim/neovim/wiki/Installing)'
-  );
-}
 
 describe('findNvim', () => {
   it('parseVersion()', () => {

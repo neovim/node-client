@@ -1,55 +1,79 @@
 /* eslint-env jest */
-import * as cp from 'node:child_process';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as which from 'which';
 import { attach } from './attach';
+import { Logger } from '../utils/logger';
+import * as testUtil from '../testUtil';
 
-try {
-  which.sync('nvim');
-} catch (e) {
-  // eslint-disable-next-line no-console
-  console.error(
-    'A Neovim installation is required to run the tests',
-    '(see https://github.com/neovim/neovim/wiki/Installing)'
-  );
-  process.exit(1);
-}
-
-describe('Nvim Promise API', () => {
-  let proc;
-  let nvim;
-  let requests;
-  let notifications;
+describe('Nvim API', () => {
+  let proc: ReturnType<typeof testUtil.startNvim>[0];
+  let nvim: ReturnType<typeof testUtil.startNvim>[1];
+  let requests: { method: string; args: number[] }[];
+  let notifications: { method: string; args: number[] }[];
 
   beforeAll(async () => {
-    try {
-      proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', '--noplugin'], {
-        cwd: __dirname,
-      });
+    [proc, nvim] = testUtil.startNvim();
 
-      nvim = attach({ proc });
-      nvim.on('request', (method, args, resp) => {
-        requests.push({ method, args });
-        resp.send(`received ${method}(${args})`);
-      });
-      nvim.on('notification', (method, args) => {
-        notifications.push({ method, args });
-      });
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log(err);
-    }
+    nvim.on('request', (method, args, resp) => {
+      requests.push({ method, args });
+      resp.send(`received ${method}(${args})`);
+    });
+    nvim.on('notification', (method, args) => {
+      notifications.push({ method, args });
+    });
   });
 
   afterAll(() => {
-    if (proc && proc.connected) {
-      proc.disconnect();
-    }
+    testUtil.stopNvim();
   });
 
   beforeEach(() => {
     requests = [];
     notifications = [];
+  });
+
+  it('console.log is monkey-patched to logger.info #329', async () => {
+    const spy = jest.spyOn(nvim.logger, 'info');
+    // eslint-disable-next-line no-console
+    console.log('log message');
+    expect(spy).toHaveBeenCalledWith('log message');
+    // Still alive?
+    expect(await nvim.eval('1+1')).toEqual(2);
+  });
+
+  it('console.log NOT monkey-patched if custom logger passed to attach()', async () => {
+    const [proc2] = testUtil.startNvim(false);
+    const logged: string[] = [];
+    let logger2 = {};
+    const fakeLog = (msg: any) => {
+      logged.push(msg);
+      return logger2;
+    };
+    logger2 = {
+      info: fakeLog,
+      warn: fakeLog,
+      debug: fakeLog,
+      error: fakeLog,
+    };
+    const nvim2 = attach({
+      proc: proc2,
+      options: { logger: logger2 as Logger },
+    });
+
+    const spy = jest.spyOn(nvim2.logger, 'info');
+    // eslint-disable-next-line no-console
+    console.log('message 1');
+    // console.log was NOT patched.
+    expect(spy).toHaveBeenCalledTimes(0);
+    // Custom logger did NOT get the message.
+    expect(logged).toEqual([]);
+
+    // Custom logger can be called explicitly.
+    nvim2.logger.info('message 2');
+    expect(logged).toEqual(['message 2']);
+
+    // Still alive?
+    expect(await nvim2.eval('1+1')).toEqual(2);
+
+    testUtil.stopNvim(nvim2);
   });
 
   it('can send requests and receive response', async () => {
@@ -95,11 +119,19 @@ describe('Nvim Promise API', () => {
     const buf = await nvim.buffer;
     expect(buf instanceof nvim.Buffer).toEqual(true);
 
-    const lines = await buf.getLines({ start: 0, end: -1 });
+    const lines = await buf.getLines({
+      start: 0,
+      end: -1,
+      strictIndexing: true,
+    });
     expect(lines).toEqual([]);
 
     buf.setLines(['line1', 'line2'], { start: 0, end: 1 });
-    const newLines = await buf.getLines({ start: 0, end: -1 });
+    const newLines = await buf.getLines({
+      start: 0,
+      end: -1,
+      strictIndexing: true,
+    });
     expect(newLines).toEqual(['line1', 'line2']);
   });
 

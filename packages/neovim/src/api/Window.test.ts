@@ -1,41 +1,16 @@
 /* eslint-env jest */
-import * as cp from 'node:child_process';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as which from 'which';
-import { attach } from '../attach';
-import { NeovimClient } from './client';
-
-try {
-  which.sync('nvim');
-} catch (e) {
-  // eslint-disable-next-line no-console
-  console.error(
-    'A Neovim installation is required to run the tests',
-    '(see https://github.com/neovim/neovim/wiki/Installing)'
-  );
-  process.exit(1);
-}
+import * as testUtil from '../testUtil';
 
 describe('Window API', () => {
-  let proc;
-  let nvim: NeovimClient;
+  let nvim: ReturnType<typeof testUtil.startNvim>[1];
 
   beforeAll(async () => {
-    proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n', '--noplugin'], {
-      cwd: __dirname,
-    });
-
-    nvim = attach({ proc });
+    [, nvim] = testUtil.startNvim();
   });
 
   afterAll(() => {
-    nvim.quit();
-    if (proc && proc.connected) {
-      proc.disconnect();
-    }
+    testUtil.stopNvim();
   });
-
-  beforeEach(() => {});
 
   it('gets the current Window', async () => {
     const win = await nvim.window;

@@ -21,8 +21,19 @@ See below for a quickstart example that you can copy and run immediately.
 
 The `neovim` package provides these functions:
 
-- `findNvim`: Tries to find a usable `nvim` binary on the current system.
-- `attach`: The primary interface. Takes a process, socket, or pair of write/read streams and returns a `NeovimClient` connected to an `nvim` process.
+- `attach()`: The primary interface. Takes a process, socket, or pair of write/read streams and returns a `NeovimClient` connected to an `nvim` process.
+- `findNvim()`: Tries to find a usable `nvim` binary on the current system.
+
+### Logging
+
+- At load-time, the `neovim` module replaces ("monkey patches") `console` with its `logger`
+  interface, so `console.log` will call `logger.info` instead of writing to stdout (which would
+  break the stdio RPC channel).
+    - To skip this patching of `console.log`, pass a custom `logger` to `attach()`.
+    - Best practice in any case is to use the `logger` available from the `NeovimClient` returned by
+      `attach()`, instead of `console` logging functions.
+- Set the `$NVIM_NODE_LOG_FILE` env var to (also) write logs to a file.
+- Set the `$ALLOW_CONSOLE` env var to (also) write logs to stdout.
 
 ### Quickstart: connect to Nvim
 
@@ -34,53 +45,54 @@ Following is a complete, working example.
    ```
 2. Paste the script below into a `demo.mjs` file and run it!
    ```
-   node demo.mjs
+   ALLOW_CONSOLE=1 node demo.mjs
    ```
+    - `$ALLOW_CONSOLE` env var must be set, because logs are normally not printed to stdout.
+    - Script:
+     ```js
+     import * as child_process from 'node:child_process'
+     import * as assert from 'node:assert'
+     import { attach, findNvim } from 'neovim'
 
-```js
-import * as child_process from 'node:child_process'
-import * as assert from 'node:assert'
-import { attach, findNvim } from 'neovim'
+     // Find `nvim` on the system and open a channel to it.
+     (async function() {
+       const found = findNvim({ orderBy: 'desc', minVersion: '0.9.0' })
+       console.log(found);
+       const nvim_proc = child_process.spawn(found.matches[0].path, ['--clean', '--embed'], {});
 
-// Find `nvim` on the system and open a channel to it.
-(async function() {
-  const found = findNvim({ orderBy: 'desc', minVersion: '0.9.0' })
-  console.log(found);
-  const nvim_proc = child_process.spawn(found.matches[0].path, ['--clean', '--embed'], {});
+       const nvim = attach({ proc: nvim_proc });
+       nvim.command('vsp | vsp | vsp');
 
-  const nvim = attach({ proc: nvim_proc });
-  nvim.command('vsp | vsp | vsp');
+       const windows = await nvim.windows;
+       assert.deepStrictEqual(windows.length, 4);
+       assert.ok(windows[0] instanceof nvim.Window);
 
-  const windows = await nvim.windows;
-  assert.deepStrictEqual(windows.length, 4);
-  assert.ok(windows[0] instanceof nvim.Window);
+       nvim.window = windows[2];
+       const win = await nvim.window;
+       assert.ok(win.id !== windows[0].id);
+       assert.deepStrictEqual(win.id, windows[2].id);
 
-  nvim.window = windows[2];
-  const win = await nvim.window;
-  assert.ok(win.id !== windows[0].id);
-  assert.deepStrictEqual(win.id, windows[2].id);
+       const buf = await nvim.buffer;
+       assert.ok(buf instanceof nvim.Buffer);
+       const lines = await buf.lines;
+       assert.deepStrictEqual(lines, []);
 
-  const buf = await nvim.buffer;
-  assert.ok(buf instanceof nvim.Buffer);
-  const lines = await buf.lines;
-  assert.deepStrictEqual(lines, []);
+       await buf.replace(['line1', 'line2'], 0);
+       const newLines = await buf.lines;
+       assert.deepStrictEqual(newLines, ['line1', 'line2']);
 
-  await buf.replace(['line1', 'line2'], 0);
-  const newLines = await buf.lines;
-  assert.deepStrictEqual(newLines, ['line1', 'line2']);
-
-  // console.log('%O', nvim_proc);
-  if (nvim_proc.disconnect) {
-    nvim_proc.disconnect();
-  }
-  nvim.quit();
-  while (nvim_proc.exitCode === null) {
-    await new Promise(resolve => setTimeout(resolve, 100))
-    console.log('waiting for Nvim (pid %d) to exit', nvim_proc.pid);
-  }
-  console.log('Nvim exit code: %d', nvim_proc.exitCode);
-})();
-```
+       // console.log('%O', nvim_proc);
+       if (nvim_proc.disconnect) {
+         nvim_proc.disconnect();
+       }
+       nvim.quit();
+       while (nvim_proc.exitCode === null) {
+         await new Promise(resolve => setTimeout(resolve, 100))
+         console.log('waiting for Nvim (pid %d) to exit', nvim_proc.pid);
+       }
+       console.log('Nvim exit code: %d', nvim_proc.exitCode);
+     })();
+     ```
 
 ### Create a remote plugin
 
@@ -93,8 +105,6 @@ If the plugin is a folder, the `main` script from `package.json` will be loaded.
 The plugin must export a function which takes a `NvimPlugin` object as its only parameter. You may then register autocmds, commands and functions by calling methods on the `NvimPlugin` object.
 **Avoid heavy initialisation or async functions at this stage,** because Nvim may only be collecting information about your plugin without wishing to actually use it.
 Instead, wait for one of your autocmds, commands or functions to be called before starting any processing.
-
-The host replaces `console` with a `winston` interface, so `console.log` will call `winston.info`.
 
 ### Remote plugin examples
 
@@ -169,7 +179,7 @@ For debugging and configuring logging, you can set the following environment var
 
 - `NVIM_NODE_HOST_DEBUG`: Spawns the node process that calls `neovim-client-host` with `--inspect-brk` so you can have a debugger.
   Pair that with this [Node Inspector Manager Chrome plugin](https://chrome.google.com/webstore/detail/nodejs-v8-inspector-manag/gnhhdgbaldcilmgcpfddgdbkhjohddkj?hl=en)
-- Logging: Logging is done using `winston` through the `logger` module. Plugins have `console` replaced with this interface.
+- Logging: Logging is done using `winston` through the `logger` module. This package replaces `console` with this interface.
     - `NVIM_NODE_LOG_LEVEL`: Sets the logging level for winston. Default is `debug`.
       Available levels: `{ error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }`
     - `NVIM_NODE_LOG_FILE`: Sets the log file path.
@@ -189,6 +199,14 @@ For debugging and configuring logging, you can set the following environment var
            ```
 
 See the tests and [`scripts`](https://github.com/neovim/node-client/tree/master/packages/neovim/scripts) for more examples.
+
+## Develop
+
+After cloning the repo, run `npm install` to install dev dependencies. The main `neovim` library is in `packages/neovim`.
+
+### Run tests
+
+    npm run build && NVIM_NODE_LOG_FILE=log npm run test
 
 ## Maintain
 
@@ -232,11 +250,7 @@ git commit -m 'publish docs'
 git push origin HEAD:gh-pages
 ```
 
-## Contributing
-
-After cloning the repo, run `npm install` to install dev dependencies. The main `neovim` library is in `packages/neovim`.
-
-### Contributors
+## Contributors
 
 * [@billyvg](https://github.com/billyvg) for rewrite
 * [@mhartington](https://github.com/mhartington) for TypeScript rewrite

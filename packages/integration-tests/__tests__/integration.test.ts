@@ -4,13 +4,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as http from 'http';
 
-import { attach } from 'neovim';
+import { NeovimClient, attach, findNvim } from 'neovim';
 
 describe('Node host', () => {
   const testdir = process.cwd();
-  let proc;
+  let proc: cp.ChildProcessWithoutNullStreams;
   let args;
-  let nvim;
+  let nvim: NeovimClient;
 
   beforeAll(async () => {
     const plugdir = path.resolve(__dirname);
@@ -36,10 +36,18 @@ describe('Node host', () => {
     let g:node_host_prog = '${path.resolve(plugdir, '../../neovim/bin/cli')}'
       `
     );
-    cp.spawnSync('nvim', args);
+
+    const minVersion = '0.9.5'
+    const nvimInfo = findNvim({ minVersion: minVersion });
+    const nvimPath = nvimInfo.matches[0]?.path;
+    if (!nvimPath) {
+      throw new Error(`nvim ${minVersion} not found`)
+    }
+
+    cp.spawnSync(nvimPath, args);
 
     proc = cp.spawn(
-      'nvim',
+      nvimPath,
       ['-u', nvimrc, '-i', 'NONE', '--headless', '--embed', '-n'],
       {}
     );
@@ -64,6 +72,14 @@ describe('Node host', () => {
   // nvim.command('UpdateRemotePlugins');
   // done();
   // });
+
+  it('console.log is monkey-patched to logger.info #329', async () => {
+    const spy = jest.spyOn(nvim.logger, 'info');
+    console.log('log message');
+    expect(spy).toHaveBeenCalledWith('log message');
+    // Still alive?
+    expect(await nvim.eval('1+1')).toEqual(2);
+  });
 
   it('can run a command from plugin', async () => {
     await nvim.command('JSHostTestCmd');

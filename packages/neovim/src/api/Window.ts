@@ -1,6 +1,6 @@
 import { BaseApi } from './Base';
 import { ExtType, Metadata, Promisify } from './types';
-import { createChainableApi } from './helpers/createChainableApi';
+import { createChainableApi } from './utils/createChainableApi';
 import { Tabpage, AsyncTabpage } from './Tabpage';
 import { Buffer, AsyncBuffer } from './Buffer';
 

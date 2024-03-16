@@ -10,6 +10,8 @@ on:
 
 env:
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  # Purpose of this (currently) is to exercise related codepaths.
+  NVIM_NODE_LOG_FILE: 'node-client.test.log'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
