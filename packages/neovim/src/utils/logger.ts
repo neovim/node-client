@@ -14,6 +14,20 @@ function setupWinstonLogger(): Logger {
       new winston.transports.File({
         filename: process.env.NVIM_NODE_LOG_FILE,
         level,
+        format: winston.format.combine(
+            winston.format.splat(),
+            winston.format.timestamp({
+                format: 'YYYY-MM-DD HH:mm:ss',
+            }),
+            winston.format.errors({ stack: true }),
+            winston.format.printf(info => {
+                if (info.raw) {
+                    return info.message
+                }
+                const lvl = info.level === 'debug' ? 'DBG' : info.level.slice(0, 3).toUpperCase();
+                return `${info.timestamp} ${lvl} ${info.message}`
+            })
+        ),
       })
     );
   }
