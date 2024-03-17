@@ -1,5 +1,11 @@
 # Changes
 
+## [5.1.0](https://github.com/neovim/node-client/compare/v4.11.0...v5.1.0) (prerelease)
+
+- fix: console.log() writes to RPC channel #202 #329
+- feat: eliminate `which` dependency
+- feat: improve logs + error messages
+
 ## [5.0.1](https://github.com/neovim/node-client/compare/v4.11.0...v5.0.1) (2024-03-01)
 
 - Renamed `getNvimFromEnv` to `findNvim`
