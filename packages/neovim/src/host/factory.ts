@@ -2,7 +2,6 @@ import * as path from 'node:path';
 import Module = require('module');
 
 import { Neovim } from '../api/Neovim';
-import { logger } from '../utils/logger';
 
 import { NvimPlugin } from './NvimPlugin';
 
@@ -17,7 +16,7 @@ function createPlugin(
   options: LoadPluginOptions = {}
 ): NvimPlugin | null {
   try {
-    logger.debug(
+    nvim.logger.debug(
       `createPlugin.${filename}.clearCache: ${options && !options.cache}`
     );
 
@@ -42,8 +41,8 @@ function createPlugin(
     }
   } catch (err) {
     const file = path.basename(filename);
-    logger.error(`[${file}] ${err.stack}`);
-    logger.error(`[${file}] Error loading child ChildPlugin ${filename}`);
+    nvim.logger.error(`[${file}] ${err.stack}`);
+    nvim.logger.error(`[${file}] Error loading child ChildPlugin ${filename}`);
   }
 
   // There may have been an error, but maybe not

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const { Host } = require('../lib/host');
-const { logger } = require('../lib/utils/logger');
+const { getLogger } = require('../lib/utils/logger');
 const { spawnSync } = require('child_process');
 
 // node <current script> <rest of args>
@@ -35,9 +35,9 @@ try {
   const host = new Host(args);
   host.start({ proc: process });
 } catch (err) {
-  logger.error(err);
+  getLogger().error(err);
 }
 
 process.on('unhandledRejection', (reason, p) => {
-  logger.info('Unhandled Rejection at:', p, 'reason:', reason);
+  getLogger().info('Unhandled Rejection at:', p, 'reason:', reason);
 });

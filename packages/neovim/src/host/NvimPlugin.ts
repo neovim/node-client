@@ -1,6 +1,5 @@
 /* eslint import/export:0 */
 import { Neovim } from '../api/Neovim';
-import { logger } from '../utils/logger';
 import { Spec } from '../types/Spec';
 
 export interface NvimPluginOptions {
@@ -108,7 +107,9 @@ export class NvimPlugin {
 
   registerAutocmd(name: string, fn: any, options?: AutocmdOptions): void {
     if (!options.pattern) {
-      logger.error(`registerAutocmd expected pattern option for ${name}`);
+      this.nvim.logger.error(
+        `registerAutocmd expected pattern option for ${name}`
+      );
       return;
     }
 
@@ -131,7 +132,9 @@ export class NvimPlugin {
         spec,
       };
     } catch (err) {
-      logger.error(`registerAutocmd expected callable argument for ${name}`);
+      this.nvim.logger.error(
+        `registerAutocmd expected callable argument for ${name}`
+      );
     }
   }
 
@@ -163,7 +166,9 @@ export class NvimPlugin {
         spec,
       };
     } catch (err) {
-      logger.error(`registerCommand expected callable argument for ${name}`);
+      this.nvim.logger.error(
+        `registerCommand expected callable argument for ${name}`
+      );
     }
   }
 
@@ -199,7 +204,9 @@ export class NvimPlugin {
         spec,
       };
     } catch (err) {
-      logger.error(`registerFunction expected callable argument for ${name}`);
+      this.nvim.logger.error(
+        `registerFunction expected callable argument for ${name}`
+      );
     }
   }
 
@@ -231,7 +238,7 @@ export class NvimPlugin {
         break;
       default:
         const errMsg = `No handler for unknown type ${type}: "${name}" in ${this.filename}`;
-        logger.error(errMsg);
+        this.nvim.logger.error(errMsg);
         throw new Error(errMsg);
     }
 
@@ -243,12 +250,14 @@ export class NvimPlugin {
           : await handler.fn(...args);
       } catch (err) {
         const msg = `Error in plugin for ${type}:${name}: ${err.message}`;
-        logger.error(`${msg} (file: ${this.filename}, stack: ${err.stack})`);
+        this.nvim.logger.error(
+          `${msg} (file: ${this.filename}, stack: ${err.stack})`
+        );
         throw new Error(err);
       }
     } else {
       const errMsg = `Missing handler for ${type}: "${name}" in ${this.filename}`;
-      logger.error(errMsg);
+      this.nvim.logger.error(errMsg);
       throw new Error(errMsg);
     }
   }

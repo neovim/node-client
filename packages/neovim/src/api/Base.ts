@@ -1,7 +1,7 @@
 import { EventEmitter } from 'node:events';
 
 import { Transport } from '../utils/transport';
-import { Logger } from '../utils/logger';
+import { Logger, getLogger } from '../utils/logger';
 import { VimValue } from '../types/VimValue';
 
 export interface BaseConstructorOptions {
@@ -50,7 +50,7 @@ export class BaseApi extends EventEmitter {
     this.setTransport(transport);
     this.data = data;
     // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-    this.logger = logger || require('../utils/logger').logger;
+    this.logger = logger || getLogger();
     this.client = client;
 
     if (metadata) {
@@ -82,10 +82,7 @@ export class BaseApi extends EventEmitter {
       });
     });
 
-  async asyncRequest(
-    name: string,
-    args: any[] = [],
-  ): Promise<any> {
+  async asyncRequest(name: string, args: any[] = []): Promise<any> {
     // `this._isReady` is undefined in ExtType classes (i.e. Buffer, Window, Tabpage)
     // But this is just for Neovim API, since it's possible to call this method from Neovim class
     // before transport is ready.

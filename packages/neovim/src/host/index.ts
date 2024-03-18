@@ -1,6 +1,5 @@
 import * as util from 'node:util';
 import { attach } from '../attach';
-import { logger } from '../utils/logger';
 import { loadPlugin, LoadPluginOptions } from './factory';
 import { NvimPlugin } from './NvimPlugin';
 
@@ -11,7 +10,7 @@ export interface Response {
 export class Host {
   public loaded: { [index: string]: NvimPlugin };
 
-  public nvim: any;
+  public nvim?: ReturnType<typeof attach>;
 
   constructor() {
     // Map for loaded plugins
@@ -21,22 +20,30 @@ export class Host {
   }
 
   getPlugin(filename: string, options: LoadPluginOptions = {}) {
-    let plugin = this.loaded[filename];
+    let plugin: (typeof this.loaded)[0] | null = this.loaded[filename];
     const shouldUseCachedPlugin =
       plugin && plugin.shouldCacheModule && !plugin.alwaysInit;
 
     if (shouldUseCachedPlugin) {
-      logger.debug('getPlugin.useCachedPlugin');
+      this.nvim?.logger.debug('getPlugin.useCachedPlugin');
       return plugin;
     }
 
+    if (!this.nvim) {
+      throw Error();
+    }
     plugin = loadPlugin(filename, this.nvim, {
       ...options,
       cache: plugin && plugin.shouldCacheModule,
     });
 
-    logger.debug('getPlugin.alwaysInit', plugin && !plugin.alwaysInit);
-    this.loaded[filename] = plugin;
+    this.nvim.logger.debug(
+      'getPlugin.alwaysInit',
+      plugin && !plugin.alwaysInit
+    );
+    if (plugin) {
+      this.loaded[filename] = plugin;
+    }
 
     return plugin;
   }
@@ -45,7 +52,7 @@ export class Host {
   async handlePlugin(method: string, args: any[]) {
     // ignore methods that start with nvim_ prefix (e.g. when attaching to buffer and listening for notifications)
     if (method.startsWith('nvim_')) return null;
-    logger.debug('host.handlePlugin: ', method);
+    this.nvim?.logger.debug('host.handlePlugin: ', method);
 
     // Parse method name
     const procInfo = method.split(':');
@@ -68,7 +75,7 @@ export class Host {
 
     if (!plugin) {
       const msg = `Could not load plugin: ${filename}`;
-      logger.error(msg);
+      this.nvim?.logger.error(msg);
       throw new Error(msg);
     }
 
@@ -77,17 +84,17 @@ export class Host {
 
   handleRequestSpecs(method: string, args: any[], res: Response) {
     const filename = args[0];
-    logger.debug(`requested specs for ${filename}`);
+    this.nvim?.logger.debug(`requested specs for ${filename}`);
     // Can return null if there is nothing defined in plugin
     const plugin = this.getPlugin(filename);
     const specs = (plugin && plugin.specs) || [];
-    logger.debug(JSON.stringify(specs));
+    this.nvim?.logger.debug(JSON.stringify(specs));
     res.send(specs);
-    logger.debug(`specs: ${util.inspect(specs)}`);
+    this.nvim?.logger.debug(`specs: ${util.inspect(specs)}`);
   }
 
   async handler(method: string, args: any[], res: Response) {
-    logger.debug('request received: ', method);
+    this.nvim?.logger.debug('request received: ', method);
     // 'poll' and 'specs' are requests by neovim,
     // otherwise it will
     if (method === 'poll') {
@@ -109,15 +116,15 @@ export class Host {
   }
 
   async start({ proc }: { proc: NodeJS.Process }) {
-    logger.debug('host.start');
     // stdio is reversed since it's from the perspective of Neovim
     const nvim = attach({ reader: proc.stdin, writer: proc.stdout });
     this.nvim = nvim;
+    this.nvim.logger.debug('host.start');
 
     nvim.on('request', this.handler);
     nvim.on('notification', this.handlePlugin);
     nvim.on('disconnect', () => {
-      logger.debug('host.disconnected');
+      this.nvim?.logger.debug('host.disconnected');
     });
   }
 }

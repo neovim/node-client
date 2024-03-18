@@ -6,6 +6,7 @@ import * as path from 'node:path';
 import { NeovimClient } from './api/client';
 import { attach } from './attach';
 import { findNvim } from './utils/findNvim';
+import { getLogger } from './utils/logger';
 
 export function findNvimOrFail() {
   const minVersion = '0.9.5';
@@ -68,6 +69,12 @@ export function stopNvim(
   } else if (proc_ && proc_.connected) {
     proc_.disconnect();
   }
+}
+
+export function getFakeNvimClient() {
+  return {
+    logger: getLogger(),
+  } as NeovimClient;
 }
 
 // jest.beforeAll(async () => {
