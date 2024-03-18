@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 const { Host } = require('../lib/host');
-const { getLogger } = require('../lib/utils/logger');
 const { spawnSync } = require('child_process');
 
 // node <current script> <rest of args>
@@ -35,9 +34,9 @@ try {
   const host = new Host(args);
   host.start({ proc: process });
 } catch (err) {
-  getLogger().error(err);
+  process.stderr.write(`failed to start Nvim plugin host: ${err.name}: ${err.message}\n`);
 }
 
 process.on('unhandledRejection', (reason, p) => {
-  getLogger().info('Unhandled Rejection at:', p, 'reason:', reason);
+  process.stderr.write(`Unhandled Rejection at: ${p} reason: ${reason}\n`);
 });
