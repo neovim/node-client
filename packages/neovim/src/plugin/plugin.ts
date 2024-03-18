@@ -1,6 +1,5 @@
 /* eslint no-shadow:0, import/export:0 */
 // Plugin decorator
-import { logger } from '../utils/logger';
 
 import { NVIM_SPEC } from './properties';
 import { Neovim } from '../api/Neovim';
@@ -26,8 +25,6 @@ function wrapper<T extends Constructor<{}>>(
   cls: T,
   options?: PluginDecoratorOptions
 ) {
-  logger.info(`Decorating class ${cls}`);
-
   return class extends cls {
     public nvim: Neovim;
 
@@ -39,14 +36,15 @@ function wrapper<T extends Constructor<{}>>(
       if (options) {
         plugin.setOptions(options);
       }
+      plugin.nvim.logger.info(`Decorating class ${cls}`);
 
       // Search for decorated methods
       Object.getOwnPropertyNames(cls.prototype).forEach(methodName => {
-        logger.info(`Method name ${methodName}`);
-        logger.info(
+        plugin.nvim.logger.info(`Method name ${methodName}`);
+        plugin.nvim.logger.info(
           `${cls.prototype[methodName]} ${typeof cls.prototype[methodName]}`
         );
-        logger.info(`${this} ${typeof this}`);
+        plugin.nvim.logger.info(`${this} ${typeof this}`);
 
         const method = cls.prototype[methodName];
         if (method && method[NVIM_SPEC]) {

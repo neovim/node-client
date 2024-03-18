@@ -4,6 +4,7 @@ import { NvimPlugin } from '../host/NvimPlugin';
 import { nvimFunction as FunctionDecorator } from './function';
 import { command as Command } from './command';
 import { autocmd as Autocmd } from './autocmd';
+import { getFakeNvimClient } from '../testUtil';
 
 const instantiateOrRun = (Fn, ...args) => {
   try {
@@ -29,7 +30,7 @@ describe('Plugin class decorator', () => {
     const plugin = Plugin({ dev: true })(MyClass);
     expect(typeof plugin).toEqual('function');
 
-    const pluginObject = { setOptions: jest.fn() };
+    const pluginObject = { setOptions: jest.fn(), nvim: getFakeNvimClient() };
     instantiateOrRun(plugin, pluginObject);
     expect(pluginObject.setOptions).toHaveBeenCalledWith({ dev: true });
   });
@@ -60,6 +61,7 @@ describe('Plugin class decorator', () => {
       registerAutocmd: jest.fn(),
       registerCommand: jest.fn(),
       registerFunction: jest.fn(),
+      nvim: getFakeNvimClient(),
     };
 
     const instance = instantiateOrRun(plugin, pluginObject);
@@ -102,7 +104,11 @@ describe('Plugin class decorator', () => {
 
     const plugin = Plugin(MyClass);
 
-    const pluginObject = new NvimPlugin('/tmp/filename', plugin, {});
+    const pluginObject = new NvimPlugin(
+      '/tmp/filename',
+      plugin,
+      getFakeNvimClient()
+    );
 
     expect(pluginObject.specs).toEqual([
       {

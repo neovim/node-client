@@ -5,6 +5,7 @@
 - fix: console.log() writes to RPC channel #202 #329
 - feat: eliminate `which` dependency
 - feat: improve logs + error messages
+- fix: always use custom logger if one is given
 
 ## [5.0.1](https://github.com/neovim/node-client/compare/v4.11.0...v5.0.1) (2024-03-01)
 

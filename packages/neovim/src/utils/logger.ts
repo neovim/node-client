@@ -59,4 +59,10 @@ function setupWinstonLogger(): Logger {
   return logger;
 }
 
-export const logger: Logger = setupWinstonLogger();
+let _logger: Logger; // singleton
+export function getLogger() {
+  if (!_logger) {
+    _logger = setupWinstonLogger();
+  }
+  return _logger;
+}

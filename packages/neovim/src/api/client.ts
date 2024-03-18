@@ -1,7 +1,7 @@
 /**
  * Handles attaching transport
  */
-import { logger } from '../utils/logger';
+import { Logger } from '../utils/logger';
 import { Transport } from '../utils/transport';
 import { VimValue } from '../types/VimValue';
 import { Neovim } from './Neovim';
@@ -18,7 +18,7 @@ export class NeovimClient extends Neovim {
 
   private attachedBuffers: Map<string, Map<string, Function[]>> = new Map();
 
-  constructor(options: { transport?: Transport; logger?: typeof logger } = {}) {
+  constructor(options: { transport?: Transport; logger?: Logger } = {}) {
     // Neovim has no `data` or `metadata`
     super({
       logger: options.logger,

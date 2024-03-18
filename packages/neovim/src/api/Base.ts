@@ -1,7 +1,7 @@
 import { EventEmitter } from 'node:events';
 
 import { Transport } from '../utils/transport';
-import { Logger } from '../utils/logger';
+import { Logger, getLogger } from '../utils/logger';
 import { VimValue } from '../types/VimValue';
 
 export interface BaseConstructorOptions {
@@ -50,7 +50,7 @@ export class BaseApi extends EventEmitter {
     this.setTransport(transport);
     this.data = data;
     // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-    this.logger = logger || require('../utils/logger').logger;
+    this.logger = logger || getLogger();
     this.client = client;
 
     if (metadata) {
@@ -73,7 +73,7 @@ export class BaseApi extends EventEmitter {
   [DO_REQUEST] = (name: string, args: any[] = []): Promise<any> =>
     new Promise((resolve, reject) => {
       this.transport.request(name, args, (err: any, res: any) => {
-        this.logger.debug(`response -> neovim.api.${name}: ${res}`);
+        this.logger.debug(`response -> ${name}: ${res}`);
         if (err) {
           reject(new Error(`${name}: ${err[1]}`));
         } else {
@@ -82,22 +82,18 @@ export class BaseApi extends EventEmitter {
       });
     });
 
-  async asyncRequest(
-    name: string,
-    args: any[] = [],
-    stack: string | undefined = undefined
-  ): Promise<any> {
+  async asyncRequest(name: string, args: any[] = []): Promise<any> {
     // `this._isReady` is undefined in ExtType classes (i.e. Buffer, Window, Tabpage)
     // But this is just for Neovim API, since it's possible to call this method from Neovim class
     // before transport is ready.
     // Not possible for ExtType classes since they are only created after transport is ready
     await this._isReady;
 
-    this.logger.debug(`request -> neovim.api.${name}`);
+    this.logger.debug(`request -> ${name}`);
 
     return this[DO_REQUEST](name, args).catch(err => {
+      // XXX: Get a `*.ts stacktrace. If we re-throw `err` we get a `*.js` trace. tsconfig issue?
       const newError = new Error(err.message);
-      newError.stack = stack;
       this.logger.error(
         `failed request to "%s": %s: %s`,
         name,
@@ -109,12 +105,7 @@ export class BaseApi extends EventEmitter {
   }
 
   request(name: string, args: any[] = []): Promise<any> {
-    // Dummy error, to get stacktrace.
-    const error = new Error(
-      `failed request to "${name}" (see $NVIM_NODE_LOG_FILE for details, if it was set)`
-    );
-
-    return this.asyncRequest(name, args, error.stack);
+    return this.asyncRequest(name, args);
   }
 
   _getArgsByPrefix(...args: any[]): any[] {
@@ -169,7 +160,7 @@ export class BaseApi extends EventEmitter {
   // TODO: Is this necessary?
   /** `request` is basically the same except you can choose to wait forpromise to be resolved */
   notify(name: string, args: any[]): void {
-    this.logger.debug(`notify -> neovim.api.${name}`);
+    this.logger.debug(`notify -> ${name}`);
     this.transport.notify(name, args);
   }
 }

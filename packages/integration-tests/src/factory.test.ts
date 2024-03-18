@@ -1,11 +1,33 @@
 /* eslint-env jest */
-import { NvimPlugin, loadPlugin } from 'neovim';
+import { Neovim, NeovimClient, NvimPlugin, loadPlugin } from 'neovim';
+
+function getFakeNvimClient(): NeovimClient {
+  const logged: string[] = [];
+  let logger2 = {};
+  const fakeLog = (msg: any) => {
+    logged.push(msg);
+    return logger2;
+  };
+  logger2 = {
+    info: fakeLog,
+    warn: fakeLog,
+    debug: fakeLog,
+    error: fakeLog,
+  };
+  return {
+    logger: logger2 as any,
+  } as NeovimClient;
+}
 
 describe('Plugin Factory (used by host)', () => {
   let pluginObj: NvimPlugin;
 
   beforeEach(() => {
-    pluginObj = loadPlugin('@neovim/example-plugin', null);
+    const p = loadPlugin('@neovim/example-plugin', getFakeNvimClient());
+    if (!p) {
+      throw new Error();
+    }
+    pluginObj = p;
   });
 
   it('should collect the specs from a plugin file', () => {
@@ -58,13 +80,13 @@ describe('Plugin Factory (used by host)', () => {
   });
 
   it('loads plugin with instance of nvim API', () => {
-    const nvim = {};
+    const nvim = getFakeNvimClient();
     const plugin = loadPlugin('@neovim/example-plugin', nvim);
-    expect(plugin.nvim).toBe(nvim);
+    expect(plugin?.nvim).toBe(nvim);
   });
 
   it('returns null on invalid module', () => {
-    expect(loadPlugin('/asdlfjka/fl', {}, {})).toBeNull();
+    expect(loadPlugin('/asdlfjka/fl', {} as Neovim, {})).toBeNull();
   });
 });
 
@@ -72,7 +94,14 @@ describe('Plugin Factory (decorator api)', () => {
   let pluginObj: NvimPlugin;
 
   beforeEach(() => {
-    pluginObj = loadPlugin('@neovim/example-plugin-decorators', null);
+    const p = loadPlugin(
+      '@neovim/example-plugin-decorators',
+      getFakeNvimClient()
+    );
+    if (!p) {
+      throw new Error();
+    }
+    pluginObj = p;
   });
 
   it('should collect the specs from a plugin file', () => {
@@ -123,21 +152,21 @@ describe('Plugin Factory (decorator api)', () => {
   });
 
   it('loads plugin with instance of nvim API', () => {
-    const nvim = {} as any;
+    const nvim = getFakeNvimClient();
     const plugin = loadPlugin('@neovim/example-plugin-decorators', nvim, {});
-    expect(plugin.nvim).toBe(nvim);
+    expect(plugin!.nvim).toBe(nvim);
   });
 
   it('cannot call illegal process functions', () => {
-    const nvim = {} as any;
+    const nvim = getFakeNvimClient();
     const plugin = loadPlugin('@neovim/example-plugin-decorators', nvim, {});
-    expect(plugin.functions.Illegal.fn).toThrow();
+    expect(plugin!.functions.Illegal.fn).toThrow();
   });
 
   it('can read process.umask()', () => {
-    const nvim = {} as any;
+    const nvim = getFakeNvimClient();
     const plugin = loadPlugin('@neovim/example-plugin-decorators', nvim, {});
-    expect(() => plugin.functions.Umask.fn()).not.toThrow();
-    expect(plugin.functions.Umask.fn()).toBeDefined();
+    expect(() => plugin!.functions.Umask.fn()).not.toThrow();
+    expect(plugin!.functions.Umask.fn()).toBeDefined();
   });
 });
