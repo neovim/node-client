@@ -59,8 +59,8 @@ Following is a complete, working example.
        const found = findNvim({ orderBy: 'desc', minVersion: '0.9.0' })
        console.log(found);
        const nvim_proc = child_process.spawn(found.matches[0].path, ['--clean', '--embed'], {});
-
        const nvim = attach({ proc: nvim_proc });
+
        nvim.command('vsp | vsp | vsp');
 
        const windows = await nvim.windows;
@@ -81,7 +81,6 @@ Following is a complete, working example.
        const newLines = await buf.lines;
        assert.deepStrictEqual(newLines, ['line1', 'line2']);
 
-       // console.log('%O', nvim_proc);
        if (nvim_proc.disconnect) {
          nvim_proc.disconnect();
        }

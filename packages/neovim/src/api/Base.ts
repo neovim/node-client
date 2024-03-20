@@ -1,6 +1,7 @@
 import { EventEmitter } from 'node:events';
 
 import { Transport } from '../utils/transport';
+import { partialClone } from '../utils/util';
 import { Logger, getLogger } from '../utils/logger';
 import { VimValue } from '../types/VimValue';
 
@@ -22,8 +23,8 @@ const DO_REQUEST = Symbol('DO_REQUEST');
 // i.e. a plugin that detaches will affect all plugins registered on host
 // const EXCLUDED = ['nvim_buf_attach', 'nvim_buf_detach'];
 
-// Instead of dealing with multiple inheritance (or lackof), just extend EE
-// Only the Neovim API class should use EE though
+// Instead of dealing with multiple inheritance (or lackof), just extend EventEmitter
+// Only the Neovim API class should use EventEmitter though
 export class BaseApi extends EventEmitter {
   protected transport: Transport;
 
@@ -49,7 +50,6 @@ export class BaseApi extends EventEmitter {
 
     this.setTransport(transport);
     this.data = data;
-    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
     this.logger = logger || getLogger();
     this.client = client;
 
@@ -73,7 +73,25 @@ export class BaseApi extends EventEmitter {
   [DO_REQUEST] = (name: string, args: any[] = []): Promise<any> =>
     new Promise((resolve, reject) => {
       this.transport.request(name, args, (err: any, res: any) => {
-        this.logger.debug(`response -> ${name}: ${res}`);
+        if (this.logger.level === 'debug') {
+          // Avoid noisy logging of entire Buffer/Window/Tabpage.
+          let logData: any;
+          try {
+            logData =
+              res && typeof res === 'object'
+                ? partialClone(
+                    res,
+                    2,
+                    ['logger', 'transport', 'client'],
+                    '[Object]'
+                  )
+                : res;
+          } catch {
+            logData = String(res);
+          }
+          this.logger.debug(`response -> ${name}: %O`, logData);
+        }
+
         if (err) {
           reject(new Error(`${name}: ${err[1]}`));
         } else {
@@ -89,7 +107,7 @@ export class BaseApi extends EventEmitter {
     // Not possible for ExtType classes since they are only created after transport is ready
     await this._isReady;
 
-    this.logger.debug(`request -> ${name}`);
+    this.logger.debug(`request  -> ${name}`);
 
     return this[DO_REQUEST](name, args).catch(err => {
       // XXX: Get a `*.ts stacktrace. If we re-throw `err` we get a `*.js` trace. tsconfig issue?

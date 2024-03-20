@@ -37,7 +37,6 @@ export function attach({
   }
 
   if (writer && reader) {
-    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
     const loggerInstance = options.logger || getLogger(); // lazy load to winston only if needed
     const neovim = new NeovimClient({ logger: loggerInstance });
     neovim.attach({

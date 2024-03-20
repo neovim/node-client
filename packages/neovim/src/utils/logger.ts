@@ -1,8 +1,35 @@
 import * as winston from 'winston';
+import { inspect } from 'node:util';
 
 const level = process.env.NVIM_NODE_LOG_LEVEL || 'debug';
 
-export type Logger = Pick<winston.Logger, 'info' | 'warn' | 'error' | 'debug'>;
+export type Logger = Pick<
+  winston.Logger,
+  'info' | 'warn' | 'error' | 'debug' | 'level'
+>;
+
+function getFormat(colorize: boolean) {
+  return winston.format.combine(
+    winston.format.splat(),
+    winston.format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss',
+    }),
+    winston.format.printf(info => {
+      let msg: string;
+      try {
+        msg =
+          typeof info.message === 'object'
+            ? inspect(info.message, false, 2, colorize)
+            : info.message;
+      } catch {
+        msg = info.message;
+      }
+      const lvl =
+        info.level === 'debug' ? 'DBG' : info.level.slice(0, 3).toUpperCase();
+      return `${info.timestamp} ${lvl} ${msg}`;
+    })
+  );
+}
 
 function setupWinstonLogger(): Logger {
   const logger = winston.createLogger({
@@ -14,23 +41,7 @@ function setupWinstonLogger(): Logger {
       new winston.transports.File({
         filename: process.env.NVIM_NODE_LOG_FILE,
         level,
-        format: winston.format.combine(
-          winston.format.splat(),
-          winston.format.timestamp({
-            format: 'YYYY-MM-DD HH:mm:ss',
-          }),
-          winston.format.errors({ stack: true }),
-          winston.format.printf(info => {
-            if (info.raw) {
-              return info.message;
-            }
-            const lvl =
-              info.level === 'debug'
-                ? 'DBG'
-                : info.level.slice(0, 3).toUpperCase();
-            return `${info.timestamp} ${lvl} ${info.message}`;
-          })
-        ),
+        format: getFormat(false),
       })
     );
   }
@@ -38,7 +49,7 @@ function setupWinstonLogger(): Logger {
   if (process.env.ALLOW_CONSOLE) {
     logger.add(
       new winston.transports.Console({
-        format: winston.format.simple(),
+        format: getFormat(true),
       })
     );
   }
