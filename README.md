@@ -218,7 +218,8 @@ Only maintainers of the [neovim NPM package](https://www.npmjs.com/package/neovi
    ```bash
    # Choose major/minor/patch as needed.
    npm version -w packages/neovim/ patch
-   # Note: this copies the top-level README.md to packages/neovim.
+   git commit -m 'release'
+   # Note: this copies the top-level README.md/CHANGELOG.md to packages/neovim/.
    npm run publish:neovim
    export _VERSION=$(grep -o 'version": "[^"]\+' packages/neovim/package.json | sed 's/.*"//')
    git tag "v${_VERSION}"

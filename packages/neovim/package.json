@@ -38,6 +38,7 @@
   },
   "files": [
     "README.md",
+    "CHANGELOG.md",
     "scripts/nvim.js",
     "scripts/api.js",
     "bin/",
