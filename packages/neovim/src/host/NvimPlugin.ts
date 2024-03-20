@@ -8,7 +8,7 @@ export interface NvimPluginOptions {
 }
 
 export interface AutocmdOptions {
-  pattern: string;
+  pattern?: string;
   // eslint-disable-next-line no-eval
   eval?: string;
   sync?: boolean;
@@ -89,7 +89,7 @@ export class NvimPlugin {
 
   setOptions(options: NvimPluginOptions): void {
     this.dev = options.dev === undefined ? this.dev : options.dev;
-    this.alwaysInit = options.alwaysInit;
+    this.alwaysInit = !!options.alwaysInit;
   }
 
   // Cache module (in dev mode will clear the require module cache)
@@ -106,7 +106,7 @@ export class NvimPlugin {
   ): void;
 
   registerAutocmd(name: string, fn: any, options?: AutocmdOptions): void {
-    if (!options.pattern) {
+    if (!options?.pattern) {
       this.nvim.logger.error(
         `registerAutocmd expected pattern option for ${name}`
       );
@@ -116,10 +116,11 @@ export class NvimPlugin {
     const spec: Spec = {
       type: 'autocmd',
       name,
-      sync: options && !!options.sync,
+      sync: !!options?.sync,
       opts: {},
     };
 
+    // @ts-expect-error changing `option: keyof …` to `option: string` causes other errors.
     ['pattern', 'eval'].forEach((option: keyof AutocmdOptions) => {
       if (options && typeof options[option] !== 'undefined') {
         (spec.opts as any)[option] = options[option];
@@ -150,10 +151,11 @@ export class NvimPlugin {
     const spec: Spec = {
       type: 'command',
       name,
-      sync: options && !!options.sync,
+      sync: !!options?.sync,
       opts: {},
     };
 
+    // @ts-expect-error changing `option: keyof …` to `option: string` causes other errors.
     ['range', 'nargs', 'complete'].forEach((option: keyof CommandOptions) => {
       if (options && typeof options[option] !== 'undefined') {
         (spec.opts as any)[option] = options[option];
@@ -188,10 +190,11 @@ export class NvimPlugin {
     const spec: Spec = {
       type: 'function',
       name,
-      sync: options && !!options.sync,
+      sync: !!options?.sync,
       opts: {},
     };
 
+    // @ts-expect-error changing `option: keyof …` to `option: string` causes other errors.
     ['range', 'eval'].forEach((option: keyof NvimFunctionOptions) => {
       if (options && typeof options[option] !== 'undefined') {
         (spec.opts as any)[option] = options[option];
@@ -248,12 +251,13 @@ export class NvimPlugin {
         return handler.spec.sync
           ? handler.fn(...args)
           : await handler.fn(...args);
-      } catch (err) {
+      } catch (e) {
+        const err = e as Error;
         const msg = `Error in plugin for ${type}:${name}: ${err.message}`;
         this.nvim.logger.error(
           `${msg} (file: ${this.filename}, stack: ${err.stack})`
         );
-        throw new Error(err);
+        throw new Error(msg, { cause: err });
       }
     } else {
       const errMsg = `Missing handler for ${type}: "${name}" in ${this.filename}`;

@@ -93,11 +93,11 @@ function parseVersion(version: string): (number | string)[] | undefined {
 function compareVersions(a: string, b: string): number {
   const versionA = parseVersion(a);
   const versionB = parseVersion(b);
-  const length = Math.min(versionA.length, versionB.length);
+  const length = Math.min(versionA?.length ?? 0, versionB?.length ?? 0);
 
   for (let i = 0; i < length; i = i + 1) {
-    const partA = versionA[i];
-    const partB = versionB[i];
+    const partA = versionA?.[i] ?? 0;
+    const partB = versionB?.[i] ?? 0;
     if (partA < partB) {
       return -1;
     }
@@ -106,7 +106,7 @@ function compareVersions(a: string, b: string): number {
     }
   }
 
-  if (versionB.length > versionA.length) {
+  if ((versionB?.length ?? 0) > (versionA?.length ?? 0)) {
     return -1;
   }
 
@@ -120,7 +120,7 @@ function compareVersions(a: string, b: string): number {
  * @param opt.orderBy See {@link FindNvimOptions.orderBy}
  */
 export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
-  const paths = process.env.PATH.split(delimiter);
+  const paths = process.env.PATH?.split(delimiter) ?? [];
   const pathLength = paths.length;
   const matches = new Array<NvimVersion>();
   const invalid = new Array<NvimVersion>();
@@ -138,7 +138,8 @@ export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
         if (nvimVersionMatch && buildTypeMatch && luaJitVersionMatch) {
           if (
             'minVersion' in opt &&
-            compareVersions(opt.minVersion, nvimVersionMatch[1]) === 1
+            compareVersions(opt.minVersion ?? '0.0.0', nvimVersionMatch[1]) ===
+              1
           ) {
             invalid.push({
               nvimVersion: nvimVersionMatch[1],
@@ -158,14 +159,16 @@ export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
       } catch (e) {
         invalid.push({
           path: nvimPath,
-          error: e,
+          error: e as Error,
         });
       }
     }
   }
 
   if (opt.orderBy === undefined || opt.orderBy === 'desc') {
-    matches.sort((a, b) => compareVersions(b.nvimVersion, a.nvimVersion));
+    matches.sort((a, b) =>
+      compareVersions(b.nvimVersion ?? '0.0.0', a.nvimVersion ?? '0.0.0')
+    );
   }
 
   return {

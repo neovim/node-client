@@ -5,7 +5,7 @@ export interface FunctionOptions {
 }
 
 export interface AutocmdOptions {
-  pattern: string;
+  pattern?: string;
   eval?: string;
   sync?: boolean;
 }

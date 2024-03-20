@@ -14,7 +14,7 @@ export class NeovimClient extends Neovim {
 
   private transportAttached: boolean;
 
-  private _channelId: number;
+  private _channelId?: number;
 
   private attachedBuffers: Map<string, Map<string, Function[]>> = new Map();
 
@@ -22,10 +22,9 @@ export class NeovimClient extends Neovim {
     // Neovim has no `data` or `metadata`
     super({
       logger: options.logger,
+      transport: options.transport || new Transport(),
     });
 
-    const transport = options.transport || new Transport();
-    this.setTransport(transport);
     this.requestQueue = [];
     this.transportAttached = false;
     this.handleRequest = this.handleRequest.bind(this);
@@ -46,12 +45,15 @@ export class NeovimClient extends Neovim {
   }
 
   get isApiReady(): boolean {
-    return this.transportAttached && typeof this._channelId !== 'undefined';
+    return this.transportAttached && this._channelId !== undefined;
   }
 
   get channelId(): Promise<number> {
     return (async () => {
       await this._isReady;
+      if (!this._channelId) {
+        throw new Error('channelId requested before _isReady');
+      }
       return this._channelId;
     })();
   }
@@ -93,12 +95,12 @@ export class NeovimClient extends Neovim {
       const [buffer] = args;
       const bufferKey = `${buffer.data}`;
 
-      if (!this.attachedBuffers.has(bufferKey)) {
+      const bufferMap = this.attachedBuffers.get(bufferKey);
+      if (bufferMap === undefined) {
         // this is a problem
         return;
       }
 
-      const bufferMap = this.attachedBuffers.get(bufferKey);
       const cbs = bufferMap.get(shortName) || [];
       cbs.forEach(cb => cb(...args));
 
@@ -162,7 +164,7 @@ export class NeovimClient extends Neovim {
   }
 
   // Request API from neovim and augment this current class to add these APIs
-  async generateApi(): Promise<null | boolean> {
+  async generateApi(): Promise<boolean> {
     let results;
 
     try {
@@ -198,7 +200,8 @@ export class NeovimClient extends Neovim {
         this.requestQueue = [];
 
         return true;
-      } catch (err) {
+      } catch (e) {
+        const err = e as Error;
         this.logger.error(
           `Could not dynamically generate neovim API: %s: %O`,
           err.name,
@@ -207,11 +210,11 @@ export class NeovimClient extends Neovim {
           }
         );
         this.logger.error(err.stack);
-        return null;
+        return false;
       }
     }
 
-    return null;
+    return false;
   }
 
   attachBuffer(buffer: Buffer, eventName: string, cb: Function) {
@@ -222,11 +225,14 @@ export class NeovimClient extends Neovim {
     }
 
     const bufferMap = this.attachedBuffers.get(bufferKey);
+    if (!bufferMap) {
+      throw Error(`buffer not found: ${bufferKey}`);
+    }
     if (!bufferMap.get(eventName)) {
       bufferMap.set(eventName, []);
     }
 
-    const cbs = bufferMap.get(eventName);
+    const cbs = bufferMap.get(eventName) ?? [];
     if (cbs.includes(cb)) return cb;
     cbs.push(cb);
     bufferMap.set(eventName, cbs);

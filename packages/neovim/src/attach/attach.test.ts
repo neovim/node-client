@@ -2,6 +2,7 @@
 import { attach } from './attach';
 import { Logger } from '../utils/logger';
 import * as testUtil from '../testUtil';
+import { NeovimClient } from '../api/client';
 
 describe('Nvim API', () => {
   let proc: ReturnType<typeof testUtil.startNvim>[0];
@@ -28,6 +29,13 @@ describe('Nvim API', () => {
   beforeEach(() => {
     requests = [];
     notifications = [];
+  });
+
+  it('failure modes', async () => {
+    const c = new NeovimClient();
+    await expect(c.channelId).rejects.toThrow(
+      'channelId requested before _isReady'
+    );
   });
 
   it('console.log is monkey-patched to logger.info #329', async () => {

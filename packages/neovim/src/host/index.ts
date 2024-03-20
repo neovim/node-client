@@ -108,7 +108,8 @@ export class Host {
         res.send(
           !plugResult || typeof plugResult === 'undefined' ? null : plugResult
         );
-      } catch (err) {
+      } catch (e) {
+        const err = e as Error;
         res.send(err.toString(), true);
       }
     }

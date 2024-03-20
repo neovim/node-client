@@ -30,7 +30,7 @@ export interface PluginWrapperConstructor {
 }
 function wrapper(cls: PluginWrapperConstructor, options?: PluginOptions): any {
   return class WrapperClass extends cls implements PluginWrapperInterface {
-    public nvim: Neovim;
+    public nvim!: Neovim;
 
     constructor(plugin: NvimPlugin) {
       super(plugin.nvim, plugin);
@@ -57,7 +57,11 @@ function wrapper(cls: PluginWrapperConstructor, options?: PluginOptions): any {
                 autoCmdOpts.eval = spec.opts.eval;
               }
 
-              plugin.registerAutocmd(spec.name, [this, method], autoCmdOpts);
+              plugin.registerAutocmd(
+                spec.name,
+                [this, method],
+                autoCmdOpts as any
+              );
               break;
             case 'command':
               const cmdOpts: CommandOptions = {
@@ -94,7 +98,7 @@ function wrapper(cls: PluginWrapperConstructor, options?: PluginOptions): any {
       });
     }
 
-    setApi(nvim: Neovim) {
+    override setApi(nvim: Neovim) {
       this.nvim = nvim;
     }
   };

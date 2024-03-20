@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noEmitOnError": true,
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "esModuleInterop": true,
@@ -16,7 +19,7 @@
     "forceConsistentCasingInFileNames": true,
     "types": ["node"]
   },
-  "exclude": ["node_modules"],
+  "exclude": ["**/node_modules"],
   "compileOnSave": false,
   "atom": {
     "rewriteTsconfig": false

@@ -23,13 +23,14 @@ export function autocmd(name: string, options?: AutocmdOptions) {
       pattern: '',
     };
 
+    // @ts-expect-error changing `option: keyof …` to `option: string` causes other errors.
     ['pattern', 'eval'].forEach((option: keyof AutocmdOptions) => {
       if (options && typeof options[option] !== 'undefined') {
         (opts[option] as any) = options[option];
       }
     });
 
-    const nameWithPattern = `${name}${options.pattern ? `:${options.pattern}` : ''}`;
+    const nameWithPattern = `${name}${options?.pattern ? `:${options.pattern}` : ''}`;
     Object.defineProperty(f, NVIM_METHOD_NAME, {
       value: `autocmd:${nameWithPattern}`,
     });

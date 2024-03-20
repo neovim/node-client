@@ -4,7 +4,7 @@ import { createChainableApi } from './utils/createChainableApi';
 import { Window, AsyncWindow } from './Window';
 
 export class Tabpage extends BaseApi {
-  public prefix: string = Metadata[ExtType.Tabpage].prefix;
+  public override prefix: string = Metadata[ExtType.Tabpage].prefix;
 
   /** Returns all windows of tabpage */
   get windows(): Promise<Window[]> {
@@ -30,12 +30,12 @@ export class Tabpage extends BaseApi {
   }
 
   /** Invalid */
-  getOption(): void {
+  override getOption(): void {
     this.logger.error('Tabpage does not have `getOption`');
   }
 
   /** Invalid */
-  setOption(): void {
+  override setOption(): void {
     this.logger.error('Tabpage does not have `setOption`');
   }
 }
