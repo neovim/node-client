@@ -128,7 +128,7 @@ export interface OpenWindowOptions {
  * Neovim API
  */
 export class Neovim extends BaseApi {
-  protected prefix = 'nvim_';
+  protected override prefix = 'nvim_';
 
   public Buffer = Buffer;
 
