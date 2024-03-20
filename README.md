@@ -223,7 +223,7 @@ Only maintainers of the [neovim NPM package](https://www.npmjs.com/package/neovi
    npm run publish:neovim
    export _VERSION=$(grep -o 'version": "[^"]\+' packages/neovim/package.json | sed 's/.*"//')
    git tag "v${_VERSION}"
-   git push --follow-tags
+   git push --tags
    ```
 3. Post-release tasks:
    ```bash
