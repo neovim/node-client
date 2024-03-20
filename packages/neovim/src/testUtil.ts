@@ -34,7 +34,6 @@ export function startNvim(
 ): [cp.ChildProcessWithoutNullStreams, NeovimClient | undefined] {
   const testFile = jest.expect.getState().testPath?.replace(/.*[\\/]/, '');
   const msg = `startNvim in test: ${testFile}`;
-  // console.log(msg);
   if (process.env.NVIM_NODE_LOG_FILE) {
     const logfile = path.resolve(process.env.NVIM_NODE_LOG_FILE);
     fs.writeFileSync(logfile, `${msg}\n`, { flag: 'a' });

@@ -48,6 +48,8 @@ module.exports = {
         functions: 'ignore',
       },
     ],
+    // airbnb discourages "for..of", wtf? https://github.com/airbnb/javascript/issues/1271#issuecomment-548688952
+    'no-restricted-syntax': 'off',
     'no-case-declarations': 'off',
     'no-prototype-builtins': 'off',
     'no-underscore-dangle': 'off',
