@@ -67,17 +67,18 @@ export class NeovimClient extends Neovim {
     resp: any,
     ...restArgs: any[]
   ) {
-    this.logger.info('handleRequest: ', method);
     // If neovim API is not generated yet and we are not handle a 'specs' request
     // then queue up requests
     //
     // Otherwise emit as normal
     if (!this.isApiReady && method !== 'specs') {
+      this.logger.info('handleRequest (queued): %s', method);
       this.requestQueue.push({
         type: 'request',
         args: [method, args, resp, ...restArgs],
       });
     } else {
+      this.logger.info('handleRequest: %s', method);
       this.emit('request', method, args, resp);
     }
   }
@@ -85,7 +86,7 @@ export class NeovimClient extends Neovim {
   emitNotification(method: string, args: any[]) {
     if (method.endsWith('_event')) {
       if (!method.startsWith('nvim_buf_')) {
-        this.logger.error('Unhandled event: ', method);
+        this.logger.error('Unhandled event: %s', method);
         return;
       }
       const shortName = method.replace(REGEX_BUF_EVENT, '$1');
@@ -112,7 +113,7 @@ export class NeovimClient extends Neovim {
   }
 
   handleNotification(method: string, args: VimValue[], ...restArgs: any[]) {
-    this.logger.info('handleNotification: ', method);
+    this.logger.info('handleNotification: %s', method);
     // If neovim API is not generated yet then queue up requests
     //
     // Otherwise emit as normal
@@ -198,9 +199,13 @@ export class NeovimClient extends Neovim {
 
         return true;
       } catch (err) {
-        this.logger.error(`Could not dynamically generate neovim API: ${err}`, {
-          error: err,
-        });
+        this.logger.error(
+          `Could not dynamically generate neovim API: %s: %O`,
+          err.name,
+          {
+            error: err,
+          }
+        );
         this.logger.error(err.stack);
         return null;
       }
