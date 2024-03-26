@@ -9,14 +9,36 @@ import { Buffer } from './Buffer';
 
 const REGEX_BUF_EVENT = /nvim_buf_(.*)_event/;
 
+export interface Response {
+  send(resp: any, isError?: boolean): void;
+}
+
+/** Handler shape for incoming requests. */
+// export interface Handler {
+//   fn: Function;
+// }
+
 export class NeovimClient extends Neovim {
   protected requestQueue: any[];
+
+  /**
+   * Handlers for custom (non "nvim_") methods registered by the remote module.
+   * These handle requests from the Nvim peer.
+   */
+  public handlers: { [index: string]: (event: { name: string }, args: any[]) => any } = {};
 
   private transportAttached: boolean;
 
   private _channelId: number;
 
   private attachedBuffers: Map<string, Map<string, Function[]>> = new Map();
+
+  /**
+   * Defines a handler for incoming RPC request method/notification.
+   */
+  setHandler(method: string, fn: (event: { name: string }, args: any[]) => any) {
+    this.handlers[method] = fn;
+  }
 
   constructor(options: { transport?: Transport; logger?: Logger } = {}) {
     // Neovim has no `data` or `metadata`
@@ -44,6 +66,61 @@ export class NeovimClient extends Neovim {
     this.transportAttached = true;
     this.setupTransport();
   }
+
+  /**
+   * The "client" is also the "host". https://github.com/neovim/neovim/issues/27949
+   */
+  async handleRequest3(name: string, args: any[]) {
+    const handler = this.handlers[name];
+    if (!handler) {
+      const msg = `node-client: missing handler for "${name}"`;
+      this.logger.error(msg);
+      throw new Error(msg);
+    }
+
+    try {
+      return await handler({ name: name }, args);
+    } catch (err) {
+      const msg = `node-client: failed to handle request: "${name}": ${err.message}`;
+      this.logger.error(msg);
+      throw new Error(msg);
+    }
+  }
+
+  /**
+   * The "client" is also the "host". https://github.com/neovim/neovim/issues/27949
+   */
+  async handleRequest2(method: string, args: any[], res: Response) {
+    this.logger.debug('request received: %s', method);
+    // 'poll' and 'specs' are requests by Nvim, otherwise we dispatch to registered remote module methods (if any).
+    if (method === 'poll') {
+      // Handshake for Nvim.
+      res.send('ok');
+    // Not needed:
+    // } else if (method === 'specs') { this.handleRequestSpecs(method, args, res);
+    } else {
+      try {
+        const plugResult = await this.handleRequest3(method, args);
+        res.send(
+          !plugResult || typeof plugResult === 'undefined' ? null : plugResult
+        );
+      } catch (err) {
+        res.send(err.toString(), true);
+      }
+    }
+  }
+
+  // async start({ proc }: { proc: NodeJS.Process }) {
+  //   // stdio is reversed since it's from the perspective of Neovim
+  //   const nvim = attach({ reader: proc.stdin, writer: proc.stdout });
+  //   this.nvim = nvim;
+  //   this.nvim.logger.debug('host.start');
+  //   nvim.on('request', this.handler);
+  //   nvim.on('notification', this.handlePlugin);
+  //   nvim.on('disconnect', () => {
+  //     this.nvim?.logger.debug('host.disconnected');
+  //   });
+  // }
 
   get isApiReady(): boolean {
     return this.transportAttached && typeof this._channelId !== 'undefined';
@@ -79,6 +156,7 @@ export class NeovimClient extends Neovim {
       });
     } else {
       this.emit('request', method, args, resp);
+      this.handleRequest2(method, args, resp);
     }
   }
 
