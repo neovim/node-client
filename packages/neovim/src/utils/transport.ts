@@ -12,7 +12,7 @@ import {
 } from '@msgpack/msgpack';
 import { Metadata } from '../api/types';
 
-class Response {
+export class Response {
   private requestId: number;
 
   private sent!: boolean;
