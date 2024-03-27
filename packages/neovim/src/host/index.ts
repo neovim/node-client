@@ -1,4 +1,3 @@
-import * as util from 'node:util';
 import { attach } from '../attach';
 import { loadPlugin, LoadPluginOptions } from './factory';
 import { NvimPlugin } from './NvimPlugin';
@@ -52,7 +51,7 @@ export class Host {
   async handlePlugin(method: string, args: any[]) {
     // ignore methods that start with nvim_ prefix (e.g. when attaching to buffer and listening for notifications)
     if (method.startsWith('nvim_')) return null;
-    this.nvim?.logger.debug('host.handlePlugin: ', method);
+    this.nvim?.logger.debug('host.handlePlugin: %s', method);
 
     // Parse method name
     const procInfo = method.split(':');
@@ -90,11 +89,11 @@ export class Host {
     const specs = (plugin && plugin.specs) || [];
     this.nvim?.logger.debug(JSON.stringify(specs));
     res.send(specs);
-    this.nvim?.logger.debug(`specs: ${util.inspect(specs)}`);
+    this.nvim?.logger.debug('specs: %O', specs);
   }
 
   async handler(method: string, args: any[], res: Response) {
-    this.nvim?.logger.debug('request received: ', method);
+    this.nvim?.logger.debug('request received: %s', method);
     // 'poll' and 'specs' are requests by neovim,
     // otherwise it will
     if (method === 'poll') {
