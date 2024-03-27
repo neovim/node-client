@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noEmitOnError": true,
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "esModuleInterop": true,

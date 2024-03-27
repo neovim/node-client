@@ -32,7 +32,7 @@ export const DETACH = Symbol('detachBuffer');
 export const ATTACH = Symbol('attachBuffer');
 
 export class Buffer extends BaseApi {
-  public prefix: string = Metadata[ExtType.Buffer].prefix;
+  public override prefix: string = Metadata[ExtType.Buffer].prefix;
 
   public get isAttached(): boolean {
     return this.client.isAttached(this);
@@ -106,9 +106,9 @@ export class Buffer extends BaseApi {
       strictIndexing: true,
     }
   ) {
-    // TODO: Error checking
-    // if (typeof start === 'undefined' || typeof end === 'undefined') {
-    // }
+    if (_start === undefined || _end === undefined) {
+      throw new Error('start and end are required');
+    }
     const indexing =
       typeof strictIndexing === 'undefined' ? true : strictIndexing;
     const lines = typeof _lines === 'string' ? [_lines] : _lines;

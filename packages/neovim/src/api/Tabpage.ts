@@ -4,7 +4,7 @@ import { createChainableApi } from './utils/createChainableApi';
 import { Window, AsyncWindow } from './Window';
 
 export class Tabpage extends BaseApi {
-  public prefix: string = Metadata[ExtType.Tabpage].prefix;
+  public override prefix: string = Metadata[ExtType.Tabpage].prefix;
 
   /** Returns all windows of tabpage */
   get windows(): Promise<Window[]> {

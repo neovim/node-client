@@ -60,7 +60,7 @@ function setupWinstonLogger(): Logger {
   }
 
   // Monkey-patch `console` so that it does not write to the RPC (stdio) channel.
-  Object.keys(console).forEach((k: keyof Console) => {
+  Object.keys(console).forEach((k: string) => {
     (console as any)[k] = function () {
       // eslint-disable-next-line prefer-rest-params
       (logger as any)[k === 'log' ? 'info' : k].apply(logger, arguments);
