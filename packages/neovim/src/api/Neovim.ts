@@ -448,9 +448,9 @@ export class Neovim extends BaseApi {
   }
 
   /**
-   * Executes lua, it's possible neovim client does not support this
+   * Executes Lua code.
    */
-  lua(code: string, args: VimValue[] = []): Promise<object> {
+  lua(code: string, args: VimValue[] = []): Promise<VimValue> {
     const _args = Array.isArray(args) ? args : [args];
     return this.request(`${this.prefix}execute_lua`, [code, _args]);
   }
@@ -458,7 +458,7 @@ export class Neovim extends BaseApi {
   /**
    * Alias for `lua()` to be consistent with neovim API
    */
-  executeLua(code: string, args: VimValue[] = []): Promise<object> {
+  executeLua(code: string, args: VimValue[] = []): ReturnType<typeof this.lua> {
     return this.lua(code, args);
   }
 
