@@ -5,7 +5,7 @@ import { Tabpage, AsyncTabpage } from './Tabpage';
 import { Buffer, AsyncBuffer } from './Buffer';
 
 export class Window extends BaseApi {
-  public prefix: string = Metadata[ExtType.Window].prefix;
+  public override prefix: string = Metadata[ExtType.Window].prefix;
 
   /**
    * The windowid that not change within a Vim session

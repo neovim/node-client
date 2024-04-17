@@ -6,7 +6,7 @@ import { Logger, getLogger } from '../utils/logger';
 import { VimValue } from '../types/VimValue';
 
 export interface BaseConstructorOptions {
-  transport?: Transport;
+  transport: Transport;
   logger?: Logger;
   data?: Buffer;
   metadata?: any;
@@ -28,13 +28,13 @@ const DO_REQUEST = Symbol('DO_REQUEST');
 export class BaseApi extends EventEmitter {
   protected transport: Transport;
 
-  protected _isReady: Promise<boolean>;
+  protected _isReady: Promise<boolean> = Promise.resolve(false);
 
-  protected prefix: string;
+  protected prefix!: string;
 
   public logger: Logger;
 
-  public data: Buffer | number;
+  public data?: Buffer | number;
 
   // Node Buffer
   protected client: any;
@@ -48,7 +48,7 @@ export class BaseApi extends EventEmitter {
   }: BaseConstructorOptions) {
     super();
 
-    this.setTransport(transport);
+    this.transport = transport;
     this.data = data;
     this.logger = logger || getLogger();
     this.client = client;
@@ -56,10 +56,6 @@ export class BaseApi extends EventEmitter {
     if (metadata) {
       Object.defineProperty(this, 'metadata', { value: metadata });
     }
-  }
-
-  protected setTransport(transport: Transport): void {
-    this.transport = transport;
   }
 
   equals(other: BaseApi): boolean {

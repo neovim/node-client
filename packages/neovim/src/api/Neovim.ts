@@ -128,7 +128,7 @@ export interface OpenWindowOptions {
  * Neovim API
  */
 export class Neovim extends BaseApi {
-  protected prefix = 'nvim_';
+  protected override prefix = 'nvim_';
 
   public Buffer = Buffer;
 
@@ -202,8 +202,8 @@ export class Neovim extends BaseApi {
   /**
    * Gets a map of buffer-local |user-commands|.
    *
-   * @param {Object} options Optional parameters (currently not used)
-   * @return {Object} Map of maps describing commands
+   * @param options Optional parameters (currently not used)
+   * @return Map of maps describing commands
    */
   getCommands(options = {}): Promise<Command> {
     return this.request(`${this.prefix}get_commands`, [options]);
@@ -248,7 +248,7 @@ export class Neovim extends BaseApi {
   /**
    * Gets the current window
    *
-   * @return {Window} Window handle
+   * @return Window handle
    */
   get window(): AsyncWindow {
     return this.getWindow();
@@ -257,7 +257,7 @@ export class Neovim extends BaseApi {
   /**
    * Sets the current window
    *
-   * @param {Window} Window handle
+   * @param win Window handle
    */
   set window(win: AsyncWindow) {
     if (win instanceof Window) this.setWindow(win);
@@ -287,7 +287,7 @@ export class Neovim extends BaseApi {
   /**
    * Sets the current window
    *
-   * @param {Window} Window handle
+   * @param win Window handle
    */
   setWindow(win: Window) {
     // Throw error if win is not instance of Window?
@@ -306,7 +306,7 @@ export class Neovim extends BaseApi {
   /**
    * Changes the global working directory
    *
-   * @param {String} Directory path
+   * @param dir Directory path
    *
    */
   set dir(dir: string) {
@@ -365,7 +365,7 @@ export class Neovim extends BaseApi {
   /**
    * Gets the current mode. |mode()| "blocking" is true if Nvim is waiting for input.
    *
-   * @return {Object} Dictionary { "mode": String, "blocking": Boolean }
+   * @return Mode info
    */
   get mode(): Promise<{ mode: string; blocking: boolean }> {
     return this.request(`${this.prefix}get_mode`);
@@ -374,7 +374,7 @@ export class Neovim extends BaseApi {
   /**
    * Gets map of defined colors
    *
-   * @return {Object} Color map
+   * @return Color map
    */
   get colorMap(): Promise<{ [name: string]: number }> {
     return this.request(`${this.prefix}get_color_map`);
@@ -383,8 +383,8 @@ export class Neovim extends BaseApi {
   /**
    * Get color by name
    *
-   * @param {String} name Color name
-   * @return {Number} Color value
+   * @param name Color name
+   * @return Color value
    */
   getColorByName(name: string): Promise<number> {
     return this.request(`${this.prefix}get_color_by_name`, [name]);
@@ -393,9 +393,9 @@ export class Neovim extends BaseApi {
   /**
    * Get highlight by name or id
    *
-   * @param {String|Number} nameOrId Name or ID
-   * @param {Boolean} isRgb Should export RGB colors
-   * @return {Object} Highlight definition map
+   * @param nameOrId Name or ID
+   * @param isRgb Should export RGB colors
+   * @return Highlight definition map
    */
   getHighlight(
     nameOrId: string | number,
@@ -411,9 +411,9 @@ export class Neovim extends BaseApi {
   /**
    * Get highlight definition by name
    *
-   * @param {String} name Highlight group name
-   * @param {Boolean} isRgb Should export RGB colors
-   * @return {Object} Highlight definition map
+   * @param name Highlight group name
+   * @param isRgb Should export RGB colors
+   * @return Highlight definition map
    */
   getHighlightByName(name: string, isRgb = true): Promise<object> {
     return this.request(`${this.prefix}get_hl_by_name`, [name, isRgb]);
@@ -422,9 +422,9 @@ export class Neovim extends BaseApi {
   /**
    * Get highlight definition by id |hlID()|
    *
-   * @param {Number} id Highlight id as returned by |hlID()|
-   * @param {Boolean} isRgb Should export RGB colors
-   * @return {Object} Highlight definition map
+   * @param id Highlight id as returned by |hlID()|
+   * @param isRgb Should export RGB colors
+   * @return Highlight definition map
    */
   getHighlightById(id: number, isRgb = true): Promise<object> {
     return this.request(`${this.prefix}get_hl_by_id`, [id, isRgb]);
@@ -839,8 +839,8 @@ export class Neovim extends BaseApi {
    * existing namespace, the associated id is returned. If `name`
    * is an empty string a new, anonymous namespace is created.
    *
-   * @param {String} name Namespace name or empty string
-   * @return {Number} Namespace id
+   * @param name Namespace name or empty string
+   * @return Namespace id
    */
   createNamespace(name = ''): Promise<number> {
     return this.request(`${this.prefix}create_namespace`, [name]);
@@ -962,10 +962,9 @@ export class Neovim extends BaseApi {
    * and `relative` must be reconfigured together. Only changing a
    * subset of these is an error.
    *
-   * @param {Window}  window Window handle
-   * @param {Number}  width  Width of window (in character cells)
-   * @param {Number}  height Height of window (in character cells)
-   * @Param {Object}  options Options object
+   * @param window Window handle
+   * @param options height, width of window (in character cells)
+   * @Param Options object
    */
   private winConfig(window: Window, options: object = {}) {
     return window.config(options);

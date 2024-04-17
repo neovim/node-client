@@ -1,6 +1,5 @@
 /* eslint-env jest */
 import * as path from 'node:path';
-import { Neovim } from './Neovim';
 import * as testUtil from '../testUtil';
 
 describe('Neovim API', () => {
@@ -12,14 +11,6 @@ describe('Neovim API', () => {
 
   afterAll(() => {
     testUtil.stopNvim();
-  });
-
-  it('sets transport when initialized', () => {
-    const transport = {};
-    const spy = jest.spyOn(Neovim.prototype, 'setTransport');
-    const neovim = new Neovim({ transport });
-    expect(spy).toHaveBeenCalledWith(transport);
-    expect(neovim.transport).toBe(transport);
   });
 
   describe('Normal API calls', () => {

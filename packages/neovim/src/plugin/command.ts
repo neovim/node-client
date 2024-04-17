@@ -18,6 +18,7 @@ export function command(name: string, options?: CommandOptions) {
     const f = isMethod ? cls[methodName] : cls;
     const opts: CommandOptions = {};
 
+    // @ts-expect-error changing `option: keyof …` to `option: string` causes other errors.
     ['range', 'nargs', 'complete'].forEach((option: keyof CommandOptions) => {
       if (options && typeof options[option] !== 'undefined') {
         (opts[option] as any) = options[option];

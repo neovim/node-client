@@ -6,24 +6,27 @@ export function createChainableApi(
   name: string,
   Type: any,
   requestPromise: () => Promise<any>,
-  chainCallPromise: () => Promise<any>
+  chainCallPromise?: () => Promise<any>
 ) {
+  // @ts-expect-error don't know how to fix this or why this module was designed like this.
+  const that = this as any;
+
   // re-use current promise if not resolved yet
   if (
-    this[`${name}Promise`] &&
-    this[`${name}Promise`].status === 0 &&
-    this[`${name}Proxy`]
+    that[`${name}Promise`] &&
+    that[`${name}Promise`].status === 0 &&
+    that[`${name}Proxy`]
   ) {
-    return this[`${name}Proxy`];
+    return that[`${name}Proxy`];
   }
 
-  this[`${name}Promise`] = requestPromise();
+  that[`${name}Promise`] = requestPromise();
 
   // TODO: Optimize this
   // Define properties on the promise for devtools
   [...baseProperties, ...Object.getOwnPropertyNames(Type.prototype)].forEach(
     key => {
-      Object.defineProperty(this[`${name}Promise`], key, {
+      Object.defineProperty(that[`${name}Promise`], key, {
         enumerable: true,
         writable: true,
         configurable: true,
@@ -65,7 +68,7 @@ export function createChainableApi(
         ) {
           // If property is a method on Type, we need to invoke it with captured args
           return (...args: any[]) =>
-            this[`${name}Promise`].then((res: any) =>
+            that[`${name}Promise`].then((res: any) =>
               res[prop].call(res, ...args)
             );
         }
@@ -73,7 +76,7 @@ export function createChainableApi(
         // Otherwise return the property requested after promise is resolved
         return (
           (chainCallPromise && chainCallPromise()) ||
-          this[`${name}Promise`].then((res: any) => res[prop])
+          that[`${name}Promise`].then((res: any) => res[prop])
         );
       }
 
@@ -108,7 +111,7 @@ export function createChainableApi(
   };
 
   // Proxy the promise so that we can check for chained API calls
-  this[`${name}Proxy`] = new Proxy(this[`${name}Promise`], proxyHandler);
+  that[`${name}Proxy`] = new Proxy(that[`${name}Promise`], proxyHandler);
 
-  return this[`${name}Proxy`];
+  return that[`${name}Proxy`];
 }

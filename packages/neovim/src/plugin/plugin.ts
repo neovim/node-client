@@ -26,7 +26,7 @@ function wrapper<T extends Constructor<{}>>(
   options?: PluginDecoratorOptions
 ) {
   return class extends cls {
-    public nvim: Neovim;
+    public nvim!: Neovim;
 
     constructor(...args: any[]) {
       const plugin: NvimPlugin = args[0];

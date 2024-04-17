@@ -15,7 +15,7 @@ import { Metadata } from '../api/types';
 class Response {
   private requestId: number;
 
-  private sent: boolean;
+  private sent!: boolean;
 
   private encoder: NodeJS.WritableStream;
 
@@ -48,9 +48,9 @@ class Transport extends EventEmitter {
 
   private nextRequestId = 1;
 
-  private reader: NodeJS.ReadableStream;
+  private reader!: NodeJS.ReadableStream;
 
-  private writer: NodeJS.WritableStream;
+  private writer!: NodeJS.WritableStream;
 
   private readonly extensionCodec: ExtensionCodec =
     this.initializeExtensionCodec();
@@ -110,6 +110,9 @@ class Transport extends EventEmitter {
     const resolveGeneratorRecursively = (iter: AsyncGenerator) => {
       iter.next().then(resolved => {
         if (!resolved.done) {
+          if (!Array.isArray(resolved.value)) {
+            throw new TypeError('expected msgpack result to be array');
+          }
           this.parseMessage(resolved.value);
           return resolveGeneratorRecursively(iter);
         }
@@ -154,6 +157,9 @@ class Transport extends EventEmitter {
       //   - msg[3]: result(if not errored)
       const id = msg[1];
       const handler = this.pending.get(id);
+      if (!handler) {
+        throw new Error(`no pending handler for id ${id}`);
+      }
       this.pending.delete(id);
       handler(msg[2], msg[3]);
     } else if (msgType === 2) {

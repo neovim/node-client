@@ -81,7 +81,7 @@ export class Host {
     return plugin.handleRequest(procName, type, args);
   }
 
-  handleRequestSpecs(method: string, args: any[], res: Response) {
+  handleRequestSpecs(_method: string, args: any[], res: Response) {
     const filename = args[0];
     this.nvim?.logger.debug(`requested specs for ${filename}`);
     // Can return null if there is nothing defined in plugin
@@ -108,7 +108,8 @@ export class Host {
         res.send(
           !plugResult || typeof plugResult === 'undefined' ? null : plugResult
         );
-      } catch (err) {
+      } catch (e) {
+        const err = e as Error;
         res.send(err.toString(), true);
       }
     }

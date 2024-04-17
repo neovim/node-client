@@ -39,7 +39,8 @@ function createPlugin(
     if (typeof plugin === 'function') {
       return new NvimPlugin(filename, plugin, nvim);
     }
-  } catch (err) {
+  } catch (e) {
+    const err = e as Error;
     const file = path.basename(filename);
     nvim.logger.error(`[${file}] ${err.stack}`);
     nvim.logger.error(`[${file}] Error loading child ChildPlugin ${filename}`);
