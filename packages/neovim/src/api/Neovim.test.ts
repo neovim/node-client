@@ -86,7 +86,7 @@ describe('Neovim API', () => {
 
     it('can run lua', async () => {
       expect(
-        await nvim.lua('function test(a) return a end return test(...)', 1)
+        await nvim.lua('function test(a) return a end return test(...)', [1])
       ).toBe(1);
 
       expect(
