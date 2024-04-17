@@ -26,7 +26,7 @@ export default class Buffered extends Transform {
   }
 
   // eslint-disable-next-line consistent-return
-  override _transform(chunk: Buffer, encoding: any, callback: any): void {
+  override _transform(chunk: Buffer, _encoding: any, callback: any): void {
     const { chunks, timer } = this;
 
     if (timer) clearTimeout(timer);
