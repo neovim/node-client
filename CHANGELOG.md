@@ -1,6 +1,11 @@
 # Changes
 
-## [5.1.0](https://github.com/neovim/node-client/compare/v4.11.0...v5.1.0) (prerelease)
+## [5.2.0](https://github.com/neovim/node-client/compare/v5.1.0...v5.2.0)
+
+- fix return type of `lua()` / `executeLua()`
+- strengthen some error handling
+
+## [5.1.0](https://github.com/neovim/node-client/compare/v4.11.0...v5.1.0)
 
 - fix: console.log() writes to RPC channel #202 #329
 - feat: eliminate `which` dependency
