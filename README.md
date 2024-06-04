@@ -221,6 +221,7 @@ Only maintainers of the [neovim NPM package](https://www.npmjs.com/package/neovi
 2. Update version. Build and publish the package. Tag the release and push.
    ```bash
    # Choose major/minor/patch as needed.
+   npm version patch
    npm version -w packages/neovim/ patch
    git commit -m 'release'
    # Note: this copies the top-level README.md/CHANGELOG.md to packages/neovim/.
@@ -231,6 +232,7 @@ Only maintainers of the [neovim NPM package](https://www.npmjs.com/package/neovi
    ```
 3. Post-release tasks:
    ```bash
+   npm version --no-git-tag-version prerelease --preid dev
    npm version -w packages/neovim/ --no-git-tag-version prerelease --preid dev
    git add packages/*/package.json package*.json && git commit -m bump
    git push
