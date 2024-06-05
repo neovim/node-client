@@ -4,9 +4,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as http from 'http';
 
+//
+//
+// TODO: The old rplugin design is deprecated and NOT supported.
+//       This file will be deleted.
+//
+//
+
 import { NeovimClient, attach, findNvim } from 'neovim';
 
-describe('Node host', () => {
+describe.skip('Node host (OLD, DELETE ME)', () => {
   const testdir = process.cwd();
   let proc: cp.ChildProcessWithoutNullStreams;
   let args;
