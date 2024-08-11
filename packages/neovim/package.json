@@ -1,7 +1,7 @@
 {
   "name": "neovim",
   "description": "Nvim msgpack API client and remote plugin provider",
-  "version": "5.2.0",
+  "version": "5.2.1-dev.0",
   "homepage": "https://github.com/neovim/node-client",
   "authors": [
     {
