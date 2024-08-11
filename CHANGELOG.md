@@ -4,6 +4,7 @@
 
 - fix return type of `lua()` / `executeLua()`
 - strengthen some error handling
+- fix: SyntaxError: Unexpected token '?' in cli.js #373
 
 ## [5.1.0](https://github.com/neovim/node-client/compare/v4.11.0...v5.1.0)
 
