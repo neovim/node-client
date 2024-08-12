@@ -65,7 +65,7 @@
     "jest-haste-map": "^29.7.0",
     "jest-resolve": "^29.6.1",
     "typedoc": "^0.26.5",
-    "typescript": "^5.3.3"
+    "typescript": "^5.5.4"
   },
   "scripts": {
     "doc": "typedoc --out doc --exclude '**/*.test.ts' src",
