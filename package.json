@@ -1,6 +1,6 @@
 {
   "name": "neovim",
-  "version": "5.2.1-dev.0",
+  "version": "5.2.1",
   "private": true,
   "workspaces": [
     "packages/neovim",
