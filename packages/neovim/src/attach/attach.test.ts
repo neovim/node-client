@@ -47,6 +47,17 @@ describe('Nvim API', () => {
     expect(await nvim.eval('1+1')).toEqual(2);
   });
 
+  it('console.assert is monkey-patched', async () => {
+    const spy = jest.spyOn(nvim.logger, 'error');
+    // eslint-disable-next-line no-console
+    console.assert(false, 'foo', 42, { x: [1, 2] });
+    expect(spy).toHaveBeenCalledWith('assertion failed', 'foo', 42, {
+      x: [1, 2],
+    });
+    // Still alive?
+    expect(await nvim.eval('1+1')).toEqual(2);
+  });
+
   it('console.log NOT monkey-patched if custom logger passed to attach()', async () => {
     const [proc2] = testUtil.startNvim(false);
     const logged: string[] = [];

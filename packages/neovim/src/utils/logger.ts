@@ -3,10 +3,8 @@ import { inspect } from 'node:util';
 
 const level = process.env.NVIM_NODE_LOG_LEVEL || 'debug';
 
-export type Logger = Pick<
-  winston.Logger,
-  'info' | 'warn' | 'error' | 'debug' | 'level'
->;
+const loggerKeys = ['info', 'warn', 'error', 'debug', 'level'] as const;
+export type Logger = Pick<winston.Logger, (typeof loggerKeys)[number]>;
 
 function getFormat(colorize: boolean) {
   return winston.format.combine(
@@ -61,10 +59,24 @@ function setupWinstonLogger(): Logger {
 
   // Monkey-patch `console` so that it does not write to the RPC (stdio) channel.
   Object.keys(console).forEach((k: string) => {
-    (console as any)[k] = function () {
-      // eslint-disable-next-line prefer-rest-params
-      (logger as any)[k === 'log' ? 'info' : k].apply(logger, arguments);
-    };
+    const loggerKey = k === 'log' ? 'info' : k;
+    if (k === 'assert') {
+      // XXX: support console.assert() even though our logger doesn't define it.
+      // eslint-disable-next-line no-console
+      console.assert = function (
+        condition?: boolean | undefined,
+        ...data: any[]
+      ) {
+        if (!condition) {
+          logger.error('assertion failed', ...data);
+        }
+      };
+    } else if (loggerKeys.includes(loggerKey as any)) {
+      (console as any)[k] = function (...args: any[]) {
+        const loggerFn = (logger as any)[loggerKey];
+        loggerFn.apply(logger, args);
+      };
+    }
   });
 
   return logger;
