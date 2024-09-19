@@ -31,6 +31,10 @@ export type FindNvimOptions = {
    *   - Example: `['0.4.4', '0.5.0', '0.4.3']`
    */
   readonly orderBy?: 'desc' | 'none';
+  /**
+   * (Optional) Stop searching after found a valid match
+   */
+  readonly stopOnFirstMatch?: boolean;
 };
 
 export type FindNvimResult = {
@@ -118,14 +122,31 @@ function compareVersions(a: string, b: string): number {
  *
  * @param opt.minVersion See {@link FindNvimOptions.minVersion}
  * @param opt.orderBy See {@link FindNvimOptions.orderBy}
+ * @param opt.stopOnFirstMatch See {@link FindNvimOptions.stopOnFirstMatch}
  */
-export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
+export function findNvim({
+  minVersion,
+  orderBy,
+  stopOnFirstMatch,
+}: FindNvimOptions = {}): Readonly<FindNvimResult> {
   const paths = process.env.PATH?.split(delimiter) ?? [];
-  const pathLength = paths.length;
+  paths.push(
+    '/usr/local/bin',
+    '/usr/bin',
+    '/opt/homebrew/bin',
+    '/home/linuxbrew/.linuxbrew/bin',
+    '/snap/nvim/current/usr/bin'
+  );
+  const home = process.env.HOME;
+  if (home) {
+    paths.push(`${home}/bin`, `${home}/.linuxbrew/bin`);
+  }
+
   const matches = new Array<NvimVersion>();
   const invalid = new Array<NvimVersion>();
-  for (let i = 0; i !== pathLength; i = i + 1) {
-    const nvimPath = join(paths[i], windows ? 'nvim.exe' : 'nvim');
+  const uniquePaths = new Set(paths);
+  for (const path of uniquePaths) {
+    const nvimPath = join(path, windows ? 'nvim.exe' : 'nvim');
     if (existsSync(nvimPath)) {
       try {
         accessSync(nvimPath, constants.X_OK);
@@ -137,9 +158,8 @@ export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
         const luaJitVersionMatch = luaJitVersionRegex.exec(nvimVersionFull);
         if (nvimVersionMatch && buildTypeMatch && luaJitVersionMatch) {
           if (
-            'minVersion' in opt &&
-            compareVersions(opt.minVersion ?? '0.0.0', nvimVersionMatch[1]) ===
-              1
+            minVersion &&
+            compareVersions(minVersion, nvimVersionMatch[1]) === 1
           ) {
             invalid.push({
               nvimVersion: nvimVersionMatch[1],
@@ -154,6 +174,13 @@ export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
               buildType: buildTypeMatch[1],
               luaJitVersion: luaJitVersionMatch[1],
             });
+
+            if (stopOnFirstMatch) {
+              return {
+                matches,
+                invalid,
+              } as const;
+            }
           }
         }
       } catch (e) {
@@ -165,7 +192,7 @@ export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
     }
   }
 
-  if (opt.orderBy === undefined || opt.orderBy === 'desc') {
+  if (orderBy === undefined || orderBy === 'desc') {
     matches.sort((a, b) =>
       compareVersions(b.nvimVersion ?? '0.0.0', a.nvimVersion ?? '0.0.0')
     );
