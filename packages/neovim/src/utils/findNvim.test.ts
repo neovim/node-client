@@ -103,4 +103,20 @@ describe('findNvim', () => {
       error: undefined,
     });
   });
+
+  it('stops searching on first match when firstMatch is True', () => {
+    const nvimRes = findNvim({ minVersion: '0.3.0', firstMatch: true });
+    expect(nvimRes).toEqual({
+      matches: expect.any(Array),
+      invalid: expect.any(Array),
+    });
+    expect(nvimRes.matches.length).toEqual(1);
+    expect(nvimRes.matches[0]).toEqual({
+      nvimVersion: expect.any(String),
+      path: expect.any(String),
+      buildType: expect.any(String),
+      luaJitVersion: expect.any(String),
+      error: undefined,
+    });
+  });
 });
