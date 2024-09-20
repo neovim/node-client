@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { join, delimiter } from 'node:path';
+import { join, delimiter, normalize } from 'node:path';
 import { constants, existsSync, accessSync } from 'node:fs';
 
 export type NvimVersion = {
@@ -34,7 +34,7 @@ export type FindNvimOptions = {
   /**
    * (Optional) Stop searching after found a valid match
    */
-  readonly stopOnFirstMatch?: boolean;
+  readonly firstMatch?: boolean;
 };
 
 export type FindNvimResult = {
@@ -117,35 +117,65 @@ function compareVersions(a: string, b: string): number {
   return 0;
 }
 
+function getPlatformPaths() {
+  const paths = new Set<string>();
+  const { PATH, USERPROFILE, LOCALAPPDATA, PROGRAMFILES, HOME } = process.env;
+
+  const normalizePath = (path: string) => normalize(path.toLowerCase());
+
+  PATH?.split(delimiter).forEach(p => paths.add(normalizePath(p)));
+
+  // Add common Neovim installation paths not always in the system's PATH.
+  if (windows) {
+    // Scoop common install location
+    if (USERPROFILE) {
+      paths.add(normalizePath(`${USERPROFILE}\\scoop\\shims`));
+    }
+    paths.add(normalizePath('C:\\ProgramData\\scoop\\shims'));
+
+    // Winget common install location
+    if (LOCALAPPDATA) {
+      paths.add(normalizePath(`${LOCALAPPDATA}\\Microsoft\\WindowsApps`));
+    }
+    if (PROGRAMFILES) {
+      paths.add(normalizePath(`${PROGRAMFILES}\\Neovim\\bin`));
+      paths.add(normalizePath(`${PROGRAMFILES} (x86)\\Neovim\\bin`));
+    }
+  } else {
+    [
+      '/usr/local/bin',
+      '/usr/bin',
+      '/opt/homebrew/bin',
+      '/home/linuxbrew/.linuxbrew/bin',
+      '/snap/nvim/current/usr/bin',
+    ].forEach(p => paths.add(p));
+
+    if (HOME) {
+      paths.add(normalizePath(`${HOME}/bin`));
+      paths.add(normalizePath(`${HOME}/.linuxbrew/bin`));
+    }
+  }
+
+  return paths;
+}
+
 /**
  * Tries to find a usable `nvim` binary on the current system.
  *
  * @param opt.minVersion See {@link FindNvimOptions.minVersion}
  * @param opt.orderBy See {@link FindNvimOptions.orderBy}
- * @param opt.stopOnFirstMatch See {@link FindNvimOptions.stopOnFirstMatch}
+ * @param opt.firstMatch See {@link FindNvimOptions.firstMatch}
  */
 export function findNvim({
   minVersion,
   orderBy,
-  stopOnFirstMatch,
+  firstMatch,
 }: FindNvimOptions = {}): Readonly<FindNvimResult> {
-  const paths = process.env.PATH?.split(delimiter) ?? [];
-  paths.push(
-    '/usr/local/bin',
-    '/usr/bin',
-    '/opt/homebrew/bin',
-    '/home/linuxbrew/.linuxbrew/bin',
-    '/snap/nvim/current/usr/bin'
-  );
-  const home = process.env.HOME;
-  if (home) {
-    paths.push(`${home}/bin`, `${home}/.linuxbrew/bin`);
-  }
+  const paths = getPlatformPaths();
 
   const matches = new Array<NvimVersion>();
   const invalid = new Array<NvimVersion>();
-  const uniquePaths = new Set(paths);
-  for (const path of uniquePaths) {
+  for (const path of paths) {
     const nvimPath = join(path, windows ? 'nvim.exe' : 'nvim');
     if (existsSync(nvimPath)) {
       try {
@@ -175,7 +205,7 @@ export function findNvim({
               luaJitVersion: luaJitVersionMatch[1],
             });
 
-            if (stopOnFirstMatch) {
+            if (firstMatch) {
               return {
                 matches,
                 invalid,

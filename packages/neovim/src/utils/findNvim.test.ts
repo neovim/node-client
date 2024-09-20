@@ -105,7 +105,7 @@ describe('findNvim', () => {
   });
 
   it('stops searching on first match when stopOnFirstMatch is True', () => {
-    const nvimRes = findNvim({ minVersion: '0.3.0', stopOnFirstMatch: true });
+    const nvimRes = findNvim({ minVersion: '0.3.0', firstMatch: true });
     expect(nvimRes).toEqual({
       matches: expect.any(Array),
       invalid: expect.any(Array),
