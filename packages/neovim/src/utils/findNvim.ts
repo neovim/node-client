@@ -121,7 +121,8 @@ function getPlatformPaths() {
   const paths = new Set<string>();
   const { PATH, USERPROFILE, LOCALAPPDATA, PROGRAMFILES, HOME } = process.env;
 
-  const normalizePath = (path: string) => normalize(path.toLowerCase());
+  const normalizePath = (path: string) =>
+    normalize(windows ? path.toLowerCase() : path);
 
   PATH?.split(delimiter).forEach(p => paths.add(normalizePath(p)));
 
@@ -129,17 +130,21 @@ function getPlatformPaths() {
   if (windows) {
     // Scoop common install location
     if (USERPROFILE) {
-      paths.add(normalizePath(`${USERPROFILE}\\scoop\\shims`));
+      paths.add(normalizePath(`${USERPROFILE}/scoop/shims`));
     }
-    paths.add(normalizePath('C:\\ProgramData\\scoop\\shims'));
+    paths.add(normalizePath('C:/ProgramData/scoop/shims'));
 
     // Winget common install location
+    // See https://github.com/microsoft/winget-cli/blob/master/doc/specs/%23182%20-%20Support%20for%20installation%20of%20portable%20standalone%20apps.md
     if (LOCALAPPDATA) {
-      paths.add(normalizePath(`${LOCALAPPDATA}\\Microsoft\\WindowsApps`));
+      paths.add(normalizePath(`${LOCALAPPDATA}/Microsoft/WindowsApps`));
+      paths.add(normalizePath(`${LOCALAPPDATA}/Microsoft/WinGet/Packages`));
     }
     if (PROGRAMFILES) {
-      paths.add(normalizePath(`${PROGRAMFILES}\\Neovim\\bin`));
-      paths.add(normalizePath(`${PROGRAMFILES} (x86)\\Neovim\\bin`));
+      paths.add(normalizePath(`${PROGRAMFILES}/Neovim/bin`));
+      paths.add(normalizePath(`${PROGRAMFILES} (x86)/Neovim/bin`));
+      paths.add(normalizePath(`${PROGRAMFILES}/WinGet/Packages`));
+      paths.add(normalizePath(`${PROGRAMFILES} (x86)/WinGet/Packages`));
     }
   } else {
     [
@@ -166,11 +171,7 @@ function getPlatformPaths() {
  * @param opt.orderBy See {@link FindNvimOptions.orderBy}
  * @param opt.firstMatch See {@link FindNvimOptions.firstMatch}
  */
-export function findNvim({
-  minVersion,
-  orderBy,
-  firstMatch,
-}: FindNvimOptions = {}): Readonly<FindNvimResult> {
+export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
   const paths = getPlatformPaths();
 
   const matches = new Array<NvimVersion>();
@@ -188,8 +189,9 @@ export function findNvim({
         const luaJitVersionMatch = luaJitVersionRegex.exec(nvimVersionFull);
         if (nvimVersionMatch && buildTypeMatch && luaJitVersionMatch) {
           if (
-            minVersion &&
-            compareVersions(minVersion, nvimVersionMatch[1]) === 1
+            'minVersion' in opt &&
+            compareVersions(opt.minVersion ?? '0.0.0', nvimVersionMatch[1]) ===
+              1
           ) {
             invalid.push({
               nvimVersion: nvimVersionMatch[1],
@@ -205,7 +207,7 @@ export function findNvim({
               luaJitVersion: luaJitVersionMatch[1],
             });
 
-            if (firstMatch) {
+            if (opt.firstMatch) {
               return {
                 matches,
                 invalid,
@@ -222,7 +224,7 @@ export function findNvim({
     }
   }
 
-  if (orderBy === undefined || orderBy === 'desc') {
+  if (opt.orderBy === undefined || opt.orderBy === 'desc') {
     matches.sort((a, b) =>
       compareVersions(b.nvimVersion ?? '0.0.0', a.nvimVersion ?? '0.0.0')
     );
