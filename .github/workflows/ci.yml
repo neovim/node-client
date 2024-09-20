@@ -93,6 +93,6 @@ jobs:
         npm run test-build --stream
 
     - uses: codecov/codecov-action@v4
-      if: runner.os == 'macOS'
+      if: matrix.node == '20'
       with:
         verbose: true # optional (default = false)
