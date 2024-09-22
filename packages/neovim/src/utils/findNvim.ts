@@ -195,17 +195,18 @@ function getPlatformSearchDirs(): Set<string> {
 export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
   const platformDirs = getPlatformSearchDirs();
   const nvimExecutable = windows ? 'nvim.exe' : 'nvim';
+  const normalizedPathsFromUser = (opt.paths ?? []).map(normalizePath);
 
   const allPaths = new Set<string>([
-    ...(opt.paths || []).map(normalizePath),
-    ...(opt.dirs || []).map(dir => normalizePath(join(dir, nvimExecutable))),
+    ...normalizedPathsFromUser,
+    ...(opt.dirs ?? []).map(dir => normalizePath(join(dir, nvimExecutable))),
     ...[...platformDirs].map(dir => join(dir, nvimExecutable)),
   ]);
 
   const matches = new Array<NvimVersion>();
   const invalid = new Array<NvimVersion>();
   for (const nvimPath of allPaths) {
-    if (existsSync(nvimPath)) {
+    if (existsSync(nvimPath) || normalizedPathsFromUser.includes(nvimPath)) {
       try {
         accessSync(nvimPath, constants.X_OK);
         const nvimVersionFull = execFileSync(nvimPath, [
@@ -272,5 +273,6 @@ if (process.env.NODE_ENV === 'test') {
   exportsForTesting = {
     parseVersion,
     compareVersions,
+    normalizePath,
   };
 }

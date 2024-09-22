@@ -5,12 +5,12 @@ import { findNvim, exportsForTesting, FindNvimResult } from './findNvim';
 
 const parseVersion = exportsForTesting.parseVersion;
 const compareVersions = exportsForTesting.compareVersions;
+const normalizePath = exportsForTesting.normalizePath as (p: string) => string;
 
 describe('findNvim', () => {
   const testDir = join(process.cwd(), 'test-dir');
-  const nvimExecutablePath = join(
-    testDir,
-    process.platform === 'win32' ? 'nvim.exe' : 'nvim'
+  const nvimExecutablePath = normalizePath(
+    join(testDir, process.platform === 'win32' ? 'nvim.exe' : 'nvim')
   );
 
   beforeAll(() => {
@@ -138,25 +138,27 @@ describe('findNvim', () => {
 
   it('searches in additional custom paths', () => {
     const customPaths = [
-      `${process.cwd()}/package.json`,
+      join(process.cwd(), 'package.json'),
       '/custom/path/to/nvim',
       '/another/custom/path',
-    ];
+    ].map(normalizePath);
     const nvimRes = findNvim({ paths: customPaths });
 
     expect(nvimRes.matches.length).toBeGreaterThanOrEqual(1);
 
-    expect(nvimRes.invalid.length).toBe(1);
-    expect(nvimRes.invalid[0].path).toEqual(customPaths[0]);
+    expect(nvimRes.invalid.length).toBe(3);
+
+    const invalidPaths = nvimRes.invalid.map(i => i.path);
+    expect(invalidPaths).toEqual(customPaths);
   });
 
   it('searches in additional custom dirs', () => {
-    const customDirs = [testDir, '/non/existent/dir'];
+    const customDirs = [testDir, '/non/existent/dir'].map(normalizePath);
     const nvimRes = findNvim({ dirs: customDirs });
 
     expect(nvimRes.matches.length).toBeGreaterThanOrEqual(1);
 
     expect(nvimRes.invalid.length).toBe(1);
-    expect(nvimRes.invalid.map(r => r.path)).toContain(nvimExecutablePath);
+    expect(nvimRes.invalid[0].path).toBe(nvimExecutablePath);
   });
 });
