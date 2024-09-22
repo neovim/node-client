@@ -2,11 +2,12 @@
 
 ## [5.3.0](https://github.com/neovim/node-client/compare/v5.2.1...v5.3.0)
 
+- `findNvim` supports `firstMatch` parameter which callers can use to stop
+  searching after the first valid Nvim is found. #370
 - `findNvim` now searches various common locations, in addition to `$PATH`. That
   makes it more useful for GUIs where `$PATH` is often different than the user's
   shell. #267
-- `findNvim` now has a `firstMatch` parameter which callers can use to stop
-  searching after the first valid matching Nvim is found. #370
+- `findNvim` supports optional `paths` and `dirs` parameters.
 
 ## [5.2.1](https://github.com/neovim/node-client/compare/v5.2.0...v5.2.1)
 
