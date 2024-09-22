@@ -35,6 +35,23 @@ export type FindNvimOptions = {
    * (Optional) Stop searching after found a valid match
    */
   readonly firstMatch?: boolean;
+  /**
+   * (Optional) Additional specific file paths to check for Nvim executables.
+   * These paths will be checked before searching in directories.
+   * Useful for allowing users to specify exact Nvim executable locations.
+   *
+   * Example: ['/usr/local/bin/nvim', '/opt/homebrew/bin/nvim']
+   */
+  readonly paths?: string[];
+  /**
+   * (Optional) Additional directories to search for Nvim executables.
+   * These directories will be searched after checking specific paths
+   * but before searching in default system locations.
+   * Useful for including non-standard installation directories.
+   *
+   * Example: ['/opt/neovim/bin', '/home/user/custom/bin']
+   */
+  readonly dirs?: string[];
 };
 
 export type FindNvimResult = {
@@ -117,7 +134,7 @@ function compareVersions(a: string, b: string): number {
   return 0;
 }
 
-function getPlatformPaths() {
+function getPlatformSearchDirectories(): Set<string> {
   const paths = new Set<string>();
   const { PATH, USERPROFILE, LOCALAPPDATA, PROGRAMFILES, HOME } = process.env;
 
@@ -147,6 +164,7 @@ function getPlatformPaths() {
       paths.add(normalizePath(`${PROGRAMFILES} (x86)/WinGet/Packages`));
     }
   } else {
+    // Common paths for Unix-like systems
     [
       '/usr/local/bin',
       '/usr/bin',
@@ -170,14 +188,22 @@ function getPlatformPaths() {
  * @param opt.minVersion See {@link FindNvimOptions.minVersion}
  * @param opt.orderBy See {@link FindNvimOptions.orderBy}
  * @param opt.firstMatch See {@link FindNvimOptions.firstMatch}
+ * @param opt.paths See {@link FindNvimOptions.paths}
+ * @param opt.dirs See {@link FindNvimOptions.dirs}
  */
 export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
-  const paths = getPlatformPaths();
+  const platformDirs = getPlatformSearchDirectories();
+  const nvimExecutable = windows ? 'nvim.exe' : 'nvim';
 
+  const allPaths = new Set<string>([
+    ...(opt.paths || []),
+    ...[...(opt.dirs || []), ...platformDirs].map(dir =>
+      join(dir, nvimExecutable)
+    ),
+  ]);
   const matches = new Array<NvimVersion>();
   const invalid = new Array<NvimVersion>();
-  for (const path of paths) {
-    const nvimPath = join(path, windows ? 'nvim.exe' : 'nvim');
+  for (const nvimPath of allPaths) {
     if (existsSync(nvimPath)) {
       try {
         accessSync(nvimPath, constants.X_OK);

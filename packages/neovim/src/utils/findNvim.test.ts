@@ -1,4 +1,6 @@
 /* eslint-env jest */
+import { join } from 'node:path';
+import * as fs from 'node:fs';
 import { findNvim, exportsForTesting, FindNvimResult } from './findNvim';
 
 const parseVersion = exportsForTesting.parseVersion;
@@ -118,5 +120,29 @@ describe('findNvim', () => {
       luaJitVersion: expect.any(String),
       error: undefined,
     });
+  });
+
+  it('searches in additional custom paths', () => {
+    const customPaths = ['/custom/path/to/nvim', '/another/custom/path'];
+
+    jest
+      .spyOn(fs, 'existsSync')
+      .mockImplementation(path => customPaths.includes(path as string));
+
+    const nvimRes = findNvim({ paths: customPaths });
+    assertOneOrMore(nvimRes);
+  });
+
+  it('searches in additional custom directories', () => {
+    const customDirs = ['/custom/dir', '/another/custom/dir'];
+    const nvimExecutable = process.platform === 'win32' ? 'nvim.exe' : 'nvim';
+    const customPaths = customDirs.map(dir => join(dir, nvimExecutable));
+
+    jest
+      .spyOn(fs, 'existsSync')
+      .mockImplementation(path => customPaths.includes(path as string));
+
+    const nvimRes = findNvim({ dirs: customDirs });
+    assertOneOrMore(nvimRes);
   });
 });
