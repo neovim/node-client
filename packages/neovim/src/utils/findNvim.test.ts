@@ -1,12 +1,26 @@
 /* eslint-env jest */
 import { join } from 'node:path';
-import * as fs from 'node:fs';
+import { mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { findNvim, exportsForTesting, FindNvimResult } from './findNvim';
 
 const parseVersion = exportsForTesting.parseVersion;
 const compareVersions = exportsForTesting.compareVersions;
 
 describe('findNvim', () => {
+  const testDir = join(process.cwd(), 'test-dir');
+  const nvimExecutablePath = join(
+    testDir,
+    process.platform === 'win32' ? 'nvim.exe' : 'nvim'
+  );
+
+  beforeAll(() => {
+    mkdirSync(testDir, { recursive: true });
+    writeFileSync(nvimExecutablePath, 'fake-nvim-executable');
+  });
+
+  afterAll(() => {
+    rmSync(testDir, { recursive: true, force: true });
+  });
   it('parseVersion()', () => {
     expect(parseVersion('0.5.0-dev+1357-g192f89ea1')).toEqual([
       0,
@@ -123,26 +137,26 @@ describe('findNvim', () => {
   });
 
   it('searches in additional custom paths', () => {
-    const customPaths = ['/custom/path/to/nvim', '/another/custom/path'];
-
-    jest
-      .spyOn(fs, 'existsSync')
-      .mockImplementation(path => customPaths.includes(path as string));
-
+    const customPaths = [
+      `${process.cwd()}/package.json`,
+      '/custom/path/to/nvim',
+      '/another/custom/path',
+    ];
     const nvimRes = findNvim({ paths: customPaths });
-    assertOneOrMore(nvimRes);
+
+    expect(nvimRes.matches.length).toBeGreaterThanOrEqual(1);
+
+    expect(nvimRes.invalid.length).toBe(1);
+    expect(nvimRes.invalid[0].path).toEqual(customPaths[0]);
   });
 
-  it('searches in additional custom directories', () => {
-    const customDirs = ['/custom/dir', '/another/custom/dir'];
-    const nvimExecutable = process.platform === 'win32' ? 'nvim.exe' : 'nvim';
-    const customPaths = customDirs.map(dir => join(dir, nvimExecutable));
-
-    jest
-      .spyOn(fs, 'existsSync')
-      .mockImplementation(path => customPaths.includes(path as string));
-
+  it('searches in additional custom dirs', () => {
+    const customDirs = [testDir, '/non/existent/dir'];
     const nvimRes = findNvim({ dirs: customDirs });
-    assertOneOrMore(nvimRes);
+
+    expect(nvimRes.matches.length).toBeGreaterThanOrEqual(1);
+
+    expect(nvimRes.invalid.length).toBe(1);
+    expect(nvimRes.invalid.map(r => r.path)).toContain(nvimExecutablePath);
   });
 });
