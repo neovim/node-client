@@ -35,6 +35,23 @@ export type FindNvimOptions = {
    * (Optional) Stop searching after found a valid match
    */
   readonly firstMatch?: boolean;
+  /**
+   * (Optional) Additional specific file paths to check for Nvim executables.
+   * These paths will be checked before searching `dirs`.
+   * Useful for allowing users to specify exact Nvim executable locations.
+   *
+   * Example: ['/usr/local/bin/nvim', '/opt/homebrew/bin/nvim']
+   */
+  readonly paths?: string[];
+  /**
+   * (Optional) Additional directories to search for Nvim executables.
+   * These directories will be searched after checking `paths`
+   * but before searching `$PATH` and other default locations.
+   * Useful for including non-standard installation directories.
+   *
+   * Example: ['/opt/neovim/bin', '/home/user/custom/bin']
+   */
+  readonly dirs?: string[];
 };
 
 export type FindNvimResult = {
@@ -117,12 +134,13 @@ function compareVersions(a: string, b: string): number {
   return 0;
 }
 
-function getPlatformPaths() {
+function normalizePath(path: string): string {
+  return normalize(windows ? path.toLowerCase() : path);
+}
+
+function getPlatformSearchDirs(): Set<string> {
   const paths = new Set<string>();
   const { PATH, USERPROFILE, LOCALAPPDATA, PROGRAMFILES, HOME } = process.env;
-
-  const normalizePath = (path: string) =>
-    normalize(windows ? path.toLowerCase() : path);
 
   PATH?.split(delimiter).forEach(p => paths.add(normalizePath(p)));
 
@@ -147,6 +165,7 @@ function getPlatformPaths() {
       paths.add(normalizePath(`${PROGRAMFILES} (x86)/WinGet/Packages`));
     }
   } else {
+    // Common paths for Unix-like systems
     [
       '/usr/local/bin',
       '/usr/bin',
@@ -170,15 +189,24 @@ function getPlatformPaths() {
  * @param opt.minVersion See {@link FindNvimOptions.minVersion}
  * @param opt.orderBy See {@link FindNvimOptions.orderBy}
  * @param opt.firstMatch See {@link FindNvimOptions.firstMatch}
+ * @param opt.paths See {@link FindNvimOptions.paths}
+ * @param opt.dirs See {@link FindNvimOptions.dirs}
  */
 export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
-  const paths = getPlatformPaths();
+  const platformDirs = getPlatformSearchDirs();
+  const nvimExecutable = windows ? 'nvim.exe' : 'nvim';
+  const normalizedPathsFromUser = (opt.paths ?? []).map(normalizePath);
+
+  const allPaths = new Set<string>([
+    ...normalizedPathsFromUser,
+    ...(opt.dirs ?? []).map(dir => normalizePath(join(dir, nvimExecutable))),
+    ...[...platformDirs].map(dir => join(dir, nvimExecutable)),
+  ]);
 
   const matches = new Array<NvimVersion>();
   const invalid = new Array<NvimVersion>();
-  for (const path of paths) {
-    const nvimPath = join(path, windows ? 'nvim.exe' : 'nvim');
-    if (existsSync(nvimPath)) {
+  for (const nvimPath of allPaths) {
+    if (existsSync(nvimPath) || normalizedPathsFromUser.includes(nvimPath)) {
       try {
         accessSync(nvimPath, constants.X_OK);
         const nvimVersionFull = execFileSync(nvimPath, [
@@ -245,5 +273,6 @@ if (process.env.NODE_ENV === 'test') {
   exportsForTesting = {
     parseVersion,
     compareVersions,
+    normalizePath,
   };
 }
