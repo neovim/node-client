@@ -250,13 +250,11 @@ The docs website is currently not automated. Follow these steps to regenerate it
 ```bash
 npm run doc -w packages/neovim
 git checkout gh-pages
-mv -f packages/neovim/doc/assets/* assets/
-mv -f packages/neovim/doc/classes/* classes/
-mv -f packages/neovim/doc/functions/* functions/
-mv -f packages/neovim/doc/types/* types/
+shopt -s extglob
+git rm -r !(node_modules|packages)
 mv packages/neovim/doc/* .
 rm -r packages/
-git add *
+git add !(node_modules|packages)
 git commit -m 'publish docs'
 git push origin HEAD:gh-pages
 ```
