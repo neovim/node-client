@@ -3,6 +3,7 @@
  */
 
 import { EventEmitter } from 'node:events';
+import { inspect } from 'node:util';
 
 import {
   encode,
@@ -111,7 +112,21 @@ class Transport extends EventEmitter {
       iter.next().then(resolved => {
         if (!resolved.done) {
           if (!Array.isArray(resolved.value)) {
-            throw new TypeError('expected msgpack result to be array');
+            let valstr = '?';
+            try {
+              valstr = inspect(resolved.value, {
+                sorted: true,
+                maxArrayLength: 10,
+                maxStringLength: 500,
+                compact: true,
+                breakLength: 500,
+              });
+            } catch (error) {
+              console.error('Failed to inspect value: ', error);
+            }
+            throw new TypeError(
+              `Expected msgpack result to be an array, but got ${valstr}`
+            );
           }
           this.parseMessage(resolved.value);
           return resolveGeneratorRecursively(iter);
