@@ -1,5 +1,7 @@
 /* eslint-env jest */
+import assert from 'node:assert';
 import * as testUtil from '../testUtil';
+import type { Buffer } from './Buffer';
 
 function wait(ms: number): Promise<void> {
   return new Promise(resolve => {
@@ -14,14 +16,16 @@ describe('Buffer API', () => {
 
   // utility to allow each test to be run in its
   // own buffer
-  function withBuffer(lines, test) {
+  function withBuffer(
+    lines: string[],
+    test: (buffer: Buffer) => Promise<void>
+  ) {
     return async () => {
       await nvim.command('new!');
 
       const buffer = await nvim.buffer;
 
       if (lines) {
-        await buffer;
         await buffer.replace(lines, 0);
       }
 
@@ -151,7 +155,7 @@ describe('Buffer API', () => {
     it(
       'removes last 2 lines',
       withBuffer(['test', 'bar', 'foo', 'a', 'b'], async buffer => {
-        buffer.remove(-3, -1);
+        buffer.remove(-3, -1, true);
         expect(await buffer.lines).toEqual(['test', 'bar', 'foo']);
       })
     );
@@ -178,7 +182,8 @@ describe('Buffer API', () => {
     it('returns -1 for byte offset of unloaded buffer', async () => {
       await nvim.command('new');
       await nvim.command('bunload!');
-      expect(await nvim.buffer.getOffset(0)).toEqual(-1);
+      const buffer = await nvim.buffer;
+      expect(await buffer.getOffset(0)).toEqual(-1);
     });
 
     it(
@@ -199,7 +204,7 @@ describe('Buffer API', () => {
     it(
       'can clear the buffer',
       withBuffer(['foo'], async buffer => {
-        buffer.remove(0, -1);
+        buffer.remove(0, -1, true);
         // One empty line
         expect(await buffer.length).toEqual(1);
         expect(await buffer.lines).toEqual(['']);
@@ -214,7 +219,7 @@ describe('Buffer API', () => {
         expect(await buffer.getOption('copyindent')).toBe(true);
         buffer.setOption('copyindent', false);
         expect(await buffer.getOption('copyindent')).toBe(false);
-
+        assert(initial !== undefined);
         // Restore option
         buffer.setOption('copyindent', initial);
         expect(await buffer.getOption('copyindent')).toBe(initial);
@@ -253,7 +258,7 @@ describe('Buffer API', () => {
       'sets virtual text and clears namespace',
       withBuffer(['test'], async buffer => {
         const ns = await nvim.createNamespace();
-        await buffer.setVirtualText(ns, 0, [['annotation']]);
+        await buffer.setVirtualText(ns, 0, [['annotation', '']]);
         await buffer.clearNamespace({ nsId: ns });
       })
     );
@@ -263,35 +268,39 @@ describe('Buffer API', () => {
 
   describe('Chainable API calls', () => {
     it('sets/gets the current buffer name using api chaining', async () => {
-      nvim.buffer.name = 'goodbye.txt';
+      const buffer = await nvim.buffer;
+      buffer.name = 'goodbye.txt';
       expect(await nvim.buffer.name).toMatch('goodbye.txt');
     });
 
     it('can chain calls from Base class i.e. getOption', async () => {
-      const initial = await nvim.buffer.getOption('copyindent');
-      nvim.buffer.setOption('copyindent', true);
-      expect(await nvim.buffer.getOption('copyindent')).toBe(true);
-      nvim.buffer.setOption('copyindent', false);
-      expect(await nvim.buffer.getOption('copyindent')).toBe(false);
-
+      const buffer = await nvim.buffer;
+      const initial = await buffer.getOption('copyindent');
+      buffer.setOption('copyindent', true);
+      expect(await buffer.getOption('copyindent')).toBe(true);
+      buffer.setOption('copyindent', false);
+      expect(await buffer.getOption('copyindent')).toBe(false);
+      assert(initial !== undefined);
       // Restore option
-      nvim.buffer.setOption('copyindent', initial);
-      expect(await nvim.buffer.getOption('copyindent')).toBe(initial);
+      buffer.setOption('copyindent', initial);
+      expect(await buffer.getOption('copyindent')).toBe(initial);
     });
 
     it('sets current buffer name to "bar.js" using api chaining', async () => {
-      await (nvim.buffer.name = 'bar.js');
-      expect(await nvim.buffer.name).toMatch('bar.js');
+      const buffer = await nvim.buffer;
+      buffer.name = 'bar.js';
+      expect(await buffer.name).toMatch('bar.js');
 
-      await (nvim.buffer.name = 'test2.js');
-      expect(await nvim.buffer.name).toMatch('test2.js');
+      buffer.name = 'test2.js';
+      expect(await buffer.name).toMatch('test2.js');
     });
 
     it(
       'can replace first line of nvim.buffer with a string',
       withBuffer([], async () => {
-        await nvim.buffer.replace('test', 0);
-        expect(await nvim.buffer.lines).toEqual(['test']);
+        const buffer = await nvim.buffer;
+        await buffer.replace('test', 0);
+        expect(await buffer.lines).toEqual(['test']);
       })
     );
 
@@ -300,9 +309,10 @@ describe('Buffer API', () => {
       withBuffer(
         ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
         async () => {
-          await nvim.buffer.replace(['a', 'b', 'c'], 2);
+          const buffer = await nvim.buffer;
+          await buffer.replace(['a', 'b', 'c'], 2);
 
-          expect(await nvim.buffer.lines).toEqual([
+          expect(await buffer.lines).toEqual([
             '0',
             '1',
             'a',
@@ -321,24 +331,27 @@ describe('Buffer API', () => {
     it(
       'can insert lines at beginning of buffer',
       withBuffer(['test'], async () => {
-        await nvim.buffer.insert(['test', 'foo'], 0);
-        expect(await nvim.buffer.lines).toEqual(['test', 'foo', 'test']);
+        const buffer = await nvim.buffer;
+        await buffer.insert(['test', 'foo'], 0);
+        expect(await buffer.lines).toEqual(['test', 'foo', 'test']);
       })
     );
 
     it(
       'can replace nvim.buffer starting at line 1',
       withBuffer(['test', 'foo'], async () => {
-        await nvim.buffer.replace(['bar', 'bar', 'bar'], 1);
-        expect(await nvim.buffer.lines).toEqual(['test', 'bar', 'bar', 'bar']);
+        const buffer = await nvim.buffer;
+        await buffer.replace(['bar', 'bar', 'bar'], 1);
+        expect(await buffer.lines).toEqual(['test', 'bar', 'bar', 'bar']);
       })
     );
 
     it(
       'inserts line at index 2',
       withBuffer(['test', 'bar', 'bar', 'bar'], async () => {
-        await nvim.buffer.insert(['foo'], 2);
-        expect(await nvim.buffer.lines).toEqual([
+        const buffer = await nvim.buffer;
+        await buffer.insert(['foo'], 2);
+        expect(await buffer.lines).toEqual([
           'test',
           'bar',
           'foo',
@@ -351,16 +364,18 @@ describe('Buffer API', () => {
     it(
       'removes last 2 lines',
       withBuffer(['test', 'bar', 'foo', 'a', 'b'], async () => {
-        await nvim.buffer.remove(-3, -1);
-        expect(await nvim.buffer.lines).toEqual(['test', 'bar', 'foo']);
+        const buffer = await nvim.buffer;
+        await buffer.remove(-3, -1, true);
+        expect(await buffer.lines).toEqual(['test', 'bar', 'foo']);
       })
     );
 
     it(
       'append lines to end of buffer',
       withBuffer(['test', 'bar', 'foo'], async () => {
-        await nvim.buffer.append(['test', 'test']);
-        expect(await nvim.buffer.lines).toEqual([
+        const buffer = await nvim.buffer;
+        await buffer.append(['test', 'test']);
+        expect(await buffer.lines).toEqual([
           'test',
           'bar',
           'foo',
@@ -373,10 +388,11 @@ describe('Buffer API', () => {
     it(
       'can clear the buffer',
       withBuffer(['foo'], async () => {
-        await nvim.buffer.remove(0, -1);
+        const buffer = await nvim.buffer;
+        await buffer.remove(0, -1, true);
         // One empty line
-        expect(await nvim.buffer.length).toEqual(1);
-        expect(await nvim.buffer.lines).toEqual(['']);
+        expect(await buffer.length).toEqual(1);
+        expect(await buffer.lines).toEqual(['']);
       })
     );
   });
@@ -394,17 +410,17 @@ describe('Buffer event updates', () => {
   });
 
   beforeEach(async () => {
-    await nvim.buffer.remove(0, -1);
+    await (await nvim.buffer).remove(0, -1, true);
   });
 
   it('can listen and unlisten', async () => {
     const buffer = await nvim.buffer;
     const mock = jest.fn();
     const unlisten = buffer.listen('lines', mock);
-    await nvim.buffer.insert(['bar'], 1);
+    await buffer.insert(['bar'], 1);
     expect(mock).toHaveBeenCalledTimes(1);
     unlisten();
-    await nvim.buffer.insert(['bar'], 1);
+    await buffer.insert(['bar'], 1);
     expect(mock).toHaveBeenCalledTimes(1);
   });
 
@@ -415,7 +431,7 @@ describe('Buffer event updates', () => {
     await wait(10);
     const mock = jest.fn();
     unlisten = buffer.listen('lines', mock);
-    await nvim.buffer.insert(['bar'], 1);
+    await buffer.insert(['bar'], 1);
     expect(mock).toHaveBeenCalledTimes(1);
     unlisten();
   });
@@ -437,7 +453,7 @@ describe('Buffer event updates', () => {
     const mock = jest.fn();
     buffer.listen('lines', mock);
     buffer.listen('lines', mock);
-    await nvim.buffer.insert(['bar'], 1);
+    await buffer.insert(['bar'], 1);
     expect(mock).toHaveBeenCalledTimes(1);
   });
 
@@ -445,10 +461,10 @@ describe('Buffer event updates', () => {
     const buffer = await nvim.buffer;
     const mock = jest.fn();
     buffer.listen('lines', mock);
-    await nvim.buffer.insert(['bar'], 1);
+    await buffer.insert(['bar'], 1);
     expect(mock).toHaveBeenCalledTimes(1);
     buffer.unlisten('lines', mock);
-    await nvim.buffer.insert(['bar'], 1);
+    await buffer.insert(['bar'], 1);
     expect(mock).toHaveBeenCalledTimes(1);
   });
 
@@ -457,10 +473,16 @@ describe('Buffer event updates', () => {
     const bufferName = await buffer.name;
     await buffer.insert(['test', 'foo'], 0);
 
-    const promise = new Promise(resolve => {
+    const promise = new Promise<void>(resolve => {
       const unlisten = buffer.listen(
         'lines',
-        async (currentBuffer, tick, start, end, data) => {
+        async (
+          currentBuffer: Buffer,
+          tick: number,
+          start: number,
+          end: number,
+          data: string[]
+        ) => {
           expect(await currentBuffer.name).toBe(bufferName);
           expect(start).toBe(1);
           expect(end).toBe(1);
@@ -471,7 +493,7 @@ describe('Buffer event updates', () => {
       );
     });
 
-    await nvim.buffer.insert(['bar'], 1);
+    await buffer.insert(['bar'], 1);
     await promise;
   });
 
@@ -484,12 +506,12 @@ describe('Buffer event updates', () => {
     buffers[0].listen('lines', foo);
     buffers[1].listen('lines', bar);
 
-    await nvim.buffer.insert(['bar'], 1);
+    await (await nvim.buffer).insert(['bar'], 1);
     expect(foo).toHaveBeenCalledTimes(0);
     expect(bar).toHaveBeenCalledTimes(1);
     await nvim.command('q!');
 
-    await nvim.buffer.insert(['foo'], 0);
+    await (await nvim.buffer).insert(['foo'], 0);
     expect(foo).toHaveBeenCalledTimes(1);
     expect(bar).toHaveBeenCalledTimes(1);
 
@@ -507,13 +529,13 @@ describe('Buffer event updates', () => {
     const unlisten1 = buffer.listen('lines', foo);
     const unlisten2 = buffer.listen('lines', bar);
 
-    await nvim.buffer.insert(['bar'], 1);
+    await buffer.insert(['bar'], 1);
     expect(foo).toHaveBeenCalledTimes(1);
     expect(bar).toHaveBeenCalledTimes(1);
 
     unlisten2();
 
-    await nvim.buffer.insert(['foo'], 0);
+    await buffer.insert(['foo'], 0);
     expect(foo).toHaveBeenCalledTimes(2);
     expect(bar).toHaveBeenCalledTimes(1);
 
@@ -531,13 +553,13 @@ describe('Buffer event updates', () => {
     const unlisten1 = buffer.listen('lines', foo);
     const unlisten2 = buffer.listen('changedtick', bar);
 
-    await nvim.buffer.insert(['bar'], 1);
+    await buffer.insert(['bar'], 1);
     expect(foo).toHaveBeenCalledTimes(1);
     expect(bar).toHaveBeenCalledTimes(1);
 
     unlisten2();
 
-    await nvim.buffer.insert(['foo'], 0);
+    await buffer.insert(['foo'], 0);
     expect(foo).toHaveBeenCalledTimes(2);
     expect(bar).toHaveBeenCalledTimes(1);
 
