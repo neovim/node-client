@@ -1,5 +1,9 @@
 # Changes
 
+## [5.4.0](https://github.com/neovim/node-client/compare/v5.3.0...v5.4.0)
+
+- TODO
+
 ## [5.3.0](https://github.com/neovim/node-client/compare/v5.2.1...v5.3.0)
 
 - `findNvim` supports `firstMatch` parameter which callers can use to stop
