@@ -1,4 +1,4 @@
-import { attach } from '../attach';
+import { attach } from '../attach/attach';
 import { loadPlugin, LoadPluginOptions } from './factory';
 import { NvimPlugin } from './NvimPlugin';
 
