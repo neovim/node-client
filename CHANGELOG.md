@@ -8,6 +8,7 @@
   makes it more useful for GUIs where `$PATH` is often different than the user's
   shell. #267
 - `findNvim` supports optional `paths` and `dirs` parameters.
+- Invalid RPC error now shows the contents of the invalid RPC message. #404
 
 ## [5.2.1](https://github.com/neovim/node-client/compare/v5.2.0...v5.2.1)
 

@@ -4,7 +4,7 @@ import * as jest from '@jest/globals';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { NeovimClient } from './api/client';
-import { attach } from './attach';
+import { attach } from './attach/attach';
 import { findNvim } from './utils/findNvim';
 import { getLogger } from './utils/logger';
 

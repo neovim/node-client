@@ -3,6 +3,7 @@
  */
 
 import { EventEmitter } from 'node:events';
+import { inspect } from 'node:util';
 
 import {
   encode,
@@ -11,6 +12,14 @@ import {
   decodeMultiStream,
 } from '@msgpack/msgpack';
 import { Metadata } from '../api/types';
+
+export let exportsForTesting: any; // eslint-disable-line import/no-mutable-exports
+// jest sets NODE_ENV=test.
+if (process.env.NODE_ENV === 'test') {
+  exportsForTesting = {
+    onTransportFail: new EventEmitter(),
+  };
+}
 
 class Response {
   private requestId: number;
@@ -111,12 +120,35 @@ class Transport extends EventEmitter {
       iter.next().then(resolved => {
         if (!resolved.done) {
           if (!Array.isArray(resolved.value)) {
-            throw new TypeError('expected msgpack result to be array');
+            let valstr = '?';
+            try {
+              valstr = inspect(resolved.value, {
+                sorted: true,
+                maxArrayLength: 10,
+                maxStringLength: 500,
+                compact: true,
+                breakLength: 500,
+              });
+            } catch (error) {
+              // Do nothing.
+            }
+
+            const errMsg = `invalid msgpack-RPC message: expected array, got: ${valstr}`;
+            const onFail: EventEmitter = exportsForTesting?.onTransportFail;
+            if (onFail) {
+              // HACK: for testing only.
+              // TODO(justinmk): let the tests explicitly drive the messages.
+              onFail.emit('fail', errMsg);
+              return;
+            }
+            throw new TypeError(errMsg);
           }
+
           this.parseMessage(resolved.value);
-          return resolveGeneratorRecursively(iter);
+          resolveGeneratorRecursively(iter);
+          return;
         }
-        return Promise.resolve();
+        Promise.resolve();
       });
     };
 
