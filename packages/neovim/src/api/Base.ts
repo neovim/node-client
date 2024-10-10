@@ -118,6 +118,7 @@ export class BaseApi extends EventEmitter {
     });
   }
 
+  /** Sends a request to Nvim (the peer). */
   request(name: string, args: any[] = []): Promise<any> {
     return this.asyncRequest(name, args);
   }

@@ -63,6 +63,7 @@ export class NeovimClient extends Neovim {
     return this.attachedBuffers.has(key);
   }
 
+  /** Handles incoming request (from the peer). */
   handleRequest(
     method: string,
     args: VimValue[],
@@ -85,6 +86,7 @@ export class NeovimClient extends Neovim {
     }
   }
 
+  /** Publishes to (local) subscribers of this `EventEmitter`. */
   emitNotification(method: string, args: any[]) {
     if (method.endsWith('_event')) {
       if (!method.startsWith('nvim_buf_')) {
@@ -114,6 +116,7 @@ export class NeovimClient extends Neovim {
     }
   }
 
+  /** Handles incoming notification (from the peer). */
   handleNotification(method: string, args: VimValue[], ...restArgs: any[]) {
     this.logger.info('handleNotification: %s', method);
     // If neovim API is not generated yet then queue up requests
