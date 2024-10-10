@@ -1,8 +1,8 @@
 /* eslint-env jest */
-import * as cp from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as http from 'http';
+import * as cp from 'node:child_process';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as http from 'node:http';
 
 import { NeovimClient, attach, findNvim } from 'neovim';
 
@@ -37,11 +37,11 @@ describe('Node host', () => {
       `
     );
 
-    const minVersion = '0.9.5'
-    const nvimInfo = findNvim({ minVersion: minVersion });
+    const minVersion = '0.9.5';
+    const nvimInfo = findNvim({ minVersion });
     const nvimPath = nvimInfo.matches[0]?.path;
     if (!nvimPath) {
-      throw new Error(`nvim ${minVersion} not found`)
+      throw new Error(`nvim ${minVersion} not found`);
     }
 
     cp.spawnSync(nvimPath, args);
@@ -115,10 +115,10 @@ describe('Node host', () => {
     const childHost = cp.spawn(
       process.execPath,
       [path.join(__dirname, '..', '..', 'neovim', 'bin', 'cli.js')],
-      { env: { NVIM_NODE_HOST_DEBUG: 1 }, stdio: 'ignore' }
+      { env: { NVIM_NODE_HOST_DEBUG: 'TRUE' }, stdio: 'ignore' }
     );
 
-    setTimeout(function () {
+    setTimeout(() => {
       http.get('http://127.0.0.1:9229/json/list', res => {
         let rawData = '';
         res.on('data', chunk => {
@@ -133,7 +133,8 @@ describe('Node host', () => {
               'ws://127.0.0.1:9229'
             );
             done();
-          } catch (e) {
+          } catch (e: any) {
+            // eslint-disable-next-line no-console
             console.error(e.message);
             throw e;
           }
