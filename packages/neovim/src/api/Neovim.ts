@@ -169,7 +169,7 @@ export class Neovim extends BaseApi {
   /**
    * Sets the current buffer
    */
-  set buffer(buffer: AsyncBuffer) {
+  set buffer(buffer: AsyncBuffer | Buffer) {
     this.request(`${this.prefix}set_current_buf`, [buffer]);
   }
 
@@ -232,7 +232,7 @@ export class Neovim extends BaseApi {
   /**
    * Sets the current tabpage
    */
-  set tabpage(tabpage: AsyncTabpage) {
+  set tabpage(tabpage: AsyncTabpage | Tabpage) {
     this.request(`${this.prefix}set_current_tabpage`, [tabpage]);
   }
 
@@ -259,7 +259,7 @@ export class Neovim extends BaseApi {
    *
    * @param win Window handle
    */
-  set window(win: AsyncWindow) {
+  set window(win: AsyncWindow | Window) {
     if (win instanceof Window) this.setWindow(win);
     else win.then(win => this.setWindow(win));
   }

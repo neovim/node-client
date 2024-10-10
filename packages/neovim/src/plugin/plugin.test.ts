@@ -6,7 +6,7 @@ import { command as Command } from './command';
 import { autocmd as Autocmd } from './autocmd';
 import { getFakeNvimClient } from '../testUtil';
 
-const instantiateOrRun = (Fn, ...args) => {
+const instantiateOrRun = (Fn: ReturnType<typeof Plugin>, ...args: any[]) => {
   try {
     return new Fn(...args);
   } catch (err) {
@@ -36,13 +36,16 @@ describe('Plugin class decorator', () => {
   });
 
   it('decorates class methods', () => {
-    class MyClass {}
-    MyClass.prototype.testF = () => {};
-    MyClass.prototype.testC = () => {};
-    MyClass.prototype.testA = () => {};
+    class MyClass {
+      testF() {}
+
+      testC() {}
+
+      testA() {}
+    }
 
     // This is how (closeish) babel applies decorators
-    FunctionDecorator('TestF', { eval: 'test', range: 'test' })(
+    FunctionDecorator('TestF', { eval: 'test', range: [1, 10] })(
       MyClass.prototype,
       'testF'
     );
@@ -85,15 +88,18 @@ describe('Plugin class decorator', () => {
     expect(pluginObject.registerFunction).toHaveBeenCalledWith(
       'TestF',
       [instance, MyClass.prototype.testF],
-      { sync: false, eval: 'test', range: 'test' }
+      { sync: false, eval: 'test', range: [1, 10] }
     );
   });
 
   it('generates specs from decorated methods', () => {
-    class MyClass {}
-    MyClass.prototype.testF = () => {};
-    MyClass.prototype.testC = () => {};
-    MyClass.prototype.testA = () => {};
+    class MyClass {
+      testF() {}
+
+      testC() {}
+
+      testA() {}
+    }
 
     // This is how (closeish) babel applies decorators
     FunctionDecorator('TestF')(MyClass.prototype, 'testF');

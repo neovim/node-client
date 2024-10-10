@@ -1,5 +1,6 @@
 /* eslint-env jest */
 import * as path from 'node:path';
+import assert from 'node:assert';
 import * as testUtil from '../testUtil';
 
 describe('Neovim API', () => {
@@ -25,7 +26,7 @@ describe('Neovim API', () => {
 
       // switch buffers
       [nvim.buffer] = buffers;
-      expect(await nvim.buffer.name).toMatch(/hello\.txt$/);
+      expect(await (await nvim.buffer).name).toMatch(/hello\.txt$/);
     });
 
     it('can list runtimepaths', async () => {
@@ -218,7 +219,7 @@ describe('Neovim API', () => {
       const numWindows = (await nvim.windows).length;
       const buffer = await nvim.createBuffer(false, false);
       expect(await nvim.buffers).toHaveLength(numBuffers + 1);
-
+      assert(typeof buffer !== 'number');
       const floatingWindow = await nvim.openWindow(buffer, true, {
         relative: 'editor',
         row: 5,
@@ -227,7 +228,7 @@ describe('Neovim API', () => {
         height: 50,
       });
       expect(await nvim.windows).toHaveLength(numWindows + 1);
-
+      assert(typeof floatingWindow !== 'number');
       await nvim.windowClose(floatingWindow, true);
       expect(await nvim.windows).toHaveLength(numWindows);
     });
@@ -235,7 +236,7 @@ describe('Neovim API', () => {
     it('resizes a window', async () => {
       const numWindows = (await nvim.windows).length;
       const buffer = await nvim.createBuffer(false, false);
-
+      assert(typeof buffer !== 'number');
       const floatingWindow = await nvim.openWindow(buffer, true, {
         relative: 'editor',
         row: 5,
@@ -243,6 +244,7 @@ describe('Neovim API', () => {
         width: 10,
         height: 10,
       });
+      assert(typeof floatingWindow !== 'number');
       expect(await nvim.windows).toHaveLength(numWindows + 1);
       expect(await floatingWindow.height).toBe(10);
       expect(await floatingWindow.width).toBe(10);

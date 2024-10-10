@@ -128,6 +128,7 @@ describe('NvimPlugin', () => {
       () => {},
       getFakeNvimClient()
     );
+    // @ts-expect-error Intentionally passing empty array for command arguments.
     plugin.registerCommand('MyCommand', [], {});
     expect(Object.keys(plugin.commands)).toHaveLength(0);
   });
@@ -175,7 +176,7 @@ describe('NvimPlugin', () => {
       () => {},
       getFakeNvimClient()
     );
-    const fn = arg => arg;
+    const fn = (arg: any) => arg;
 
     plugin.registerAutocmd('BufWritePre', fn, { pattern: '*', sync: true });
     plugin.registerCommand('MyCommand', fn, { sync: true });

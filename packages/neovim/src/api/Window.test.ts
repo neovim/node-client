@@ -1,5 +1,7 @@
 /* eslint-env jest */
+import assert from 'node:assert';
 import * as testUtil from '../testUtil';
+import type { Window } from './Window';
 
 describe('Window API', () => {
   let nvim: ReturnType<typeof testUtil.startNvim>[1];
@@ -24,7 +26,7 @@ describe('Window API', () => {
   });
 
   describe('Normal API calls', () => {
-    let win;
+    let win: Window;
 
     beforeEach(async () => {
       win = await nvim.window;
@@ -51,7 +53,7 @@ describe('Window API', () => {
     });
 
     it('has same cursor position after appending a line to buffer', async () => {
-      await win.buffer.append(['test']);
+      await (await win.buffer).append(['test']);
       expect(await win.buffer.lines).toEqual(['', 'test']);
       expect(await win.cursor).toEqual([1, 0]);
     });
@@ -94,7 +96,7 @@ describe('Window API', () => {
     });
 
     it('has the right window positions in display cells', async () => {
-      let windows;
+      let windows: Awaited<typeof nvim.windows>;
       nvim.command('vsplit');
 
       // XXX If we re-use `win` without a new call to `nvim.window`,
@@ -126,6 +128,7 @@ describe('Window API', () => {
       expect(await win.getOption('list')).toBe(true);
       win.setOption('list', false);
       expect(await win.getOption('list')).toBe(false);
+      assert(list !== undefined);
       // Restore option
       win.setOption('list', list);
       expect(await win.getOption('list')).toBe(list);
@@ -167,7 +170,7 @@ describe('Window API', () => {
     });
 
     it.skip('gets current lines in buffer', async () => {
-      expect(await nvim.window.buffer.lines).toEqual(['test']);
+      expect(await (await nvim.window.buffer).lines).toEqual(['test']);
     });
   });
 });
