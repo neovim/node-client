@@ -53,5 +53,9 @@
     "jest": "^29.7.0",
     "jest-haste-map": "^29.7.0",
     "jest-resolve": "^29.6.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [".d.ts", ".js"]
   }
 }
