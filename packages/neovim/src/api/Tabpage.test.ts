@@ -1,5 +1,6 @@
 /* eslint-env jest */
 import * as testUtil from '../testUtil';
+import type { Tabpage } from './Tabpage';
 
 describe('Tabpage API', () => {
   let nvim: ReturnType<typeof testUtil.startNvim>[1];
@@ -18,7 +19,7 @@ describe('Tabpage API', () => {
   });
 
   describe('Normal API calls', () => {
-    let tabpage;
+    let tabpage: Tabpage;
 
     beforeEach(async () => {
       tabpage = await nvim.tabpage;
@@ -68,10 +69,10 @@ describe('Tabpage API', () => {
     it('logs an error when calling `getOption`', () => {
       const spy = jest.spyOn(tabpage.logger, 'error');
 
-      tabpage.getOption('option');
+      tabpage.getOption();
       expect(spy.mock.calls.length).toBe(1);
 
-      tabpage.setOption('option', 'value');
+      tabpage.setOption();
       expect(spy.mock.calls.length).toBe(2);
       spy.mockClear();
     });
