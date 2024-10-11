@@ -155,15 +155,13 @@ describe('Nvim API', () => {
   });
 
   it('emits "disconnect" after quit', done => {
-    let called = false;
-    nvim.on('disconnect', () => {
-      called = true;
-    });
+    const disconnectMock = jest.fn();
+    nvim.on('disconnect', disconnectMock);
 
     nvim.quit();
 
-    proc.on('close', () => {
-      expect(called).toBe(true);
+    proc.on('exit', () => {
+      expect(disconnectMock).toHaveBeenCalledTimes(1);
       done();
     });
 
