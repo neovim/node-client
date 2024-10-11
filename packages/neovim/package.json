@@ -59,13 +59,13 @@
     "@babel/preset-env": "^7.25.3",
     "@babel/preset-typescript": "^7.24.7",
     "@types/jest": "^29.5.12",
-    "@types/node": "16.9.x",
+    "@types/node": "^16.18.113",
     "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
     "jest-haste-map": "^29.7.0",
     "jest-resolve": "^29.6.1",
     "typedoc": "^0.26.7",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.3"
   },
   "scripts": {
     "doc": "typedoc --out doc --exclude '**/*.test.ts' src",
