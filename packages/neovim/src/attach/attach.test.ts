@@ -160,6 +160,7 @@ describe('Nvim API', () => {
 
     nvim.quit();
 
+    // TODO: 'close' event sometimes does not emit. #414
     proc.on('exit', () => {
       expect(disconnectMock).toHaveBeenCalledTimes(1);
       done();
