@@ -1,18 +1,9 @@
-/* eslint-env jest */
-import * as testUtil from '../testUtil';
+import * as jestMock from 'jest-mock';
+import expect from 'expect';
+import { nvim } from '../testUtil';
 import type { Tabpage } from './Tabpage';
 
 describe('Tabpage API', () => {
-  let nvim: ReturnType<typeof testUtil.startNvim>[1];
-
-  beforeAll(async () => {
-    [, nvim] = testUtil.startNvim();
-  });
-
-  afterAll(() => {
-    testUtil.stopNvim();
-  });
-
   it('gets the current Tabpage', async () => {
     const tabpage = await nvim.tabpage;
     expect(tabpage).toBeInstanceOf(nvim.Tabpage);
@@ -25,7 +16,7 @@ describe('Tabpage API', () => {
       tabpage = await nvim.tabpage;
     });
 
-    afterAll(() => nvim.command('tabclose'));
+    after(() => nvim.command('tabclose'));
 
     it('gets the current tabpage number', async () => {
       expect(await tabpage.number).toBe(1);
@@ -67,7 +58,7 @@ describe('Tabpage API', () => {
     });
 
     it('logs an error when calling `getOption`', () => {
-      const spy = jest.spyOn(tabpage.logger, 'error');
+      const spy = jestMock.spyOn(tabpage.logger, 'error');
 
       tabpage.getOption();
       expect(spy.mock.calls.length).toBe(1);

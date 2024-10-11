@@ -1,8 +1,9 @@
-/* eslint-env jest */
 import * as cp from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as http from 'node:http';
+import expect from 'expect';
+import * as jestMock from 'jest-mock';
 
 import { NeovimClient, attach, findNvim } from 'neovim';
 
@@ -12,7 +13,7 @@ describe('Node host', () => {
   let args;
   let nvim: NeovimClient;
 
-  beforeAll(async () => {
+  before(async () => {
     const plugdir = path.resolve(__dirname);
     const nvimrc = path.join(plugdir, 'nvimrc');
     args = [
@@ -54,7 +55,7 @@ describe('Node host', () => {
     nvim = attach({ proc });
   });
 
-  afterAll(() => {
+  after(() => {
     process.chdir(testdir);
     nvim.quit();
     if (proc && proc.connected) {
@@ -74,7 +75,7 @@ describe('Node host', () => {
   // });
 
   it('console.log is monkey-patched to logger.info #329', async () => {
-    const spy = jest.spyOn(nvim.logger, 'info');
+    const spy = jestMock.spyOn(nvim.logger, 'info');
     console.log('log message');
     expect(spy).toHaveBeenCalledWith('log message');
     // Still alive?

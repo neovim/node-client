@@ -90,7 +90,7 @@ jobs:
         which nvim
         nvim --version
 
-        npm run test-build --stream
+        npm run test-coverage --stream
 
     - uses: codecov/codecov-action@v4
       if: matrix.node == '20'

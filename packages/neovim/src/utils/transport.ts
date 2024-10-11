@@ -14,7 +14,7 @@ import {
 import { Metadata } from '../api/types';
 
 export let exportsForTesting: any; // eslint-disable-line import/no-mutable-exports
-// jest sets NODE_ENV=test.
+// 'NODE_ENV=test' is being set in testSetup.ts
 if (process.env.NODE_ENV === 'test') {
   exportsForTesting = {
     onTransportFail: new EventEmitter(),

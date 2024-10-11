@@ -1,19 +1,9 @@
-/* eslint-env jest */
 import assert from 'node:assert';
-import * as testUtil from '../testUtil';
+import expect from 'expect';
+import { nvim } from '../testUtil';
 import type { Window } from './Window';
 
 describe('Window API', () => {
-  let nvim: ReturnType<typeof testUtil.startNvim>[1];
-
-  beforeAll(async () => {
-    [, nvim] = testUtil.startNvim();
-  });
-
-  afterAll(() => {
-    testUtil.stopNvim();
-  });
-
   it('gets the current Window', async () => {
     const win = await nvim.window;
     expect(win).toBeInstanceOf(nvim.Window);

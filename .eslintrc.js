@@ -14,6 +14,7 @@ module.exports = {
   env: {
     node: true,
     es2024: true,
+    mocha: true,
   },
 
   overrides: [
@@ -70,6 +71,7 @@ module.exports = {
 
     'import/extensions': 'off',
     'import/prefer-default-export': 'off',
+    'import/no-extraneous-dependencies': ['error', {'devDependencies': true, 'optionalDependencies': false, 'peerDependencies': false}],
 
     '@typescript-eslint/no-namespace': 'error',
     // TODO: '@typescript-eslint/no-floating-promises': 'error', // Promises must catch errors or be awaited.

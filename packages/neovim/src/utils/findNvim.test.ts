@@ -1,6 +1,6 @@
-/* eslint-env jest */
 import { join } from 'node:path';
 import { mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import expect from 'expect';
 import { findNvim, exportsForTesting, FindNvimResult } from './findNvim';
 
 const parseVersion = exportsForTesting.parseVersion;
@@ -13,12 +13,12 @@ describe('findNvim', () => {
     join(testDir, process.platform === 'win32' ? 'nvim.exe' : 'nvim')
   );
 
-  beforeAll(() => {
+  before(() => {
     mkdirSync(testDir, { recursive: true });
     writeFileSync(nvimExecutablePath, 'fake-nvim-executable');
   });
 
-  afterAll(() => {
+  after(() => {
     rmSync(testDir, { recursive: true, force: true });
   });
 
