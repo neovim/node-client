@@ -91,7 +91,7 @@
       "<rootDir>/src/testSetup.ts"
     ],
     "testEnvironment": "node",
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts$",
+    "testRegex": "(/__tests__/.*|attach(\\.|/)(test|spec))\\.ts$",
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "coverageReporters": [

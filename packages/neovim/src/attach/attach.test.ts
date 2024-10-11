@@ -154,14 +154,38 @@ describe('Nvim API', () => {
     expect(newLines).toEqual(['line1', 'line2']);
   });
 
-  it('emits "disconnect" after quit', done => {
+  it.only('emits "disconnect" after quit', done => {
     const disconnectMock = jest.fn();
     nvim.on('disconnect', disconnectMock);
 
     nvim.quit();
 
+    const r = {
+      stdoutClosed: false,
+      stderrClosed: false,
+      errors: 0,
+    };
+    proc.stdout.on('close', () => {
+      r.stdoutClosed = true;
+    });
+    proc.stderr.on('close', () => {
+      r.stderrClosed = true;
+    });
+    proc.on('error', () => {
+      r.errors = r.errors + 1;
+    });
+
     // TODO: 'close' event sometimes does not emit. #414
     proc.on('exit', () => {
+      expect(r).toStrictEqual({
+        stdoutClosed: true,
+        stderrClosed: true,
+        errors: 0,
+      });
+      done();
+    });
+
+    proc.on('close', () => {
       expect(disconnectMock).toHaveBeenCalledTimes(1);
       done();
     });
