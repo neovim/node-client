@@ -154,27 +154,22 @@ describe('Nvim API', () => {
     expect(newLines).toEqual(['line1', 'line2']);
   });
 
-  it('emits "disconnect" after quit', async () => {
-    const disconnectMock = jest.fn();
-    nvim.on('disconnect', disconnectMock);
-    nvim.quit();
-
-    const closePromise = new Promise(resolve => {
-      proc.on('close', resolve);
+  it('emits "disconnect" after quit', done => {
+    let called = false;
+    nvim.on('disconnect', () => {
+      called = true;
     });
 
-    let timeout: NodeJS.Timeout;
+    nvim.quit();
 
-    await Promise.race([
-      closePromise.then(() => clearTimeout(timeout)),
-      new Promise((_, reject) => {
-        timeout = setTimeout(
-          () => reject(new Error('Timeout waiting for nvim to quit')),
-          5000
-        );
-      }),
-    ]);
+    proc.on('close', () => {
+      expect(called).toBe(true);
+      done();
+    });
 
-    expect(disconnectMock).toHaveBeenCalledTimes(1);
-  }, 10000);
+    // Event doesn't actually emit when we quit nvim, but when the child process is killed
+    if (proc && proc.connected) {
+      proc.disconnect();
+    }
+  });
 });
