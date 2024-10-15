@@ -83,6 +83,9 @@ function parseVersion(version: string): (number | string)[] | undefined {
   }
 
   const [, major, minor, patch, prerelease] = match;
+  if (major === undefined || minor === undefined || patch === undefined) {
+    throw new TypeError(`Invalid version string: "${version}"`);
+  }
   const majorNumber = Number(major);
   const minorNumber = Number(minor);
   const patchNumber = Number(patch);
@@ -114,11 +117,17 @@ function parseVersion(version: string): (number | string)[] | undefined {
 function compareVersions(a: string, b: string): number {
   const versionA = parseVersion(a);
   const versionB = parseVersion(b);
-  const length = Math.min(versionA?.length ?? 0, versionB?.length ?? 0);
+  if (versionA === undefined) {
+    throw new TypeError(`Invalid version: "${a}"`);
+  }
+  if (versionB === undefined) {
+    return 1;
+  }
 
+  const length = Math.min(versionA.length, versionB.length);
   for (let i = 0; i < length; i = i + 1) {
-    const partA = versionA?.[i] ?? 0;
-    const partB = versionB?.[i] ?? 0;
+    const partA = versionA[i] ?? 0;
+    const partB = versionB[i] ?? 0;
     if (partA < partB) {
       return -1;
     }
@@ -127,7 +136,7 @@ function compareVersions(a: string, b: string): number {
     }
   }
 
-  if ((versionB?.length ?? 0) > (versionA?.length ?? 0)) {
+  if (versionB.length > versionA.length) {
     return -1;
   }
 
@@ -209,6 +218,7 @@ export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
     if (existsSync(nvimPath) || normalizedPathsFromUser.includes(nvimPath)) {
       try {
         accessSync(nvimPath, constants.X_OK);
+        // TODO: fallback to `echo 'print(vim.version())' | nvim -l -` if parsing --version fails.
         const nvimVersionFull = execFileSync(nvimPath, [
           '--version',
         ]).toString();

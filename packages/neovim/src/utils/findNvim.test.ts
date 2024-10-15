@@ -21,6 +21,7 @@ describe('findNvim', () => {
   afterAll(() => {
     rmSync(testDir, { recursive: true, force: true });
   });
+
   it('parseVersion()', () => {
     expect(parseVersion('0.5.0-dev+1357-g192f89ea1')).toEqual([
       0,
@@ -74,6 +75,18 @@ describe('findNvim', () => {
         '0.3.0-dev-658+g06694203e-Homebrew'
       )
     ).toBe(1);
+
+    // Failure modes:
+    expect(compareVersions('0.3.0', 'nonsense')).toBe(1);
+    expect(() => compareVersions('nonsense', '0.3.0')).toThrow(
+      'Invalid version: "nonsense"'
+    );
+    expect(() => compareVersions('nonsense', 'nonsense')).toThrow(
+      'Invalid version: "nonsense"'
+    );
+    expect(() => compareVersions(undefined, undefined)).toThrow(
+      'Invalid version format: not a string'
+    );
   });
 
   /** Asserts that >=1 nvim binaries were found. */
