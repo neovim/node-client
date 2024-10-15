@@ -67,7 +67,7 @@ export type FindNvimResult = {
 };
 
 const versionRegex = /^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/;
-const nvimVersionRegex = /^NVIM\s+v(.+)$/m;
+const nvimVersionRegex = /^[nN][vV][iI][mM]\s+v?(.+)$/m;
 const buildTypeRegex = /^Build\s+type:\s+(.+)$/m;
 const luaJitVersionRegex = /^LuaJIT\s+(.+)$/m;
 const windows = process.platform === 'win32';
