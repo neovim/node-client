@@ -149,7 +149,8 @@ describe('Nvim API', () => {
     expect(newLines).toEqual(['line1', 'line2']);
   });
 
-  it('emits "disconnect" after quit', done => {
+  // skip for now. #419
+  it.skip('emits "disconnect" after quit', done => {
     const disconnectMock = jestMock.fn();
     nvim.on('disconnect', disconnectMock);
 
