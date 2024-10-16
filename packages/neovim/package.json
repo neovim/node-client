@@ -71,7 +71,7 @@
   "scripts": {
     "doc": "typedoc --out doc --exclude '**/*.test.ts' src",
     "prepublishOnly": "npm run build",
-    "test": "NODE_ENV=test mocha --exit --require ts-node/register --require src/testSetup.ts src/**/*.test.ts",
+    "test": "mocha",
     "test-coverage": "c8 --reporter=json --reporter=html npm test",
     "test-staged": "npm test --bail",
     "test-missing-apis": "npm run build && node scripts/findMissingApi",

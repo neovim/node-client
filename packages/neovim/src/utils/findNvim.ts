@@ -276,7 +276,7 @@ export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
 
 // eslint-disable-next-line import/no-mutable-exports
 export let exportsForTesting: any;
-// 'NODE_ENV=test' is being set in testSetup.ts
+// .mocharc.js sets NODE_ENV=test.
 if (process.env.NODE_ENV === 'test') {
   // These functions are intentionally not exported. After `nvim` is found, clients can use Nvim's
   // own `vim.version` module, so node-client shouldn't expose a half-baked "semver" implementation.
