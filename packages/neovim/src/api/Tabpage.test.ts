@@ -1,9 +1,19 @@
 import * as jestMock from 'jest-mock';
 import expect from 'expect';
-import { nvim } from '../testUtil';
+import * as testUtil from '../testUtil';
 import type { Tabpage } from './Tabpage';
 
 describe('Tabpage API', () => {
+  let nvim: ReturnType<typeof testUtil.startNvim>[1];
+
+  before(async () => {
+    [, nvim] = testUtil.startNvim();
+  });
+
+  after(() => {
+    testUtil.stopNvim();
+  });
+
   it('gets the current Tabpage', async () => {
     const tabpage = await nvim.tabpage;
     expect(tabpage).toBeInstanceOf(nvim.Tabpage);

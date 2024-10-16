@@ -2,12 +2,23 @@ import * as jestMock from 'jest-mock';
 import expect from 'expect';
 import { attach } from './attach';
 import { Logger } from '../utils/logger';
-import { proc, nvim, startNvim, stopNvim } from '../testUtil';
+import * as testUtil from '../testUtil';
 import { NeovimClient } from '../api/client';
 
 // global.expect = expect;
 
 describe('Nvim API', () => {
+  let proc: ReturnType<typeof testUtil.startNvim>[0];
+  let nvim: ReturnType<typeof testUtil.startNvim>[1];
+
+  before(async () => {
+    [proc, nvim] = testUtil.startNvim();
+  });
+
+  after(() => {
+    testUtil.stopNvim();
+  });
+
   let requests: { method: string; args: number[] }[];
   let notifications: { method: string; args: number[] }[];
 
@@ -54,7 +65,7 @@ describe('Nvim API', () => {
   });
 
   it('console.log NOT monkey-patched if custom logger passed to attach()', async () => {
-    const [proc2] = startNvim(false);
+    const [proc2] = testUtil.startNvim(false);
     const logged: string[] = [];
     let logger2 = {};
     const fakeLog = (msg: any) => {
@@ -87,7 +98,7 @@ describe('Nvim API', () => {
     // Still alive?
     expect(await nvim2.eval('1+1')).toEqual(2);
 
-    stopNvim(nvim2);
+    testUtil.stopNvim(nvim2);
   });
 
   it('can send requests and receive response', async () => {
