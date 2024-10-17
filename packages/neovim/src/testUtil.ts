@@ -1,6 +1,7 @@
 import * as cp from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import expect from 'expect';
 import { NeovimClient } from './api/client';
 import { attach } from './attach/attach';
