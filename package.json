@@ -30,7 +30,7 @@
     "dev": "npm run --stream --parallel dev --workspaces --if-present",
     "publish:neovim": "cd packages/neovim && cp ../../README.md . && cp ../../CHANGELOG.md . && npm publish",
     "test": "npm run test --workspaces --if-present",
-    "test-coverage": "npm run test --workspaces --if-present",
+    "test-coverage": "npm run test-coverage --workspaces --if-present",
     "test-staged": "npm run test-staged --workspaces --if-present -- --",
     "test-missing-apis": "npm run test-missing-apis --workspaces --if-present",
     "test-lint": "npm run lint",
