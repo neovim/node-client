@@ -1,5 +1,5 @@
-import expect from 'expect';
-import * as jestMock from 'jest-mock';
+import assert from 'node:assert';
+import * as sinon from 'sinon';
 import { getFakeNvimClient } from '../testUtil';
 import { callable, NvimPlugin } from './NvimPlugin';
 
@@ -8,12 +8,12 @@ describe('NvimPlugin', () => {
     const fakeNvimClient = getFakeNvimClient();
     const plugin = new NvimPlugin('/tmp/filename', () => {}, fakeNvimClient);
 
-    expect(plugin.filename).toEqual('/tmp/filename');
-    expect(plugin.nvim).toEqual(fakeNvimClient);
-    expect(plugin.dev).toBe(false);
-    expect(Object.keys(plugin.autocmds)).toHaveLength(0);
-    expect(Object.keys(plugin.commands)).toHaveLength(0);
-    expect(Object.keys(plugin.functions)).toHaveLength(0);
+    assert.strictEqual(plugin.filename, '/tmp/filename');
+    assert.strictEqual(plugin.nvim, fakeNvimClient);
+    assert.strictEqual(plugin.dev, false);
+    assert.strictEqual(Object.keys(plugin.autocmds).length, 0);
+    assert.strictEqual(Object.keys(plugin.commands).length, 0);
+    assert.strictEqual(Object.keys(plugin.functions).length, 0);
   });
 
   it('should set dev options when you call setOptions', () => {
@@ -23,8 +23,8 @@ describe('NvimPlugin', () => {
       getFakeNvimClient()
     );
     plugin.setOptions({ dev: true });
-    expect(plugin.dev).toBe(true);
-    expect(plugin.shouldCacheModule).toBe(false);
+    assert.strictEqual(plugin.dev, true);
+    assert.strictEqual(plugin.shouldCacheModule, false);
   });
 
   it('should store registered autocmds', () => {
@@ -42,8 +42,8 @@ describe('NvimPlugin', () => {
       opts,
     };
     plugin.registerAutocmd('BufWritePre', fn, opts);
-    expect(Object.keys(plugin.autocmds)).toHaveLength(1);
-    expect(plugin.autocmds['BufWritePre *']).toEqual({ fn, spec });
+    assert.strictEqual(Object.keys(plugin.autocmds).length, 1);
+    assert.deepStrictEqual(plugin.autocmds['BufWritePre *'], { fn, spec });
   });
 
   it('should store registered commands', () => {
@@ -61,8 +61,8 @@ describe('NvimPlugin', () => {
       opts: {},
     };
     plugin.registerCommand('MyCommand', fn, opts);
-    expect(Object.keys(plugin.commands)).toHaveLength(1);
-    expect(plugin.commands.MyCommand).toEqual({ fn, spec });
+    assert.strictEqual(Object.keys(plugin.commands).length, 1);
+    assert.deepStrictEqual(plugin.commands.MyCommand, { fn, spec });
   });
 
   it('should store registered functions', () => {
@@ -80,8 +80,8 @@ describe('NvimPlugin', () => {
       opts: {},
     };
     plugin.registerFunction('MyFunction', fn, opts);
-    expect(Object.keys(plugin.functions)).toHaveLength(1);
-    expect(plugin.functions.MyFunction).toEqual({ fn, spec });
+    assert.strictEqual(Object.keys(plugin.functions).length, 1);
+    assert.deepStrictEqual(plugin.functions.MyFunction, { fn, spec });
   });
 
   it('should not add autocmds with no pattern option', () => {
@@ -91,20 +91,20 @@ describe('NvimPlugin', () => {
       getFakeNvimClient()
     );
     plugin.registerAutocmd('BufWritePre', () => {}, { pattern: '' });
-    expect(Object.keys(plugin.autocmds)).toHaveLength(0);
+    assert.strictEqual(Object.keys(plugin.autocmds).length, 0);
   });
 
   it('should create functions from callable arrays', () => {
-    const fn = jestMock.fn(function () {
+    const fn = sinon.spy(function () {
       // @ts-expect-error intentional
       return this;
     });
-    expect(callable(fn)).toEqual(fn);
+    assert.strictEqual(callable(fn), fn);
     callable([{}, fn])();
-    expect(fn).toHaveBeenCalledTimes(1);
+    assert.strictEqual(fn.callCount, 1);
 
     const thisObj = {};
-    expect(callable([thisObj, fn])()).toBe(thisObj);
+    assert.strictEqual(callable([thisObj, fn])(), thisObj);
 
     const plugin = new NvimPlugin(
       '/tmp/filename',
@@ -112,7 +112,7 @@ describe('NvimPlugin', () => {
       getFakeNvimClient()
     );
     const obj = {
-      func: jestMock.fn(function () {
+      func: sinon.spy(function () {
         // @ts-expect-error intentional
         return this;
       }),
@@ -121,8 +121,9 @@ describe('NvimPlugin', () => {
     plugin.registerCommand('MyCommand', [obj, obj.func], {});
 
     const thisObject = plugin.commands.MyCommand.fn('arg1', 'arg2');
-    expect(obj.func).toHaveBeenCalledWith('arg1', 'arg2');
-    expect(thisObject).toBe(obj);
+    // @ts-expect-error intentional
+    assert.strictEqual(obj.func.calledWith('arg1', 'arg2'), true);
+    assert.strictEqual(thisObject, obj);
   });
 
   it('should not register commands with incorrect callable arguments', () => {
@@ -133,7 +134,7 @@ describe('NvimPlugin', () => {
     );
     // @ts-expect-error Intentionally passing empty array for command arguments.
     plugin.registerCommand('MyCommand', [], {});
-    expect(Object.keys(plugin.commands)).toHaveLength(0);
+    assert.strictEqual(Object.keys(plugin.commands).length, 0);
   });
 
   it('should return specs for registered commands', () => {
@@ -170,7 +171,7 @@ describe('NvimPlugin', () => {
     };
     plugin.registerFunction('MyFunction', fn, fOpts);
 
-    expect(plugin.specs).toEqual([aSpec, cSpec, fSpec]);
+    assert.deepStrictEqual(plugin.specs, [aSpec, cSpec, fSpec]);
   });
 
   it('should handle requests for registered commands', async () => {
@@ -185,15 +186,18 @@ describe('NvimPlugin', () => {
     plugin.registerCommand('MyCommand', fn, { sync: true });
     plugin.registerFunction('MyFunction', fn);
 
-    expect(await plugin.handleRequest('BufWritePre *', 'autocmd', [true])).toBe(
+    assert.strictEqual(
+      await plugin.handleRequest('BufWritePre *', 'autocmd', [true]),
       true
     );
-    expect(await plugin.handleRequest('MyCommand', 'command', [false])).toBe(
+    assert.strictEqual(
+      await plugin.handleRequest('MyCommand', 'command', [false]),
       false
     );
-    expect(
-      await plugin.handleRequest('MyFunction', 'function', ['blue'])
-    ).toEqual('blue');
+    assert.strictEqual(
+      await plugin.handleRequest('MyFunction', 'function', ['blue']),
+      'blue'
+    );
   });
 
   it('should throw on unknown request', () => {
@@ -202,13 +206,9 @@ describe('NvimPlugin', () => {
       () => {},
       getFakeNvimClient()
     );
-    expect.assertions(1);
-    plugin.handleRequest('BufWritePre *', 'autocmd', [true]).catch(err => {
-      expect(err).toEqual(
-        new Error(
-          'Missing handler for autocmd: "BufWritePre *" in /tmp/filename'
-        )
-      );
-    });
+    assert.rejects(
+      plugin.handleRequest('BufWritePre *', 'autocmd', [true]),
+      new Error('Missing handler for autocmd: "BufWritePre *" in /tmp/filename')
+    );
   });
 });

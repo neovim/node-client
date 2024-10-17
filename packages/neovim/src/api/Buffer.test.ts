@@ -1,6 +1,5 @@
 import assert from 'node:assert';
-import { expect } from 'expect';
-import * as jestMock from 'jest-mock';
+import sinon from 'sinon';
 import * as testUtil from '../testUtil';
 import type { Buffer } from './Buffer';
 
@@ -47,7 +46,7 @@ describe('Buffer API', () => {
   it(
     'gets the current buffer',
     withBuffer([], async buffer => {
-      expect(buffer).toBeInstanceOf(nvim.Buffer);
+      assert(buffer instanceof nvim.Buffer);
     })
   );
 
@@ -55,7 +54,7 @@ describe('Buffer API', () => {
     'get bufnr by id',
     withBuffer([], async buffer => {
       const bufnr = await nvim.call('bufnr', ['%']);
-      expect(buffer.id).toBe(bufnr);
+      assert.strictEqual(buffer.id, bufnr);
     })
   );
 
@@ -67,24 +66,24 @@ describe('Buffer API', () => {
 
         // insert a line
         buffer.append('hi');
-        expect(await buffer.changedtick).toBe(initial + 1);
+        assert.strictEqual(await buffer.changedtick, initial + 1);
 
         // clear buffer
         buffer.remove(0, -1, false);
-        expect(await buffer.changedtick).toBe(initial + 2);
+        assert.strictEqual(await buffer.changedtick, initial + 2);
       })
     );
 
     it('sets/gets the current buffer name', async () => {
       (await nvim.buffers)[0].name = 'hello.txt';
       const name = await (await nvim.buffers)[0].name;
-      expect(name).toMatch('hello.txt');
+      assert(name.match('hello.txt'));
     });
 
     it(
       'is a valid buffer',
       withBuffer([], async buffer => {
-        expect(await buffer.valid).toBe(true);
+        assert.strictEqual(await buffer.valid, true);
       })
     );
 
@@ -93,10 +92,11 @@ describe('Buffer API', () => {
       withBuffer([], async buffer => {
         // eslint-disable-next-line no-param-reassign
         buffer.name = 'foo.txt';
-        expect(await buffer.name).toMatch('foo.txt');
+        assert((await buffer.name).match('foo.txt'));
+
         // eslint-disable-next-line no-param-reassign
         buffer.name = 'test2.txt';
-        expect(await buffer.name).toMatch('test2.txt');
+        assert((await buffer.name).match('test2.txt'));
       })
     );
 
@@ -104,7 +104,7 @@ describe('Buffer API', () => {
       'can replace first line of buffer with a string',
       withBuffer(['foo'], async buffer => {
         buffer.replace('test', 0);
-        expect(await buffer.lines).toEqual(['test']);
+        assert.deepStrictEqual(await buffer.lines, ['test']);
       })
     );
 
@@ -112,7 +112,7 @@ describe('Buffer API', () => {
       'can insert lines at beginning of buffer',
       withBuffer(['test'], async buffer => {
         await buffer.insert(['test', 'foo'], 0);
-        expect(await buffer.lines).toEqual(['test', 'foo', 'test']);
+        assert.deepStrictEqual(await buffer.lines, ['test', 'foo', 'test']);
       })
     );
 
@@ -123,7 +123,7 @@ describe('Buffer API', () => {
         async buffer => {
           await buffer.replace(['a', 'b', 'c'], 2);
 
-          expect(await buffer.lines).toEqual([
+          assert.deepStrictEqual(await buffer.lines, [
             '0',
             '1',
             'a',
@@ -143,7 +143,7 @@ describe('Buffer API', () => {
       'inserts line at index 2',
       withBuffer(['test', 'bar', 'bar', 'bar'], async buffer => {
         buffer.insert(['foo'], 2);
-        expect(await buffer.lines).toEqual([
+        assert.deepStrictEqual(await buffer.lines, [
           'test',
           'bar',
           'foo',
@@ -157,26 +157,26 @@ describe('Buffer API', () => {
       'removes last 2 lines',
       withBuffer(['test', 'bar', 'foo', 'a', 'b'], async buffer => {
         buffer.remove(-3, -1, true);
-        expect(await buffer.lines).toEqual(['test', 'bar', 'foo']);
+        assert.deepStrictEqual(await buffer.lines, ['test', 'bar', 'foo']);
       })
     );
 
     it('checks if buffer is loaded', async () => {
       await nvim.command('new');
       const buffer = await nvim.buffer;
-      expect(await buffer.loaded).toBe(true);
+      assert.strictEqual(await buffer.loaded, true);
       await nvim.command('bunload!');
-      expect(await buffer.loaded).toBe(false);
+      assert.strictEqual(await buffer.loaded, false);
     });
 
     it(
       'gets byte offset for a line',
       withBuffer(['test', 'bar', ''], async buffer => {
-        expect(await buffer.getOffset(0)).toEqual(0);
-        expect(await buffer.getOffset(1)).toEqual(5); // test\n
-        expect(await buffer.getOffset(2)).toEqual(9); // test\n + bar\n
-        expect(await buffer.getOffset(3)).toEqual(10); // test\n + bar\n + \n
-        expect(buffer.getOffset(4)).rejects.toThrow();
+        assert.strictEqual(await buffer.getOffset(0), 0);
+        assert.strictEqual(await buffer.getOffset(1), 5); // test\n
+        assert.strictEqual(await buffer.getOffset(2), 9); // test\n + bar\n
+        assert.strictEqual(await buffer.getOffset(3), 10); // test\n + bar\n + \n
+        await assert.rejects(buffer.getOffset(4));
       })
     );
 
@@ -184,7 +184,7 @@ describe('Buffer API', () => {
       await nvim.command('new');
       await nvim.command('bunload!');
       const buffer = await nvim.buffer;
-      expect(await buffer.getOffset(0)).toEqual(-1);
+      assert.strictEqual(await buffer.getOffset(0), -1);
     });
 
     it(
@@ -192,7 +192,7 @@ describe('Buffer API', () => {
       withBuffer(['test', 'bar', 'foo'], async buffer => {
         await buffer.append(['test', 'test']);
 
-        expect(await buffer.lines).toEqual([
+        assert.deepStrictEqual(await buffer.lines, [
           'test',
           'bar',
           'foo',
@@ -207,8 +207,8 @@ describe('Buffer API', () => {
       withBuffer(['foo'], async buffer => {
         buffer.remove(0, -1, true);
         // One empty line
-        expect(await buffer.length).toEqual(1);
-        expect(await buffer.lines).toEqual(['']);
+        assert.strictEqual(await buffer.length, 1);
+        assert.deepStrictEqual(await buffer.lines, ['']);
       })
     );
 
@@ -217,13 +217,13 @@ describe('Buffer API', () => {
       withBuffer([], async buffer => {
         const initial = await buffer.getOption('copyindent');
         buffer.setOption('copyindent', true);
-        expect(await buffer.getOption('copyindent')).toBe(true);
+        assert.strictEqual(await buffer.getOption('copyindent'), true);
         buffer.setOption('copyindent', false);
-        expect(await buffer.getOption('copyindent')).toBe(false);
+        assert.strictEqual(await buffer.getOption('copyindent'), false);
         assert(initial !== undefined);
         // Restore option
         buffer.setOption('copyindent', initial);
-        expect(await buffer.getOption('copyindent')).toBe(initial);
+        assert.strictEqual(await buffer.getOption('copyindent'), initial);
       })
     );
 
@@ -231,7 +231,7 @@ describe('Buffer API', () => {
       'returns null if variable is not found',
       withBuffer([], async buffer => {
         const test = await buffer.getVar('test');
-        expect(test).toBe(null);
+        assert.strictEqual(test, null);
       })
     );
 
@@ -240,19 +240,20 @@ describe('Buffer API', () => {
       withBuffer([], async buffer => {
         buffer.setVar('test', { foo: 'testValue' });
 
-        expect(await buffer.getVar('test')).toEqual({ foo: 'testValue' });
+        assert.deepStrictEqual(await buffer.getVar('test'), {
+          foo: 'testValue',
+        });
 
-        expect(await nvim.eval('b:test')).toEqual({ foo: 'testValue' });
+        assert.deepStrictEqual(await nvim.eval('b:test'), { foo: 'testValue' });
         buffer.deleteVar('test');
 
-        expect(await nvim.eval('exists("b:test")')).toBe(0);
+        assert.strictEqual(await nvim.eval('exists("b:test")'), 0);
 
-        expect(await buffer.getVar('test')).toBe(null);
+        assert.strictEqual(await buffer.getVar('test'), null);
       })
     );
-
     it('can get list of commands', async () => {
-      expect(await nvim.buffer.commands).toEqual({});
+      assert.deepStrictEqual(await nvim.buffer.commands, {});
     });
 
     it(
@@ -271,29 +272,29 @@ describe('Buffer API', () => {
     it('sets/gets the current buffer name using api chaining', async () => {
       const buffer = await nvim.buffer;
       buffer.name = 'goodbye.txt';
-      expect(await nvim.buffer.name).toMatch('goodbye.txt');
+      assert((await nvim.buffer.name).match('goodbye.txt'));
     });
 
     it('can chain calls from Base class i.e. getOption', async () => {
       const buffer = await nvim.buffer;
       const initial = await buffer.getOption('copyindent');
       buffer.setOption('copyindent', true);
-      expect(await buffer.getOption('copyindent')).toBe(true);
+      assert.strictEqual(await buffer.getOption('copyindent'), true);
       buffer.setOption('copyindent', false);
-      expect(await buffer.getOption('copyindent')).toBe(false);
+      assert.strictEqual(await buffer.getOption('copyindent'), false);
       assert(initial !== undefined);
       // Restore option
       buffer.setOption('copyindent', initial);
-      expect(await buffer.getOption('copyindent')).toBe(initial);
+      assert.strictEqual(await buffer.getOption('copyindent'), initial);
     });
 
     it('sets current buffer name to "bar.js" using api chaining', async () => {
       const buffer = await nvim.buffer;
       buffer.name = 'bar.js';
-      expect(await buffer.name).toMatch('bar.js');
+      assert((await buffer.name).match('bar.js'));
 
       buffer.name = 'test2.js';
-      expect(await buffer.name).toMatch('test2.js');
+      assert((await buffer.name).match('test2.js'));
     });
 
     it(
@@ -301,7 +302,7 @@ describe('Buffer API', () => {
       withBuffer([], async () => {
         const buffer = await nvim.buffer;
         await buffer.replace('test', 0);
-        expect(await buffer.lines).toEqual(['test']);
+        assert.deepStrictEqual(await buffer.lines, ['test']);
       })
     );
 
@@ -313,7 +314,7 @@ describe('Buffer API', () => {
           const buffer = await nvim.buffer;
           await buffer.replace(['a', 'b', 'c'], 2);
 
-          expect(await buffer.lines).toEqual([
+          assert.deepStrictEqual(await buffer.lines, [
             '0',
             '1',
             'a',
@@ -334,7 +335,7 @@ describe('Buffer API', () => {
       withBuffer(['test'], async () => {
         const buffer = await nvim.buffer;
         await buffer.insert(['test', 'foo'], 0);
-        expect(await buffer.lines).toEqual(['test', 'foo', 'test']);
+        assert.deepStrictEqual(await buffer.lines, ['test', 'foo', 'test']);
       })
     );
 
@@ -343,7 +344,12 @@ describe('Buffer API', () => {
       withBuffer(['test', 'foo'], async () => {
         const buffer = await nvim.buffer;
         await buffer.replace(['bar', 'bar', 'bar'], 1);
-        expect(await buffer.lines).toEqual(['test', 'bar', 'bar', 'bar']);
+        assert.deepStrictEqual(await buffer.lines, [
+          'test',
+          'bar',
+          'bar',
+          'bar',
+        ]);
       })
     );
 
@@ -352,7 +358,7 @@ describe('Buffer API', () => {
       withBuffer(['test', 'bar', 'bar', 'bar'], async () => {
         const buffer = await nvim.buffer;
         await buffer.insert(['foo'], 2);
-        expect(await buffer.lines).toEqual([
+        assert.deepStrictEqual(await buffer.lines, [
           'test',
           'bar',
           'foo',
@@ -367,7 +373,7 @@ describe('Buffer API', () => {
       withBuffer(['test', 'bar', 'foo', 'a', 'b'], async () => {
         const buffer = await nvim.buffer;
         await buffer.remove(-3, -1, true);
-        expect(await buffer.lines).toEqual(['test', 'bar', 'foo']);
+        assert.deepStrictEqual(await buffer.lines, ['test', 'bar', 'foo']);
       })
     );
 
@@ -376,7 +382,7 @@ describe('Buffer API', () => {
       withBuffer(['test', 'bar', 'foo'], async () => {
         const buffer = await nvim.buffer;
         await buffer.append(['test', 'test']);
-        expect(await buffer.lines).toEqual([
+        assert.deepStrictEqual(await buffer.lines, [
           'test',
           'bar',
           'foo',
@@ -392,8 +398,8 @@ describe('Buffer API', () => {
         const buffer = await nvim.buffer;
         await buffer.remove(0, -1, true);
         // One empty line
-        expect(await buffer.length).toEqual(1);
-        expect(await buffer.lines).toEqual(['']);
+        assert.strictEqual(await buffer.length, 1);
+        assert.deepStrictEqual(await buffer.lines, ['']);
       })
     );
   });
@@ -416,57 +422,57 @@ describe('Buffer event updates', () => {
 
   it('can listen and unlisten', async () => {
     const buffer = await nvim.buffer;
-    const mock = jestMock.fn();
+    const mock = sinon.spy();
     const unlisten = buffer.listen('lines', mock);
     await buffer.insert(['bar'], 1);
-    expect(mock).toHaveBeenCalledTimes(1);
+    assert.strictEqual(mock.callCount, 1);
     unlisten();
     await buffer.insert(['bar'], 1);
-    expect(mock).toHaveBeenCalledTimes(1);
+    assert.strictEqual(mock.callCount, 1);
   });
 
   it('can reattach for buffer events', async () => {
     const buffer = await nvim.buffer;
-    let unlisten = buffer.listen('lines', jestMock.fn());
+    let unlisten = buffer.listen('lines', sinon.spy());
     unlisten();
     await wait(10);
-    const mock = jestMock.fn();
+    const mock = sinon.spy();
     unlisten = buffer.listen('lines', mock);
     await buffer.insert(['bar'], 1);
-    expect(mock).toHaveBeenCalledTimes(1);
+    assert.strictEqual(mock.callCount, 1);
     unlisten();
   });
 
   it('should return attached state', async () => {
     const buffer = await nvim.buffer;
-    const unlisten = buffer.listen('lines', jestMock.fn());
+    const unlisten = buffer.listen('lines', sinon.spy());
     await wait(30);
     let attached = buffer.isAttached;
-    expect(attached).toBe(true);
+    assert.strictEqual(attached, true);
     unlisten();
     await wait(30);
     attached = buffer.isAttached;
-    expect(attached).toBe(false);
+    assert.strictEqual(attached, false);
   });
 
-  it('only bind once for the same event and handler ', async () => {
+  it('only bind once for the same event and handler', async () => {
     const buffer = await nvim.buffer;
-    const mock = jestMock.fn();
+    const mock = sinon.spy();
     buffer.listen('lines', mock);
     buffer.listen('lines', mock);
     await buffer.insert(['bar'], 1);
-    expect(mock).toHaveBeenCalledTimes(1);
+    assert.strictEqual(mock.callCount, 1);
   });
 
   it('can use `buffer.unlisten` to unlisten', async () => {
     const buffer = await nvim.buffer;
-    const mock = jestMock.fn();
+    const mock = sinon.spy();
     buffer.listen('lines', mock);
     await buffer.insert(['bar'], 1);
-    expect(mock).toHaveBeenCalledTimes(1);
+    assert.strictEqual(mock.callCount, 1);
     buffer.unlisten('lines', mock);
     await buffer.insert(['bar'], 1);
-    expect(mock).toHaveBeenCalledTimes(1);
+    assert.strictEqual(mock.callCount, 1);
   });
 
   it('listens to line updates', async () => {
@@ -484,10 +490,10 @@ describe('Buffer event updates', () => {
           end: number,
           data: string[]
         ) => {
-          expect(await currentBuffer.name).toBe(bufferName);
-          expect(start).toBe(1);
-          expect(end).toBe(1);
-          expect(data).toEqual(['bar']);
+          assert.strictEqual(await currentBuffer.name, bufferName);
+          assert.strictEqual(start, 1);
+          assert.strictEqual(end, 1);
+          assert.deepStrictEqual(data, ['bar']);
           unlisten();
           resolve();
         }
@@ -498,23 +504,23 @@ describe('Buffer event updates', () => {
     await promise;
   });
 
-  it('has listener on multiple buffers ', async () => {
+  it('has listener on multiple buffers', async () => {
     await nvim.command('new!');
     const buffers = await nvim.buffers;
-    const foo = jestMock.fn();
-    const bar = jestMock.fn();
+    const foo = sinon.spy();
+    const bar = sinon.spy();
 
     buffers[0].listen('lines', foo);
     buffers[1].listen('lines', bar);
 
     await (await nvim.buffer).insert(['bar'], 1);
-    expect(foo).toHaveBeenCalledTimes(0);
-    expect(bar).toHaveBeenCalledTimes(1);
+    assert.strictEqual(foo.callCount, 0);
+    assert.strictEqual(bar.callCount, 1);
     await nvim.command('q!');
 
     await (await nvim.buffer).insert(['foo'], 0);
-    expect(foo).toHaveBeenCalledTimes(1);
-    expect(bar).toHaveBeenCalledTimes(1);
+    assert.strictEqual(foo.callCount, 1);
+    assert.strictEqual(bar.callCount, 1);
 
     buffers[0].unlisten('lines', foo);
     buffers[1].unlisten('lines', bar);
@@ -524,21 +530,21 @@ describe('Buffer event updates', () => {
     await nvim.command('new!');
 
     const buffer = await nvim.buffer;
-    const foo = jestMock.fn();
-    const bar = jestMock.fn();
+    const foo = sinon.spy();
+    const bar = sinon.spy();
 
     const unlisten1 = buffer.listen('lines', foo);
     const unlisten2 = buffer.listen('lines', bar);
 
     await buffer.insert(['bar'], 1);
-    expect(foo).toHaveBeenCalledTimes(1);
-    expect(bar).toHaveBeenCalledTimes(1);
+    assert.strictEqual(foo.callCount, 1);
+    assert.strictEqual(bar.callCount, 1);
 
     unlisten2();
 
     await buffer.insert(['foo'], 0);
-    expect(foo).toHaveBeenCalledTimes(2);
-    expect(bar).toHaveBeenCalledTimes(1);
+    assert.strictEqual(foo.callCount, 2);
+    assert.strictEqual(bar.callCount, 1);
 
     unlisten1();
     await nvim.command('q!');
@@ -548,21 +554,21 @@ describe('Buffer event updates', () => {
     await nvim.command('new!');
 
     const buffer = await nvim.buffer;
-    const foo = jestMock.fn();
-    const bar = jestMock.fn();
+    const foo = sinon.spy();
+    const bar = sinon.spy();
 
     const unlisten1 = buffer.listen('lines', foo);
     const unlisten2 = buffer.listen('changedtick', bar);
 
     await buffer.insert(['bar'], 1);
-    expect(foo).toHaveBeenCalledTimes(1);
-    expect(bar).toHaveBeenCalledTimes(1);
+    assert.strictEqual(foo.callCount, 1);
+    assert.strictEqual(bar.callCount, 1);
 
     unlisten2();
 
     await buffer.insert(['foo'], 0);
-    expect(foo).toHaveBeenCalledTimes(2);
-    expect(bar).toHaveBeenCalledTimes(1);
+    assert.strictEqual(foo.callCount, 2);
+    assert.strictEqual(bar.callCount, 1);
 
     unlisten1();
     await nvim.command('q!');

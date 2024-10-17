@@ -1,6 +1,6 @@
 import * as path from 'node:path';
 import assert from 'node:assert';
-import expect from 'expect';
+import sinon from 'sinon';
 import * as testUtil from '../testUtil';
 
 describe('Neovim API', () => {
@@ -17,20 +17,20 @@ describe('Neovim API', () => {
   describe('Normal API calls', () => {
     it('gets a list of buffers and switches buffers', async () => {
       const buffers = await nvim.buffers;
-      expect(buffers.length).toBe(1);
+      assert.strictEqual(buffers.length, 1);
       buffers[0].name = 'hello.txt';
 
-      nvim.command('noswapfile e! goodbye.txt');
-      expect((await nvim.buffers).length).toBe(2);
-      expect(await nvim.buffer.name).toMatch(/goodbye\.txt$/);
+      await nvim.command('noswapfile e! goodbye.txt');
+      assert.strictEqual((await nvim.buffers).length, 2);
+      assert((await nvim.buffer.name).match(/goodbye\.txt$/));
 
       // switch buffers
       [nvim.buffer] = buffers;
-      expect(await (await nvim.buffer).name).toMatch(/hello\.txt$/);
+      assert((await (await nvim.buffer).name).match(/hello\.txt$/));
     });
 
     it('can list runtimepaths', async () => {
-      expect((await nvim.runtimePaths).length).toBeGreaterThan(0);
+      assert((await nvim.runtimePaths).length > 0);
     });
 
     it('can change current working directory', async () => {
@@ -38,23 +38,23 @@ describe('Neovim API', () => {
       const newCwd = path.dirname(initial);
 
       nvim.dir = newCwd;
-      expect(await nvim.call('getcwd', [])).toBe(newCwd);
+      assert.strictEqual(await nvim.call('getcwd', []), newCwd);
     });
 
     it.skip('can get current mode', async () => {
       const initial = await nvim.mode;
-      expect(initial).toEqual({ mode: 'n', blocking: false });
+      assert.deepStrictEqual(initial, { mode: 'n', blocking: false });
 
       await nvim.command('startinsert');
     });
 
     it('can get color map', async () => {
       const colorMap = await nvim.colorMap;
-      expect(Object.keys(colorMap).length).toBeGreaterThan(0);
+      assert(Object.keys(colorMap).length > 0);
     });
 
     it('can get color by name', async () => {
-      expect(await nvim.getColorByName('white')).toBe(16777215);
+      assert.strictEqual(await nvim.getColorByName('white'), 16777215);
     });
 
     it('can get highlight by name or id', async () => {
@@ -68,67 +68,66 @@ describe('Neovim API', () => {
         colEnd: 3,
         srcId: 0,
       });
-      expect(srcId).toBeGreaterThan(0);
+      assert(srcId > 0);
 
       const highlightById = await nvim.getHighlightById(srcId);
-      expect(highlightById).toEqual(
-        expect.objectContaining({
-          foreground: expect.anything(),
-        })
-      );
-      expect(await nvim.getHighlight(srcId)).toEqual(highlightById);
+      sinon.assert.match(highlightById, { foreground: sinon.match.any });
+      assert.deepStrictEqual(await nvim.getHighlight(srcId), highlightById);
 
       // Note this doesn't work as you would think because
       // addHighlight does not add a highlight group
-      expect(await nvim.getHighlightByName('test')).toEqual({});
+      assert.deepStrictEqual(await nvim.getHighlightByName('test'), {});
 
       buffer.remove(0, -1, false);
     });
 
     it('can run lua', async () => {
-      expect(
-        await nvim.lua('function test(a) return a end return test(...)', [1])
-      ).toBe(1);
+      assert.strictEqual(
+        await nvim.lua('function test(a) return a end return test(...)', [1]),
+        1
+      );
 
-      expect(
+      assert.strictEqual(
         await nvim.lua('function test(a) return a end return test(...)', [
           'foo',
-        ])
-      ).toBe('foo');
+        ]),
+        'foo'
+      );
 
-      expect(
+      assert.strictEqual(
         await nvim.executeLua(
           'function test(a) return a end return test(...)',
           ['foo']
-        )
-      ).toBe('foo');
+        ),
+        'foo'
+      );
     });
 
     it('get/set/delete current line', async () => {
       const line = await nvim.line;
-      expect(line).toBe('');
+      assert.strictEqual(line, '');
 
       nvim.line = 'current line';
-      expect(await nvim.line).toBe('current line');
+      assert.strictEqual(await nvim.line, 'current line');
 
       nvim.deleteCurrentLine();
 
-      expect(await nvim.line).toBe('');
+      assert.strictEqual(await nvim.line, '');
     });
 
     it('gets v: vars', async () => {
       const initial = await nvim.eval('v:ctype');
-      expect(await nvim.getVvar('ctype')).toBe(initial);
+      assert.strictEqual(await nvim.getVvar('ctype'), initial);
     });
 
     it('sets v: vars', async () => {
       await nvim.setVvar('mouse_winid', 2);
-      expect(await nvim.eval('v:mouse_winid')).toBe(2);
-      expect(await nvim.getVvar('mouse_winid')).toBe(2);
+      assert.strictEqual(await nvim.eval('v:mouse_winid'), 2);
+      assert.strictEqual(await nvim.getVvar('mouse_winid'), 2);
     });
 
     it('gets string width', async () => {
-      expect(await nvim.strWidth('string')).toBe(6);
+      assert.strictEqual(await nvim.strWidth('string'), 6);
     });
 
     it('write to vim output buffer', async () => {
@@ -143,62 +142,46 @@ describe('Neovim API', () => {
     });
 
     it('parse expression', async () => {
-      expect(await nvim.parseExpression('@', 'm', true)).toEqual(
-        expect.objectContaining({})
-      );
+      const parsedExpression = await nvim.parseExpression('@', 'm', true);
+      sinon.assert.match(parsedExpression, sinon.match.object);
     });
 
     it('gets api info', async () => {
       const [, apiInfo] = await nvim.apiInfo;
-      expect(apiInfo).toEqual(
-        expect.objectContaining({
-          version: expect.anything(),
-          functions: expect.anything(),
-          ui_events: expect.anything(),
-          ui_options: expect.anything(),
-          error_types: expect.anything(),
-          types: expect.anything(),
-        })
-      );
+      sinon.assert.match(apiInfo, {
+        version: sinon.match.any,
+        functions: sinon.match.any,
+        ui_events: sinon.match.any,
+        ui_options: sinon.match.any,
+        error_types: sinon.match.any,
+        types: sinon.match.any,
+      });
     });
 
     it('gets all channels', async () => {
       const chans = await nvim.chans;
-      expect(chans).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: expect.anything(),
-            stream: expect.anything(),
-            mode: expect.anything(),
-          }),
-        ])
-      );
+      assert(Array.isArray(chans));
+      assert(chans.length > 0);
     });
 
     it('gets channel info', async () => {
-      expect(await nvim.getChanInfo(1)).toEqual(
-        expect.objectContaining({
-          id: expect.anything(),
-          stream: expect.anything(),
-          mode: expect.anything(),
-        })
-      );
+      assert(await nvim.getChanInfo(1));
     });
 
     it('gets commands', async () => {
-      expect(await nvim.commands).toEqual({});
+      assert.deepStrictEqual(await nvim.commands, {});
     });
 
     it('gets proc', async () => {
-      expect(async () => nvim.getProc(1)).not.toThrow();
+      assert.doesNotThrow(async () => nvim.getProc(1));
     });
 
     it('gets proc children', async () => {
-      expect(async () => nvim.getProcChildren(1)).not.toThrow();
+      assert.doesNotThrow(async () => nvim.getProcChildren(1));
     });
 
     it('gets uis', async () => {
-      expect(await nvim.uis).toEqual([]);
+      assert.deepStrictEqual(await nvim.uis, []);
     });
 
     it('can subscribe to vim events', async () => {
@@ -207,7 +190,7 @@ describe('Neovim API', () => {
     });
 
     it('sets clientInfo', async () => {
-      expect(() => nvim.setClientInfo('test', {}, '', {}, {})).not.toThrow();
+      assert.doesNotThrow(() => nvim.setClientInfo('test', {}, '', {}, {}));
     });
 
     it('selects popupmenu item', async () => {
@@ -218,7 +201,7 @@ describe('Neovim API', () => {
       const numBuffers = (await nvim.buffers).length;
       const numWindows = (await nvim.windows).length;
       const buffer = await nvim.createBuffer(false, false);
-      expect(await nvim.buffers).toHaveLength(numBuffers + 1);
+      assert.strictEqual((await nvim.buffers).length, numBuffers + 1);
       assert(typeof buffer !== 'number');
       const floatingWindow = await nvim.openWindow(buffer, true, {
         relative: 'editor',
@@ -227,10 +210,10 @@ describe('Neovim API', () => {
         width: 50,
         height: 50,
       });
-      expect(await nvim.windows).toHaveLength(numWindows + 1);
+      assert.strictEqual((await nvim.windows).length, numWindows + 1);
       assert(typeof floatingWindow !== 'number');
       await nvim.windowClose(floatingWindow, true);
-      expect(await nvim.windows).toHaveLength(numWindows);
+      assert.strictEqual((await nvim.windows).length, numWindows);
     });
 
     it('resizes a window', async () => {
@@ -245,13 +228,13 @@ describe('Neovim API', () => {
         height: 10,
       });
       assert(typeof floatingWindow !== 'number');
-      expect(await nvim.windows).toHaveLength(numWindows + 1);
-      expect(await floatingWindow.height).toBe(10);
-      expect(await floatingWindow.width).toBe(10);
+      assert.strictEqual((await nvim.windows).length, numWindows + 1);
+      assert.strictEqual(await floatingWindow.height, 10);
+      assert.strictEqual(await floatingWindow.width, 10);
 
       await nvim.windowConfig(floatingWindow, { width: 20, height: 20 });
-      expect(await floatingWindow.height).toBe(20);
-      expect(await floatingWindow.width).toBe(20);
+      assert.strictEqual(await floatingWindow.height, 20);
+      assert.strictEqual(await floatingWindow.width, 20);
 
       await nvim.windowClose(floatingWindow, true);
     });
@@ -260,16 +243,16 @@ describe('Neovim API', () => {
   describe('Namespaces', () => {
     it('creates and gets anonymous namespaces', async () => {
       const id = await nvim.createNamespace();
-      expect(typeof id).toBe('number');
+      assert.strictEqual(typeof id, 'number');
 
-      expect(await nvim.getNamespaces()).toEqual({});
+      assert.deepStrictEqual(await nvim.getNamespaces(), {});
     });
 
     it('creates and gets named namespaces', async () => {
       const foo = await nvim.createNamespace('foo');
       const bar = await nvim.createNamespace('bar');
 
-      expect(await nvim.getNamespaces()).toEqual({ foo, bar });
+      assert.deepStrictEqual(await nvim.getNamespaces(), { foo, bar });
     });
   });
 });

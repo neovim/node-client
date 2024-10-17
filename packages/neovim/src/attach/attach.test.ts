@@ -1,5 +1,5 @@
-import * as jestMock from 'jest-mock';
-import expect from 'expect';
+import assert from 'node:assert';
+import sinon from 'sinon';
 import { attach } from './attach';
 import { Logger } from '../utils/logger';
 import * as testUtil from '../testUtil';
@@ -42,29 +42,34 @@ describe('Nvim API', () => {
 
   it('failure modes', async () => {
     const c = new NeovimClient();
-    await expect(c.channelId).rejects.toThrow(
-      'channelId requested before _isReady'
-    );
+    await assert.rejects(c.channelId, {
+      message: 'channelId requested before _isReady',
+    });
   });
 
   it('console.log is monkey-patched to logger.info #329', async () => {
-    const spy = jestMock.spyOn(nvim.logger, 'info');
+    const spy = sinon.spy(nvim.logger, 'info');
     // eslint-disable-next-line no-console
     console.log('log message');
-    expect(spy).toHaveBeenCalledWith('log message');
+    // @ts-expect-error Sinon types are broken with overloads
+    // see https://github.com/DefinitelyTyped/DefinitelyTyped/issues/36436
+    assert(spy.calledWith('log message'));
     // Still alive?
-    expect(await nvim.eval('1+1')).toEqual(2);
+    assert.strictEqual(await nvim.eval('1+1'), 2);
   });
 
   it('console.assert is monkey-patched', async () => {
-    const spy = jestMock.spyOn(nvim.logger, 'error');
+    const spy = sinon.spy(nvim.logger, 'error');
     // eslint-disable-next-line no-console
     console.assert(false, 'foo', 42, { x: [1, 2] });
-    expect(spy).toHaveBeenCalledWith('assertion failed', 'foo', 42, {
-      x: [1, 2],
-    });
+    assert(
+      // @ts-expect-error Sinon types are broken with overloads
+      spy.calledWithExactly('assertion failed', 'foo', 42, {
+        x: [1, 2],
+      })
+    );
     // Still alive?
-    expect(await nvim.eval('1+1')).toEqual(2);
+    assert.strictEqual(await nvim.eval('1+1'), 2);
   });
 
   it('console.log NOT monkey-patched if custom logger passed to attach()', async () => {
@@ -86,20 +91,20 @@ describe('Nvim API', () => {
       options: { logger: logger2 as Logger },
     });
 
-    const spy = jestMock.spyOn(nvim2.logger, 'info');
+    const spy = sinon.spy(nvim2.logger, 'info');
     // eslint-disable-next-line no-console
     console.log('message 1');
     // console.log was NOT patched.
-    expect(spy).toHaveBeenCalledTimes(0);
+    assert(spy.notCalled);
     // Custom logger did NOT get the message.
-    expect(logged).toEqual([]);
+    assert.deepStrictEqual(logged, []);
 
     // Custom logger can be called explicitly.
     nvim2.logger.info('message 2');
-    expect(logged).toEqual(['message 2']);
+    assert.deepStrictEqual(logged, ['message 2']);
 
     // Still alive?
-    expect(await nvim2.eval('1+1')).toEqual(2);
+    assert.strictEqual(await nvim2.eval('1+1'), 2);
 
     testUtil.stopNvim(nvim2);
   });
@@ -121,32 +126,35 @@ describe('Nvim API', () => {
       nvim.command('bwipeout!');
     }
 
-    expect(requestCount).toEqual(99 * 2);
+    assert.strictEqual(requestCount, 99 * 2);
+
     // Still alive?
-    expect(await nvim.eval('1+1')).toEqual(2);
+    assert.strictEqual(await nvim.eval('1+1'), 2);
 
     nvim.request = oldRequest;
   });
 
   it('can send requests and receive response', async () => {
     const result = await nvim.eval('{"k1": "v1", "k2": 2}');
-    expect(result).toEqual({ k1: 'v1', k2: 2 });
+    assert.deepStrictEqual(result, { k1: 'v1', k2: 2 });
   });
 
   it('can receive requests and send responses', async () => {
     const res = await nvim.eval('rpcrequest(1, "request", 1, 2, 3)');
-    expect(res).toEqual('received request(1,2,3)');
-    expect(requests).toEqual([{ method: 'request', args: [1, 2, 3] }]);
-    expect(notifications).toEqual([]);
+    assert.strictEqual(res, 'received request(1,2,3)');
+    assert.deepStrictEqual(requests, [{ method: 'request', args: [1, 2, 3] }]);
+    assert.deepStrictEqual(notifications, []);
   });
 
   it('can receive notifications', async () => {
     const res = await nvim.eval('rpcnotify(1, "notify", 1, 2, 3)');
-    expect(res).toEqual(1);
-    expect(requests).toEqual([]);
+    assert.strictEqual(res, 1);
+    assert.deepStrictEqual(requests, []);
     return new Promise(resolve => {
       setImmediate(() => {
-        expect(notifications).toEqual([{ method: 'notify', args: [1, 2, 3] }]);
+        assert.deepStrictEqual(notifications, [
+          { method: 'notify', args: [1, 2, 3] },
+        ]);
         resolve(undefined);
       });
     });
@@ -158,25 +166,25 @@ describe('Nvim API', () => {
     await nvim.command('vsp');
     const windows = await nvim.windows;
 
-    expect(windows.length).toEqual(4);
-    expect(windows[0] instanceof nvim.Window).toEqual(true);
-    expect(windows[1] instanceof nvim.Window).toEqual(true);
+    assert.strictEqual(windows.length, 4);
+    assert(windows[0] instanceof nvim.Window);
+    assert(windows[1] instanceof nvim.Window);
 
     await nvim.setWindow(windows[2]);
     const win = await nvim.window;
 
-    expect(win.equals(windows[0])).toBe(false);
-    expect(win.equals(windows[2])).toBe(true);
+    assert(!win.equals(windows[0]));
+    assert(win.equals(windows[2]));
 
     const buf = await nvim.buffer;
-    expect(buf instanceof nvim.Buffer).toEqual(true);
+    assert(buf instanceof nvim.Buffer);
 
     const lines = await buf.getLines({
       start: 0,
       end: -1,
       strictIndexing: true,
     });
-    expect(lines).toEqual(['']);
+    assert.deepStrictEqual(lines, ['']);
 
     buf.setLines(['line1', 'line2'], { start: 0, end: 1 });
     const newLines = await buf.getLines({
@@ -184,19 +192,19 @@ describe('Nvim API', () => {
       end: -1,
       strictIndexing: true,
     });
-    expect(newLines).toEqual(['line1', 'line2']);
+    assert.deepStrictEqual(newLines, ['line1', 'line2']);
   });
 
   // skip for now. #419
   it.skip('emits "disconnect" after quit', done => {
-    const disconnectMock = jestMock.fn();
+    const disconnectMock = sinon.spy();
     nvim.on('disconnect', disconnectMock);
 
     nvim.quit();
 
     // TODO: 'close' event sometimes does not emit. #414
     proc.on('exit', () => {
-      expect(disconnectMock).toHaveBeenCalledTimes(1);
+      assert.strictEqual(disconnectMock.callCount, 1);
       done();
     });
 

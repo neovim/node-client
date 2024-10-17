@@ -2,8 +2,9 @@ import * as cp from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as http from 'node:http';
-import expect from 'expect';
-import * as jestMock from 'jest-mock';
+import assert from 'node:assert';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import sinon from 'sinon';
 
 import { NeovimClient, attach, findNvim } from 'neovim';
 
@@ -75,37 +76,40 @@ describe('Node host', () => {
   // });
 
   it('console.log is monkey-patched to logger.info #329', async () => {
-    const spy = jestMock.spyOn(nvim.logger, 'info');
+    const spy = sinon.spy(nvim.logger, 'info');
+    // eslint-disable-next-line no-console
     console.log('log message');
-    expect(spy).toHaveBeenCalledWith('log message');
+    // @ts-expect-error Sinon types are broken with overloads
+    // see https://github.com/DefinitelyTyped/DefinitelyTyped/issues/36436
+    assert(spy.calledWith('log message'));
     // Still alive?
-    expect(await nvim.eval('1+1')).toEqual(2);
+    assert.strictEqual(await nvim.eval('1+1'), 2);
   });
 
   it('can run a command from plugin', async () => {
     await nvim.command('JSHostTestCmd');
     const line = await nvim.line;
-    expect(line).toEqual('A line, for your troubles');
+    assert.strictEqual(line, 'A line, for your troubles');
   });
 
   it('can catch thrown errors from plugin', async () => {
     try {
       await nvim.command('JSHostTestCmd canhazresponse?');
       // Below should not be evaluated because above throws
-      expect(true).toEqual(false);
+      assert.strictEqual(true, false);
     } catch (err) {
-      expect(err).toBeInstanceOf(Error);
+      assert(err instanceof Error);
     }
   });
 
   it('can call a function from plugin', async () => {
     const result = await nvim.callFunction('Func', []);
-    expect(result).toEqual('Funcy ');
+    assert.strictEqual(result, 'Funcy ');
   });
 
   it('can call a function from plugin with args', async () => {
     const result = await nvim.callFunction('Func', ['args']);
-    expect(result).toEqual('Funcy args');
+    assert.strictEqual(result, 'Funcy args');
   });
 
   it.skip('can call a function from plugin with args', async () => {
@@ -129,8 +133,9 @@ describe('Node host', () => {
           try {
             const debugData = JSON.parse(rawData);
             childHost.kill();
-            expect(Array.isArray(debugData) && debugData.length).toBeTruthy();
-            expect(debugData[0].webSocketDebuggerUrl).toMatch(
+            assert(Array.isArray(debugData) && debugData.length);
+            sinon.assert.match(
+              debugData[0].webSocketDebuggerUrl,
               'ws://127.0.0.1:9229'
             );
             done();
