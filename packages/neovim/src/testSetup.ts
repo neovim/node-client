@@ -1,11 +1,16 @@
 // Global test setup. Runs before each test.
+// eslint-disable-next-line import/no-extraneous-dependencies
+import sinon from 'sinon';
 import { startNvim, stopNvim } from './testUtil';
 
 export const mochaHooks = {
-  beforeAll: async () => {
+  beforeAll() {
     startNvim();
   },
-  afterAll: () => {
+  beforeEach() {
+    sinon.restore();
+  },
+  afterAll() {
     stopNvim();
   },
 };

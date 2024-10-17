@@ -1,8 +1,6 @@
 import * as cp from 'node:child_process';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import expect from 'expect';
+// import * as fs from 'node:fs';
+// import * as path from 'node:path';
 import { NeovimClient } from './api/client';
 import { attach } from './attach/attach';
 import { findNvim } from './utils/findNvim';
@@ -34,12 +32,12 @@ export function startNvim(
 export function startNvim(
   doAttach: boolean = true
 ): [cp.ChildProcessWithoutNullStreams, NeovimClient | undefined] {
-  const testFile = expect.getState().testPath?.replace(/.*[\\/]/, '');
-  const msg = `startNvim in test: ${testFile}`;
-  if (process.env.NVIM_NODE_LOG_FILE) {
-    const logfile = path.resolve(process.env.NVIM_NODE_LOG_FILE);
-    fs.writeFileSync(logfile, `${msg}\n`, { flag: 'a' });
-  }
+  // const testFile = expect.getState().testPath?.replace(/.*[\\/]/, '');
+  // const msg = `startNvim in test: ${testFile}`;
+  // if (process.env.NVIM_NODE_LOG_FILE) {
+  //   const logfile = path.resolve(process.env.NVIM_NODE_LOG_FILE);
+  //   fs.writeFileSync(logfile, `${msg}\n`, { flag: 'a' });
+  // }
 
   proc = cp.spawn(nvimPath, ['-u', 'NONE', '--embed', '-n', '--noplugin'], {
     cwd: __dirname,

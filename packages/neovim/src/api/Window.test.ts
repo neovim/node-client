@@ -1,5 +1,4 @@
 import assert from 'node:assert';
-import expect from 'expect';
 import * as testUtil from '../testUtil';
 import type { Window } from './Window';
 
@@ -16,13 +15,13 @@ describe('Window API', () => {
 
   it('gets the current Window', async () => {
     const win = await nvim.window;
-    expect(win).toBeInstanceOf(nvim.Window);
+    assert(win instanceof nvim.Window);
   });
 
   it('get windowid by id', async () => {
     const win = await nvim.window;
     const winid = await nvim.call('win_getid');
-    expect(win.id).toBe(winid);
+    assert.strictEqual(win.id, winid);
   });
 
   describe('Normal API calls', () => {
@@ -33,144 +32,140 @@ describe('Window API', () => {
     });
 
     it('gets the current win number', async () => {
-      expect(await win.number).toBe(1);
+      assert.strictEqual(await win.number, 1);
     });
 
     it('is a valid win', async () => {
-      expect(await win.valid).toBe(true);
+      assert.strictEqual(await win.valid, true);
     });
 
     it('gets current tabpage from window', async () => {
-      expect(await win.tabpage).toBeInstanceOf(nvim.Tabpage);
+      assert((await win.tabpage) instanceof nvim.Tabpage);
     });
 
     it('gets current buffer from window', async () => {
-      expect(await win.buffer).toBeInstanceOf(nvim.Buffer);
+      assert((await win.buffer) instanceof nvim.Buffer);
     });
 
     it('gets current cursor position', async () => {
-      expect(await win.cursor).toEqual([1, 0]);
+      assert.deepStrictEqual(await win.cursor, [1, 0]);
     });
 
     it('has same cursor position after appending a line to buffer', async () => {
       await (await win.buffer).append(['test']);
-      expect(await win.buffer.lines).toEqual(['', 'test']);
-      expect(await win.cursor).toEqual([1, 0]);
+      assert.deepStrictEqual(await win.buffer.lines, ['', 'test']);
+      assert.deepStrictEqual(await win.cursor, [1, 0]);
     });
 
     it('changes cursor position', async () => {
       win.cursor = [2, 2];
-      expect(await win.cursor).toEqual([2, 2]);
+      assert.deepStrictEqual(await win.cursor, [2, 2]);
     });
 
     it('has correct height after ":split"', async () => {
       const currentHeight = await win.height;
       await nvim.command('split');
-      expect(await win.height).toEqual(Math.floor(currentHeight / 2));
+      assert.strictEqual(await win.height, Math.floor(currentHeight / 2));
 
       win.height = 5;
-      expect(await win.height).toEqual(5);
+      assert.strictEqual(await win.height, 5);
 
       await nvim.command('q');
-      expect(await win.height).toEqual(currentHeight);
+      assert.strictEqual(await win.height, currentHeight);
     });
 
     it('has correct width after ":vsplit"', async () => {
       const width = await win.width;
       await nvim.command('vsplit');
-      // XXX: Not sure if this is correct, but guessing after a vsplit we lose a col
-      // to gutter?
-      expect(await win.width).toEqual(Math.floor(width / 2) - 1);
+      assert.strictEqual(await win.width, Math.floor(width / 2) - 1);
 
       win.width = 10;
-      expect(await win.width).toEqual(10);
+      assert.strictEqual(await win.width, 10);
 
       await nvim.command('q');
-      expect(await win.width).toEqual(width);
+      assert.strictEqual(await win.width, width);
     });
 
     it('can get the window position', async () => {
-      expect(await win.position).toEqual([0, 0]);
-      expect(await win.row).toBe(0);
-      expect(await win.col).toBe(0);
+      assert.deepStrictEqual(await win.position, [0, 0]);
+      assert.strictEqual(await win.row, 0);
+      assert.strictEqual(await win.col, 0);
     });
 
     it('has the right window positions in display cells', async () => {
       let windows: Awaited<typeof nvim.windows>;
-      nvim.command('vsplit');
+      await nvim.command('vsplit');
 
       // XXX If we re-use `win` without a new call to `nvim.window`,
       // then `win` will reference the new split
       win = await nvim.window;
-      expect(await win.row).toBe(0);
-      expect(await win.col).toBe(0);
+      assert.strictEqual(await win.row, 0);
+      assert.strictEqual(await win.col, 0);
 
       windows = await nvim.windows;
       // Set to new split
       [, nvim.window] = windows;
 
       win = await nvim.window;
-      expect(await win.row).toBe(0);
-      expect((await win.col) > 0).toBe(true);
+      assert.strictEqual(await win.row, 0);
+      assert((await win.col) > 0);
 
-      nvim.command('split');
+      await nvim.command('split');
       windows = await nvim.windows;
       [, , nvim.window] = windows;
 
       win = await nvim.window;
-      expect((await win.row) > 0).toBe(true);
-      expect((await win.col) > 0).toBe(true);
+      assert((await win.row) > 0);
+      assert((await win.col) > 0);
     });
 
     it('changes window options', async () => {
       const list = await win.getOption('list');
       win.setOption('list', true);
-      expect(await win.getOption('list')).toBe(true);
+      assert.strictEqual(await win.getOption('list'), true);
       win.setOption('list', false);
-      expect(await win.getOption('list')).toBe(false);
+      assert.strictEqual(await win.getOption('list'), false);
       assert(list !== undefined);
       // Restore option
       win.setOption('list', list);
-      expect(await win.getOption('list')).toBe(list);
+      assert.strictEqual(await win.getOption('list'), list);
     });
 
     it('returns null if variable is not found', async () => {
       const test = await win.getVar('test');
-      expect(test).toBe(null);
+      assert.strictEqual(test, null);
     });
 
     it('can set a w: variable', async () => {
-      win.setVar('test', 'testValue');
+      await win.setVar('test', 'testValue');
 
-      expect(await win.getVar('test')).toBe('testValue');
-
-      expect(await nvim.eval('w:test')).toBe('testValue');
+      assert.strictEqual(await win.getVar('test'), 'testValue');
+      assert.strictEqual(await nvim.eval('w:test'), 'testValue');
     });
 
     it('can delete a w: variable', async () => {
-      win.deleteVar('test');
+      await win.deleteVar('test');
 
-      expect(await nvim.eval('exists("w:test")')).toBe(0);
-
-      expect(await win.getVar('test')).toBe(null);
+      assert.strictEqual(await nvim.eval('exists("w:test")'), 0);
+      assert.strictEqual(await win.getVar('test'), null);
     });
   });
 
   describe('Chainable API calls', () => {
     it('gets the current tabpage', async () => {
-      expect(await nvim.window.tabpage).toBeInstanceOf(nvim.Tabpage);
+      assert((await nvim.window.tabpage) instanceof nvim.Tabpage);
     });
 
     it('is a valid window', async () => {
-      expect(await nvim.window.valid).toBe(true);
+      assert.strictEqual(await nvim.window.valid, true);
     });
 
     it('gets the current buffer', async () => {
-      expect(await nvim.window.buffer).toBeInstanceOf(nvim.Buffer);
+      assert((await nvim.window.buffer) instanceof nvim.Buffer);
     });
 
     it.skip('gets current lines in buffer', async () => {
-      expect(await (await nvim.window.buffer).lines).toEqual(['test']);
+      assert.deepStrictEqual(await (await nvim.window.buffer).lines, ['test']);
     });
   });
 });

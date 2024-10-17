@@ -1,7 +1,7 @@
 import { EventEmitter } from 'node:events';
 import { Readable, Writable } from 'node:stream';
 import * as msgpack from '@msgpack/msgpack';
-import expect from 'expect';
+import assert from 'node:assert';
 import { attach } from '../attach/attach';
 import { exportsForTesting } from './transport';
 
@@ -10,7 +10,8 @@ describe('transport', () => {
     const invalidPayload = { bogus: 'nonsense' };
     const onTransportFail: EventEmitter = exportsForTesting.onTransportFail;
     onTransportFail.on('fail', (errMsg: string) => {
-      expect(errMsg).toEqual(
+      assert.strictEqual(
+        errMsg,
         "invalid msgpack-RPC message: expected array, got: { bogus: 'nonsense' }"
       );
       done();

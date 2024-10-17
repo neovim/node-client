@@ -1,5 +1,5 @@
-import expect from 'expect';
-import * as jestMock from 'jest-mock';
+import assert from 'node:assert';
+import sinon from 'sinon';
 import { plugin as Plugin } from './plugin';
 import { NvimPlugin } from '../host/NvimPlugin';
 import { nvimFunction as FunctionDecorator } from './function';
@@ -22,21 +22,21 @@ describe('Plugin class decorator', () => {
   it('decorates class with no options', () => {
     class MyClass {}
     const plugin = Plugin(MyClass);
-    expect(typeof plugin).toEqual('function');
+    assert(typeof plugin === 'function');
   });
 
   it('decorates class with dev mode option', () => {
     class MyClass {}
 
     const plugin = Plugin({ dev: true })(MyClass);
-    expect(typeof plugin).toEqual('function');
+    assert(typeof plugin === 'function');
 
     const pluginObject = {
-      setOptions: jestMock.fn(),
+      setOptions: sinon.fake(),
       nvim: getFakeNvimClient(),
     };
     instantiateOrRun(plugin, pluginObject);
-    expect(pluginObject.setOptions).toHaveBeenCalledWith({ dev: true });
+    pluginObject.setOptions.calledWith({ dev: true });
   });
 
   it('decorates class methods', () => {
@@ -65,15 +65,15 @@ describe('Plugin class decorator', () => {
     const plugin = Plugin(MyClass);
 
     const pluginObject = {
-      registerAutocmd: jestMock.fn(),
-      registerCommand: jestMock.fn(),
-      registerFunction: jestMock.fn(),
+      registerAutocmd: sinon.fake(),
+      registerCommand: sinon.fake(),
+      registerFunction: sinon.fake(),
       nvim: getFakeNvimClient(),
     };
 
     const instance = instantiateOrRun(plugin, pluginObject);
 
-    expect(pluginObject.registerAutocmd).toHaveBeenCalledWith(
+    pluginObject.registerAutocmd.calledWith(
       'TestAutocmd',
       [instance, MyClass.prototype.testA],
       {
@@ -83,13 +83,13 @@ describe('Plugin class decorator', () => {
       }
     );
 
-    expect(pluginObject.registerCommand).toHaveBeenCalledWith(
+    pluginObject.registerCommand.calledWith(
       'TestCommand',
       [instance, MyClass.prototype.testC],
       { sync: false, range: 'test', nargs: '3' }
     );
 
-    expect(pluginObject.registerFunction).toHaveBeenCalledWith(
+    pluginObject.registerFunction.calledWith(
       'TestF',
       [instance, MyClass.prototype.testF],
       { sync: false, eval: 'test', range: [1, 10] }
@@ -120,7 +120,7 @@ describe('Plugin class decorator', () => {
       getFakeNvimClient()
     );
 
-    expect(pluginObject.specs).toEqual([
+    assert.deepStrictEqual(pluginObject.specs, [
       {
         type: 'autocmd',
         name: 'TestAutocmd',

@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { mkdirSync, writeFileSync, rmSync } from 'node:fs';
-import expect from 'expect';
+import assert from 'node:assert';
+import * as sinon from 'sinon';
 import { findNvim, exportsForTesting, FindNvimResult } from './findNvim';
 
 const parseVersion = exportsForTesting.parseVersion;
@@ -23,87 +24,95 @@ describe('findNvim', () => {
   });
 
   it('parseVersion()', () => {
-    expect(parseVersion('0.5.0-dev+1357-g192f89ea1')).toEqual([
+    assert.deepStrictEqual(parseVersion('0.5.0-dev+1357-g192f89ea1'), [
       0,
       5,
       0,
       'dev+1357-g192f89ea1',
     ]);
-    expect(parseVersion('0.5.0-dev+1357-g192f89ea1-Homebrew')).toEqual([
+    assert.deepStrictEqual(parseVersion('0.5.0-dev+1357-g192f89ea1-Homebrew'), [
       0,
       5,
       0,
       'dev+1357-g192f89ea1-Homebrew',
     ]);
-    expect(parseVersion('0.9.1')).toEqual([0, 9, 1, 'zzz']);
+    assert.deepStrictEqual(parseVersion('0.9.1'), [0, 9, 1, 'zzz']);
 
     // Failure modes:
-    expect(() => parseVersion(42 as any)).toThrow(TypeError);
-    expect(parseVersion('x.y.z')).toEqual(undefined);
-    expect(parseVersion('1.y.z')).toEqual(undefined);
-    expect(parseVersion('1.2.z')).toEqual(undefined);
-    expect(parseVersion('x.2.3')).toEqual(undefined);
-    expect(parseVersion('1.y.3')).toEqual(undefined);
+    assert.throws(() => parseVersion(42 as any), TypeError);
+    assert.strictEqual(parseVersion('x.y.z'), undefined);
+    assert.strictEqual(parseVersion('1.y.z'), undefined);
+    assert.strictEqual(parseVersion('1.2.z'), undefined);
+    assert.strictEqual(parseVersion('x.2.3'), undefined);
+    assert.strictEqual(parseVersion('1.y.3'), undefined);
   });
 
   it('compareVersions()', () => {
-    expect(compareVersions('0.3.0', '0.3.0')).toBe(0);
-    expect(compareVersions('0.3.0', '0.3.1')).toBe(-1);
-    expect(compareVersions('0.3.1', '0.3.0')).toBe(1);
-    expect(compareVersions('0.3.0-abc', '0.3.0-dev-420')).toBe(-1);
-    expect(compareVersions('0.3.0', '0.3.0-dev-658+g06694203e-Homebrew')).toBe(
+    assert.strictEqual(compareVersions('0.3.0', '0.3.0'), 0);
+    assert.strictEqual(compareVersions('0.3.0', '0.3.1'), -1);
+    assert.strictEqual(compareVersions('0.3.1', '0.3.0'), 1);
+    assert.strictEqual(compareVersions('0.3.0-abc', '0.3.0-dev-420'), -1);
+    assert.strictEqual(
+      compareVersions('0.3.0', '0.3.0-dev-658+g06694203e-Homebrew'),
       1
     );
-    expect(compareVersions('0.3.0-dev-658+g06694203e-Homebrew', '0.3.0')).toBe(
+    assert.strictEqual(
+      compareVersions('0.3.0-dev-658+g06694203e-Homebrew', '0.3.0'),
       -1
     );
-    expect(
+    assert.strictEqual(
       compareVersions(
         '0.3.0-dev-658+g06694203e-Homebrew',
         '0.3.0-dev-658+g06694203e-Homebrew'
-      )
-    ).toBe(0);
-    expect(
+      ),
+      0
+    );
+    assert.strictEqual(
       compareVersions(
         '0.3.0-dev-658+g06694203e-Homebrew',
         '0.3.0-dev-659+g06694203e-Homebrew'
-      )
-    ).toBe(-1);
-    expect(
+      ),
+      -1
+    );
+    assert.strictEqual(
       compareVersions(
         '0.3.0-dev-659+g06694203e-Homebrew',
         '0.3.0-dev-658+g06694203e-Homebrew'
-      )
-    ).toBe(1);
+      ),
+      1
+    );
 
     // Failure modes:
-    expect(compareVersions('0.3.0', 'nonsense')).toBe(1);
-    expect(() => compareVersions('nonsense', '0.3.0')).toThrow(
-      'Invalid version: "nonsense"'
+    assert.strictEqual(compareVersions('0.3.0', 'nonsense'), 1);
+    assert.throws(
+      () => compareVersions('nonsense', '0.3.0'),
+      TypeError('Invalid version: "nonsense"')
     );
-    expect(() => compareVersions('nonsense', 'nonsense')).toThrow(
-      'Invalid version: "nonsense"'
+    assert.throws(
+      () => compareVersions('nonsense', 'nonsense'),
+      TypeError('Invalid version: "nonsense"')
     );
-    expect(() => compareVersions(undefined, undefined)).toThrow(
-      'Invalid version format: not a string'
+    assert.throws(
+      () => compareVersions(undefined, undefined),
+      TypeError('Invalid version format: not a string')
     );
   });
 
   /** Asserts that >=1 nvim binaries were found. */
   function assertOneOrMore(nvimRes: Readonly<FindNvimResult>) {
-    expect(nvimRes).toEqual({
-      matches: expect.any(Array),
-      invalid: expect.any(Array),
+    sinon.assert.match(nvimRes, {
+      matches: sinon.match.array,
+      invalid: sinon.match.array,
     });
-    expect(nvimRes.matches.length).toBeGreaterThan(0);
-    expect(nvimRes.matches[0]).toEqual({
-      nvimVersion: expect.any(String),
-      path: expect.any(String),
-      buildType: expect.any(String),
-      luaJitVersion: expect.any(String),
+    assert(nvimRes.matches.length > 0);
+    sinon.assert.match(nvimRes.matches[0], {
+      nvimVersion: sinon.match.string,
+      path: sinon.match.string,
+      buildType: sinon.match.string,
+      luaJitVersion: sinon.match.string,
       error: undefined,
     });
-    expect(nvimRes.invalid.length).toEqual(0);
+    assert.strictEqual(nvimRes.invalid.length, 0);
   }
 
   it('gets Nvim satisfying given min version', () => {
@@ -118,33 +127,33 @@ describe('findNvim', () => {
 
   it('collects invalid matches separately', () => {
     const nvimRes = findNvim({ minVersion: '9999.0.0' });
-    expect(nvimRes).toEqual({
+    sinon.assert.match(nvimRes, {
       matches: [],
-      invalid: expect.any(Array),
+      invalid: sinon.match.array,
     });
-    expect(nvimRes.matches.length).toEqual(0);
-    expect(nvimRes.invalid.length).toBeGreaterThan(0);
-    expect(nvimRes.invalid[0]).toEqual({
-      nvimVersion: expect.any(String),
-      path: expect.any(String),
-      buildType: expect.any(String),
-      luaJitVersion: expect.any(String),
+    assert.strictEqual(nvimRes.matches.length, 0);
+    assert(nvimRes.invalid.length > 0);
+    sinon.assert.match(nvimRes.invalid[0], {
+      nvimVersion: sinon.match.string,
+      path: sinon.match.string,
+      buildType: sinon.match.string,
+      luaJitVersion: sinon.match.string,
       error: undefined,
     });
   });
 
   it('stops searching on first match when firstMatch is True', () => {
     const nvimRes = findNvim({ minVersion: '0.3.0', firstMatch: true });
-    expect(nvimRes).toEqual({
-      matches: expect.any(Array),
-      invalid: expect.any(Array),
+    sinon.assert.match(nvimRes, {
+      matches: sinon.match.array,
+      invalid: sinon.match.array,
     });
-    expect(nvimRes.matches.length).toEqual(1);
-    expect(nvimRes.matches[0]).toEqual({
-      nvimVersion: expect.any(String),
-      path: expect.any(String),
-      buildType: expect.any(String),
-      luaJitVersion: expect.any(String),
+    assert.strictEqual(nvimRes.matches.length, 1);
+    sinon.assert.match(nvimRes.matches[0], {
+      nvimVersion: sinon.match.string,
+      path: sinon.match.string,
+      buildType: sinon.match.string,
+      luaJitVersion: sinon.match.string,
       error: undefined,
     });
   });
@@ -157,21 +166,19 @@ describe('findNvim', () => {
     ].map(normalizePath);
     const nvimRes = findNvim({ paths: customPaths });
 
-    expect(nvimRes.matches.length).toBeGreaterThanOrEqual(1);
-
-    expect(nvimRes.invalid.length).toBe(3);
+    assert(nvimRes.matches.length >= 1);
+    assert.strictEqual(nvimRes.invalid.length, 3);
 
     const invalidPaths = nvimRes.invalid.map(i => i.path);
-    expect(invalidPaths).toEqual(customPaths);
+    assert.deepStrictEqual(invalidPaths, customPaths);
   });
 
   it('searches in additional custom dirs', () => {
     const customDirs = [testDir, '/non/existent/dir'].map(normalizePath);
     const nvimRes = findNvim({ dirs: customDirs });
 
-    expect(nvimRes.matches.length).toBeGreaterThanOrEqual(1);
-
-    expect(nvimRes.invalid.length).toBe(1);
-    expect(nvimRes.invalid[0].path).toBe(nvimExecutablePath);
+    assert(nvimRes.matches.length >= 1);
+    assert.strictEqual(nvimRes.invalid.length, 1);
+    assert.strictEqual(nvimRes.invalid[0].path, nvimExecutablePath);
   });
 });
