@@ -1,4 +1,5 @@
-/* eslint-env jest */
+import expect from 'expect';
+import * as jestMock from 'jest-mock';
 import { getFakeNvimClient } from '../testUtil';
 import { callable, NvimPlugin } from './NvimPlugin';
 
@@ -94,7 +95,8 @@ describe('NvimPlugin', () => {
   });
 
   it('should create functions from callable arrays', () => {
-    const fn = jest.fn(function () {
+    const fn = jestMock.fn(function () {
+      // @ts-expect-error intentional
       return this;
     });
     expect(callable(fn)).toEqual(fn);
@@ -110,7 +112,8 @@ describe('NvimPlugin', () => {
       getFakeNvimClient()
     );
     const obj = {
-      func: jest.fn(function () {
+      func: jestMock.fn(function () {
+        // @ts-expect-error intentional
         return this;
       }),
     };

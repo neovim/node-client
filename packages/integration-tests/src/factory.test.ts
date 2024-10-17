@@ -1,5 +1,5 @@
-/* eslint-env jest */
 import { Neovim, NeovimClient, NvimPlugin, loadPlugin } from 'neovim';
+import expect from 'expect';
 
 function getFakeNvimClient(): NeovimClient {
   const logged: string[] = [];

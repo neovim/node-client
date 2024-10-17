@@ -17,7 +17,7 @@
     "target": "es2015",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["node", "jest"]
+    "types": ["node", "mocha"]
   },
   "exclude": ["**/node_modules"],
   "compileOnSave": false,

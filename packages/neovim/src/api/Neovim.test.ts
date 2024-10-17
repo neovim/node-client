@@ -1,16 +1,16 @@
-/* eslint-env jest */
 import * as path from 'node:path';
 import assert from 'node:assert';
+import expect from 'expect';
 import * as testUtil from '../testUtil';
 
 describe('Neovim API', () => {
   let nvim: ReturnType<typeof testUtil.startNvim>[1];
 
-  beforeAll(async () => {
+  before(async () => {
     [, nvim] = testUtil.startNvim();
   });
 
-  afterAll(() => {
+  after(() => {
     testUtil.stopNvim();
   });
 

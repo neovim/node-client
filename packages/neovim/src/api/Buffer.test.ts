@@ -1,5 +1,6 @@
-/* eslint-env jest */
 import assert from 'node:assert';
+import { expect } from 'expect';
+import * as jestMock from 'jest-mock';
 import * as testUtil from '../testUtil';
 import type { Buffer } from './Buffer';
 
@@ -35,11 +36,11 @@ describe('Buffer API', () => {
     };
   }
 
-  beforeAll(async () => {
+  before(async () => {
     [, nvim] = testUtil.startNvim();
   });
 
-  afterAll(() => {
+  after(() => {
     testUtil.stopNvim();
   });
 
@@ -401,11 +402,11 @@ describe('Buffer API', () => {
 describe('Buffer event updates', () => {
   let nvim: ReturnType<typeof testUtil.startNvim>[1];
 
-  beforeAll(async () => {
+  before(async () => {
     [, nvim] = testUtil.startNvim();
   });
 
-  afterAll(() => {
+  after(() => {
     testUtil.stopNvim();
   });
 
@@ -415,7 +416,7 @@ describe('Buffer event updates', () => {
 
   it('can listen and unlisten', async () => {
     const buffer = await nvim.buffer;
-    const mock = jest.fn();
+    const mock = jestMock.fn();
     const unlisten = buffer.listen('lines', mock);
     await buffer.insert(['bar'], 1);
     expect(mock).toHaveBeenCalledTimes(1);
@@ -426,10 +427,10 @@ describe('Buffer event updates', () => {
 
   it('can reattach for buffer events', async () => {
     const buffer = await nvim.buffer;
-    let unlisten = buffer.listen('lines', jest.fn());
+    let unlisten = buffer.listen('lines', jestMock.fn());
     unlisten();
     await wait(10);
-    const mock = jest.fn();
+    const mock = jestMock.fn();
     unlisten = buffer.listen('lines', mock);
     await buffer.insert(['bar'], 1);
     expect(mock).toHaveBeenCalledTimes(1);
@@ -438,7 +439,7 @@ describe('Buffer event updates', () => {
 
   it('should return attached state', async () => {
     const buffer = await nvim.buffer;
-    const unlisten = buffer.listen('lines', jest.fn());
+    const unlisten = buffer.listen('lines', jestMock.fn());
     await wait(30);
     let attached = buffer.isAttached;
     expect(attached).toBe(true);
@@ -450,7 +451,7 @@ describe('Buffer event updates', () => {
 
   it('only bind once for the same event and handler ', async () => {
     const buffer = await nvim.buffer;
-    const mock = jest.fn();
+    const mock = jestMock.fn();
     buffer.listen('lines', mock);
     buffer.listen('lines', mock);
     await buffer.insert(['bar'], 1);
@@ -459,7 +460,7 @@ describe('Buffer event updates', () => {
 
   it('can use `buffer.unlisten` to unlisten', async () => {
     const buffer = await nvim.buffer;
-    const mock = jest.fn();
+    const mock = jestMock.fn();
     buffer.listen('lines', mock);
     await buffer.insert(['bar'], 1);
     expect(mock).toHaveBeenCalledTimes(1);
@@ -500,8 +501,8 @@ describe('Buffer event updates', () => {
   it('has listener on multiple buffers ', async () => {
     await nvim.command('new!');
     const buffers = await nvim.buffers;
-    const foo = jest.fn();
-    const bar = jest.fn();
+    const foo = jestMock.fn();
+    const bar = jestMock.fn();
 
     buffers[0].listen('lines', foo);
     buffers[1].listen('lines', bar);
@@ -523,8 +524,8 @@ describe('Buffer event updates', () => {
     await nvim.command('new!');
 
     const buffer = await nvim.buffer;
-    const foo = jest.fn();
-    const bar = jest.fn();
+    const foo = jestMock.fn();
+    const bar = jestMock.fn();
 
     const unlisten1 = buffer.listen('lines', foo);
     const unlisten2 = buffer.listen('lines', bar);
@@ -547,8 +548,8 @@ describe('Buffer event updates', () => {
     await nvim.command('new!');
 
     const buffer = await nvim.buffer;
-    const foo = jest.fn();
-    const bar = jest.fn();
+    const foo = jestMock.fn();
+    const bar = jestMock.fn();
 
     const unlisten1 = buffer.listen('lines', foo);
     const unlisten2 = buffer.listen('changedtick', bar);

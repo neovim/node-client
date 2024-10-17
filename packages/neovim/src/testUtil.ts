@@ -1,8 +1,8 @@
 import * as cp from 'node:child_process';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as jest from '@jest/globals';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import expect from 'expect';
 import { NeovimClient } from './api/client';
 import { attach } from './attach/attach';
 import { findNvim } from './utils/findNvim';
@@ -19,8 +19,10 @@ export function findNvimOrFail() {
 
 const nvimPath = findNvimOrFail();
 
-let proc: cp.ChildProcessWithoutNullStreams;
-let nvim: NeovimClient;
+// eslint-disable-next-line import/no-mutable-exports
+export let proc: cp.ChildProcessWithoutNullStreams;
+// eslint-disable-next-line import/no-mutable-exports
+export let nvim: NeovimClient;
 
 export function startNvim(): [cp.ChildProcessWithoutNullStreams, NeovimClient];
 export function startNvim(
@@ -32,7 +34,7 @@ export function startNvim(
 export function startNvim(
   doAttach: boolean = true
 ): [cp.ChildProcessWithoutNullStreams, NeovimClient | undefined] {
-  const testFile = jest.expect.getState().testPath?.replace(/.*[\\/]/, '');
+  const testFile = expect.getState().testPath?.replace(/.*[\\/]/, '');
   const msg = `startNvim in test: ${testFile}`;
   if (process.env.NVIM_NODE_LOG_FILE) {
     const logfile = path.resolve(process.env.NVIM_NODE_LOG_FILE);
@@ -75,10 +77,3 @@ export function getFakeNvimClient() {
     logger: getLogger(),
   } as NeovimClient;
 }
-
-// jest.beforeAll(async () => {
-//   [proc, nvim] = startNvim();
-// });
-// jest.afterAll(() => {
-//   stopNvim();
-// });

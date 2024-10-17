@@ -1,4 +1,5 @@
-/* eslint-env jest */
+import expect from 'expect';
+import * as jestMock from 'jest-mock';
 import { plugin as Plugin } from './plugin';
 import { NvimPlugin } from '../host/NvimPlugin';
 import { nvimFunction as FunctionDecorator } from './function';
@@ -30,7 +31,10 @@ describe('Plugin class decorator', () => {
     const plugin = Plugin({ dev: true })(MyClass);
     expect(typeof plugin).toEqual('function');
 
-    const pluginObject = { setOptions: jest.fn(), nvim: getFakeNvimClient() };
+    const pluginObject = {
+      setOptions: jestMock.fn(),
+      nvim: getFakeNvimClient(),
+    };
     instantiateOrRun(plugin, pluginObject);
     expect(pluginObject.setOptions).toHaveBeenCalledWith({ dev: true });
   });
@@ -61,9 +65,9 @@ describe('Plugin class decorator', () => {
     const plugin = Plugin(MyClass);
 
     const pluginObject = {
-      registerAutocmd: jest.fn(),
-      registerCommand: jest.fn(),
-      registerFunction: jest.fn(),
+      registerAutocmd: jestMock.fn(),
+      registerCommand: jestMock.fn(),
+      registerFunction: jestMock.fn(),
       nvim: getFakeNvimClient(),
     };
 

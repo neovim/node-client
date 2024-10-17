@@ -1,7 +1,7 @@
-/* eslint-env jest */
 import { EventEmitter } from 'node:events';
 import { Readable, Writable } from 'node:stream';
 import * as msgpack from '@msgpack/msgpack';
+import expect from 'expect';
 import { attach } from '../attach/attach';
 import { exportsForTesting } from './transport';
 

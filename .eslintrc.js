@@ -14,6 +14,7 @@ module.exports = {
   env: {
     node: true,
     es2024: true,
+    mocha: true,
   },
 
   overrides: [
@@ -28,6 +29,7 @@ module.exports = {
         // `jest` against the compiled .js results (would require compiling
         // the test files as well)?
         'unicorn/prefer-at': 'off',
+        'import/no-extraneous-dependencies': ['error', {'devDependencies': true, 'optionalDependencies': false, 'peerDependencies': false}],
       },
     },
   ],
