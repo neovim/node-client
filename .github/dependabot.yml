@@ -29,9 +29,13 @@ updates:
                   - '@types/*'
               exclude-patterns:
                   - '@types/node'
-          jest:
+          test:
               patterns:
+                  - 'mocha*'
+                  - '@types/mocha'
                   - 'jest*'
+                  - 'c8'
+                  - 'expect'
     # Check for updates to GitHub Actions every week
     - package-ecosystem: 'github-actions'
       directory: '/'
