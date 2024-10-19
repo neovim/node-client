@@ -2,10 +2,10 @@
 import { startNvim, stopNvim } from './testUtil';
 
 export const mochaHooks = {
-  beforeAll: async () => {
+  beforeAll() {
     startNvim();
   },
-  afterAll: () => {
+  afterAll() {
     stopNvim();
   },
 };
