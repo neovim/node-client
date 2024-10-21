@@ -47,6 +47,8 @@ Following is a complete, working example.
 1. Install the `neovim` package _locally_ in any directory (i.e. without `-g`. Node throws `ERR_MODULE_NOT_FOUND` if a script imports a _globally_ installed package).
    ```bash
    npm install neovim
+   # Or if build from source:
+   npm run build
    ```
 2. Paste the script below into a `demo.mjs` file and run it!
 
@@ -69,7 +71,8 @@ Following is a complete, working example.
    (async function () {
      const found = findNvim({ orderBy: 'desc', minVersion: '0.9.0' });
      console.log(found);
-     const nvim_proc = child_process.spawn(found.matches[0].path, ['--clean', '--embed'], {});
+     const [arg0, ...args] = found.matches[0].cmd;
+     const nvim_proc = child_process.spawn(arg0, [...args, '--clean', '--embed'], {});
      const nvim = attach({ proc: nvim_proc });
 
      nvim.command('vsp | vsp | vsp');

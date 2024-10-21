@@ -9,14 +9,14 @@ import { getLogger } from './utils/logger';
 
 export function findNvimOrFail() {
   const minVersion = '0.9.5';
-  const found = findNvim({ minVersion });
+  const found = findNvim({ minVersion, firstMatch: true });
   if (found.matches.length === 0) {
     throw new Error(`nvim ${minVersion} not found`);
   }
-  return found.matches[0].path;
+  return found.matches[0].cmd;
 }
 
-const nvimPath = findNvimOrFail();
+const nvimCmd = findNvimOrFail();
 
 // eslint-disable-next-line import/no-mutable-exports
 export let proc: cp.ChildProcessWithoutNullStreams;
@@ -36,7 +36,7 @@ export function startNvim(
     fs.writeFileSync(logfile, `${msg}\n`, { flag: 'a' });
   }
 
-  proc = cp.spawn(nvimPath, ['-u', 'NONE', '--embed', '-n', '--noplugin'], {
+  proc = cp.spawn(nvimCmd[0], [...nvimCmd.slice(1), '-u', 'NONE', '--embed', '-n', '--noplugin'], {
     cwd: __dirname,
   });
   if (!doAttach) {

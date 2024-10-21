@@ -1,9 +1,11 @@
 import { execFileSync } from 'node:child_process';
 import { join, delimiter, normalize } from 'node:path';
-import { constants, existsSync, accessSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 
 export type NvimVersion = {
-  /** Path to `nvim` executable. */
+  /** Command that runs Nvim, e.g. `['wsl.exe', '-d', 'Ubuntu', 'nvim']`. Append args to it. */
+  readonly cmd: string[];
+  /** @deprecated Use `cmd`. Same as `cmd[0]`. */
   readonly path: string;
   /** Nvim version, or undefined if there was an error. */
   readonly nvimVersion?: string;
@@ -36,16 +38,24 @@ export type FindNvimOptions = {
    */
   readonly firstMatch?: boolean;
   /**
-   * (Optional) Additional specific file paths to check for Nvim executables.
-   * These paths will be checked before searching `dirs`.
-   * Useful for allowing users to specify exact Nvim executable locations.
+   * (Optional) Other commands that (potentially) invoke Nvim and can receive arbitrary args.
+   * Checked before searching `dirs`. Useful for checking a user-configured Nvim location or
+   * arbitrary wrappers such as Windows WSL.
    *
-   * Example: ['/usr/local/bin/nvim', '/opt/homebrew/bin/nvim']
+   * Example:
+   * ```
+   * cmds: [
+   *   ['/opt/homebrew/bin/nvim'],
+   *   ['C:/Windows/system32/wsl.exe', '-d', 'Ubuntu', 'nvim'],
+   * ],
+   * ```
    */
+  readonly cmds?: string[][];
+  /** @deprecated */
   readonly paths?: string[];
   /**
    * (Optional) Additional directories to search for Nvim executables.
-   * These directories will be searched after checking `paths`
+   * These directories will be searched after checking `cmds`
    * but before searching `$PATH` and other default locations.
    * Useful for including non-standard installation directories.
    *
@@ -144,48 +154,47 @@ function normalizePath(path: string): string {
 }
 
 function getPlatformSearchDirs(): Set<string> {
-  const paths = new Set<string>();
+  const dirs = new Set<string>();
   const { PATH, USERPROFILE, LOCALAPPDATA, PROGRAMFILES, HOME } = process.env;
 
-  PATH?.split(delimiter).forEach(p => paths.add(normalizePath(p)));
+  PATH?.split(delimiter).forEach(p => dirs.add(normalizePath(p)));
 
-  // Add common Neovim installation paths not always in the system's PATH.
+  // Add common Nvim locations which may not be in the system $PATH.
   if (windows) {
-    // Scoop common install location
+    // Scoop install location.
     if (USERPROFILE) {
-      paths.add(normalizePath(`${USERPROFILE}/scoop/shims`));
+      dirs.add(normalizePath(`${USERPROFILE}/scoop/shims`));
     }
-    paths.add(normalizePath('C:/ProgramData/scoop/shims'));
+    dirs.add(normalizePath('C:/ProgramData/scoop/shims'));
 
-    // Winget common install location
-    // See https://github.com/microsoft/winget-cli/blob/master/doc/specs/%23182%20-%20Support%20for%20installation%20of%20portable%20standalone%20apps.md
+    // Winget install location. https://github.com/microsoft/winget-cli/blob/master/doc/specs/%23182%20-%20Support%20for%20installation%20of%20portable%20standalone%20apps.md
     if (LOCALAPPDATA) {
-      paths.add(normalizePath(`${LOCALAPPDATA}/Microsoft/WindowsApps`));
-      paths.add(normalizePath(`${LOCALAPPDATA}/Microsoft/WinGet/Packages`));
+      dirs.add(normalizePath(`${LOCALAPPDATA}/Microsoft/WindowsApps`));
+      dirs.add(normalizePath(`${LOCALAPPDATA}/Microsoft/WinGet/Packages`));
     }
     if (PROGRAMFILES) {
-      paths.add(normalizePath(`${PROGRAMFILES}/Neovim/bin`));
-      paths.add(normalizePath(`${PROGRAMFILES} (x86)/Neovim/bin`));
-      paths.add(normalizePath(`${PROGRAMFILES}/WinGet/Packages`));
-      paths.add(normalizePath(`${PROGRAMFILES} (x86)/WinGet/Packages`));
+      dirs.add(normalizePath(`${PROGRAMFILES}/Neovim/bin`));
+      dirs.add(normalizePath(`${PROGRAMFILES} (x86)/Neovim/bin`));
+      dirs.add(normalizePath(`${PROGRAMFILES}/WinGet/Packages`));
+      dirs.add(normalizePath(`${PROGRAMFILES} (x86)/WinGet/Packages`));
     }
   } else {
-    // Common paths for Unix-like systems
+    // Common locations for Unix-like systems.
     [
       '/usr/local/bin',
       '/usr/bin',
       '/opt/homebrew/bin',
       '/home/linuxbrew/.linuxbrew/bin',
       '/snap/nvim/current/usr/bin',
-    ].forEach(p => paths.add(p));
+    ].forEach(p => dirs.add(p));
 
     if (HOME) {
-      paths.add(normalizePath(`${HOME}/bin`));
-      paths.add(normalizePath(`${HOME}/.linuxbrew/bin`));
+      dirs.add(normalizePath(`${HOME}/bin`));
+      dirs.add(normalizePath(`${HOME}/.linuxbrew/bin`));
     }
   }
 
-  return paths;
+  return dirs;
 }
 
 /**
@@ -194,64 +203,56 @@ function getPlatformSearchDirs(): Set<string> {
  * @param opt.minVersion See {@link FindNvimOptions.minVersion}
  * @param opt.orderBy See {@link FindNvimOptions.orderBy}
  * @param opt.firstMatch See {@link FindNvimOptions.firstMatch}
- * @param opt.paths See {@link FindNvimOptions.paths}
+ * @param opt.cmds See {@link FindNvimOptions.cmds}
  * @param opt.dirs See {@link FindNvimOptions.dirs}
  */
 export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
-  const platformDirs = getPlatformSearchDirs();
   const nvimExecutable = windows ? 'nvim.exe' : 'nvim';
-  const normalizedPathsFromUser = (opt.paths ?? []).map(normalizePath);
-
-  const allPaths = new Set<string>([
-    ...normalizedPathsFromUser,
-    ...(opt.dirs ?? []).map(dir => normalizePath(join(dir, nvimExecutable))),
-    ...[...platformDirs].map(dir => join(dir, nvimExecutable)),
-  ]);
+  const userCmds = [...(opt.cmds ?? []), ...(opt.paths ?? []).map(p => [p])].map(
+    ([arg0, ...args]) => [normalizePath(arg0), ...args]
+  );
+  // Unlike `cmds` (always tried, so failures are reported in `invalid`), skip dirs without Nvim.
+  const dirCmds = [...(opt.dirs ?? []), ...getPlatformSearchDirs()]
+    .map(dir => [normalizePath(join(dir, nvimExecutable))])
+    .filter(([nvimPath]) => existsSync(nvimPath));
+  // Dedupe, e.g. if a dir is in both $PATH and the platform defaults.
+  const allCmds = new Map(
+    [...userCmds, ...dirCmds].map(cmd => [JSON.stringify(cmd), cmd] as const)
+  );
 
   const matches = new Array<NvimVersion>();
   const invalid = new Array<NvimVersion>();
-  for (const nvimPath of allPaths) {
-    if (existsSync(nvimPath) || normalizedPathsFromUser.includes(nvimPath)) {
-      try {
-        accessSync(nvimPath, constants.X_OK);
-        // TODO: fallback to `echo 'print(vim.version())' | nvim -l -` if parsing --version fails.
-        const nvimVersionFull = execFileSync(nvimPath, ['--version']).toString();
-        const nvimVersionMatch = nvimVersionRegex.exec(nvimVersionFull);
-        const buildTypeMatch = buildTypeRegex.exec(nvimVersionFull);
-        const luaJitVersionMatch = luaJitVersionRegex.exec(nvimVersionFull);
-        if (nvimVersionMatch && buildTypeMatch && luaJitVersionMatch) {
-          if (
-            'minVersion' in opt &&
-            compareVersions(opt.minVersion ?? '0.0.0', nvimVersionMatch[1]) === 1
-          ) {
-            invalid.push({
-              nvimVersion: nvimVersionMatch[1],
-              path: nvimPath,
-              buildType: buildTypeMatch[1],
-              luaJitVersion: luaJitVersionMatch[1],
-            });
-          } else {
-            matches.push({
-              nvimVersion: nvimVersionMatch[1],
-              path: nvimPath,
-              buildType: buildTypeMatch[1],
-              luaJitVersion: luaJitVersionMatch[1],
-            });
-
-            if (opt.firstMatch) {
-              return {
-                matches,
-                invalid,
-              } as const;
-            }
-          }
-        }
-      } catch (e) {
-        invalid.push({
-          path: nvimPath,
-          error: e as Error,
-        });
+  for (const cmd of allCmds.values()) {
+    const [arg0, ...args] = cmd;
+    try {
+      // TODO: fallback to `echo 'print(vim.version())' | nvim -l -` if parsing --version fails.
+      const nvimVersionFull = execFileSync(arg0, [...args, '--version']).toString();
+      const nvimVersionMatch = nvimVersionRegex.exec(nvimVersionFull);
+      const buildTypeMatch = buildTypeRegex.exec(nvimVersionFull);
+      const luaJitVersionMatch = luaJitVersionRegex.exec(nvimVersionFull);
+      if (!nvimVersionMatch || !buildTypeMatch || !luaJitVersionMatch) {
+        continue;
       }
+      const found: NvimVersion = {
+        cmd,
+        path: arg0,
+        nvimVersion: nvimVersionMatch[1],
+        buildType: buildTypeMatch[1],
+        luaJitVersion: luaJitVersionMatch[1],
+      };
+      if (
+        'minVersion' in opt &&
+        compareVersions(opt.minVersion ?? '0.0.0', nvimVersionMatch[1]) === 1
+      ) {
+        invalid.push(found);
+      } else {
+        matches.push(found);
+        if (opt.firstMatch) {
+          break;
+        }
+      }
+    } catch (e) {
+      invalid.push({ cmd, path: arg0, error: e as Error });
     }
   }
 
