@@ -4,7 +4,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'prettier',
   ],
-  plugins: ['unicorn', 'import', 'prettier', '@typescript-eslint'],
+  plugins: ['unicorn', 'import', '@typescript-eslint'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: './tsconfig.json',
@@ -66,9 +66,6 @@ module.exports = {
     // Causes issues with enums
     'no-shadow': 'off',
     'prefer-destructuring': 'off',  // Intentionally disabled trash.
-
-    // prettier things
-    'prettier/prettier': 'error',
 
     'import/extensions': 'off',
     'import/prefer-default-export': 'off',
