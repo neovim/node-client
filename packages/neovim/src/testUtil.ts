@@ -25,12 +25,8 @@ export let proc: cp.ChildProcessWithoutNullStreams;
 export let nvim: NeovimClient;
 
 export function startNvim(): [cp.ChildProcessWithoutNullStreams, NeovimClient];
-export function startNvim(
-  doAttach: false
-): [cp.ChildProcessWithoutNullStreams, undefined];
-export function startNvim(
-  doAttach: true
-): [cp.ChildProcessWithoutNullStreams, NeovimClient];
+export function startNvim(doAttach: false): [cp.ChildProcessWithoutNullStreams, undefined];
+export function startNvim(doAttach: true): [cp.ChildProcessWithoutNullStreams, NeovimClient];
 export function startNvim(
   doAttach: boolean = true
 ): [cp.ChildProcessWithoutNullStreams, NeovimClient | undefined] {
@@ -51,9 +47,7 @@ export function startNvim(
   return [proc, nvim];
 }
 
-export function stopNvim(
-  proc_?: cp.ChildProcessWithoutNullStreams | NeovimClient
-) {
+export function stopNvim(proc_?: cp.ChildProcessWithoutNullStreams | NeovimClient) {
   // Stop all (proc + client).
   if (!proc_) {
     if (proc) {

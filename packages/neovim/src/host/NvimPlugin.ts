@@ -99,17 +99,11 @@ export class NvimPlugin {
 
   registerAutocmd(name: string, fn: Function, options: AutocmdOptions): void;
 
-  registerAutocmd(
-    name: string,
-    fn: [any, Function],
-    options: AutocmdOptions
-  ): void;
+  registerAutocmd(name: string, fn: [any, Function], options: AutocmdOptions): void;
 
   registerAutocmd(name: string, fn: any, options?: AutocmdOptions): void {
     if (!options?.pattern) {
-      this.nvim.logger.error(
-        `registerAutocmd expected pattern option for ${name}`
-      );
+      this.nvim.logger.error(`registerAutocmd expected pattern option for ${name}`);
       return;
     }
 
@@ -133,19 +127,13 @@ export class NvimPlugin {
         spec,
       };
     } catch (err) {
-      this.nvim.logger.error(
-        `registerAutocmd expected callable argument for ${name}`
-      );
+      this.nvim.logger.error(`registerAutocmd expected callable argument for ${name}`);
     }
   }
 
   registerCommand(name: string, fn: Function, options?: CommandOptions): void;
 
-  registerCommand(
-    name: string,
-    fn: [any, Function],
-    options?: CommandOptions
-  ): void;
+  registerCommand(name: string, fn: [any, Function], options?: CommandOptions): void;
 
   registerCommand(name: string, fn: any, options?: CommandOptions): void {
     const spec: Spec = {
@@ -168,23 +156,13 @@ export class NvimPlugin {
         spec,
       };
     } catch (err) {
-      this.nvim.logger.error(
-        `registerCommand expected callable argument for ${name}`
-      );
+      this.nvim.logger.error(`registerCommand expected callable argument for ${name}`);
     }
   }
 
-  registerFunction(
-    name: string,
-    fn: Function,
-    options?: NvimFunctionOptions
-  ): void;
+  registerFunction(name: string, fn: Function, options?: NvimFunctionOptions): void;
 
-  registerFunction(
-    name: string,
-    fn: [any, Function],
-    options?: NvimFunctionOptions
-  ): void;
+  registerFunction(name: string, fn: [any, Function], options?: NvimFunctionOptions): void;
 
   registerFunction(name: string, fn: any, options?: NvimFunctionOptions): void {
     const spec: Spec = {
@@ -207,22 +185,14 @@ export class NvimPlugin {
         spec,
       };
     } catch (err) {
-      this.nvim.logger.error(
-        `registerFunction expected callable argument for ${name}`
-      );
+      this.nvim.logger.error(`registerFunction expected callable argument for ${name}`);
     }
   }
 
   get specs(): Spec[] {
-    const autocmds = Object.keys(this.autocmds).map(
-      key => this.autocmds[key].spec
-    );
-    const commands = Object.keys(this.commands).map(
-      key => this.commands[key].spec
-    );
-    const functions = Object.keys(this.functions).map(
-      key => this.functions[key].spec
-    );
+    const autocmds = Object.keys(this.autocmds).map(key => this.autocmds[key].spec);
+    const commands = Object.keys(this.commands).map(key => this.commands[key].spec);
+    const functions = Object.keys(this.functions).map(key => this.functions[key].spec);
     return autocmds.concat(commands).concat(functions);
   }
 
@@ -248,15 +218,11 @@ export class NvimPlugin {
     if (handlers.hasOwnProperty(name)) {
       const handler = handlers[name];
       try {
-        return handler.spec.sync
-          ? handler.fn(...args)
-          : await handler.fn(...args);
+        return handler.spec.sync ? handler.fn(...args) : await handler.fn(...args);
       } catch (e) {
         const err = e as Error;
         const msg = `Error in plugin for ${type}:${name}: ${err.message}`;
-        this.nvim.logger.error(
-          `${msg} (file: ${this.filename}, stack: ${err.stack})`
-        );
+        this.nvim.logger.error(`${msg} (file: ${this.filename}, stack: ${err.stack})`);
         throw new Error(msg, { cause: err });
       }
     } else {

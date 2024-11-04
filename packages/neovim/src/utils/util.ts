@@ -19,11 +19,7 @@ export function partialClone(
   replacement: any = undefined
 ): any {
   // Base case: If input is not an object or has no children, return it.
-  if (
-    typeof obj !== 'object' ||
-    obj === null ||
-    Object.getOwnPropertyNames(obj).length === 0
-  ) {
+  if (typeof obj !== 'object' || obj === null || Object.getOwnPropertyNames(obj).length === 0) {
     return obj;
   }
 
@@ -39,12 +35,7 @@ export function partialClone(
     if (omitKeys.includes(key)) {
       (clonedObj as any)[key] = replacement || (Array.isArray(obj) ? [] : {});
     } else if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      (clonedObj as any)[key] = partialClone(
-        obj[key],
-        depth - 1,
-        omitKeys,
-        replacement
-      );
+      (clonedObj as any)[key] = partialClone(obj[key], depth - 1, omitKeys, replacement);
     }
   }
 

@@ -51,27 +51,20 @@ describe('Plugin Factory (used by host)', () => {
   });
 
   it('should collect the handlers from a plugin', async () => {
-    expect(await pluginObj.handleRequest('Func', 'function', ['town'])).toEqual(
-      'Funcy town'
-    );
+    expect(await pluginObj.handleRequest('Func', 'function', ['town'])).toEqual('Funcy town');
   });
 
   it('should load the plugin a sandbox', async () => {
-    expect(
-      await pluginObj.handleRequest('Global', 'function', ['loaded'])
-    ).toEqual(true);
-    expect(
-      await pluginObj.handleRequest('Global', 'function', ['Buffer'])
-    ).not.toEqual(undefined);
-    expect(
-      await pluginObj.handleRequest('Global', 'function', ['process'])
-    ).not.toContain(['chdir', 'exit']);
+    expect(await pluginObj.handleRequest('Global', 'function', ['loaded'])).toEqual(true);
+    expect(await pluginObj.handleRequest('Global', 'function', ['Buffer'])).not.toEqual(undefined);
+    expect(await pluginObj.handleRequest('Global', 'function', ['process'])).not.toContain([
+      'chdir',
+      'exit',
+    ]);
   });
 
   it('should load files required by the plugin in a sandbox', async () => {
-    expect(
-      await pluginObj.handleRequest('Global', 'function', ['required'])
-    ).toEqual('you bet!');
+    expect(await pluginObj.handleRequest('Global', 'function', ['required'])).toEqual('you bet!');
     // expect(
     // Object.keys(required.globals.process),
     // ).not.toContain(
@@ -94,10 +87,7 @@ describe('Plugin Factory (decorator api)', () => {
   let pluginObj: NvimPlugin;
 
   beforeEach(() => {
-    const p = loadPlugin(
-      '@neovim/example-plugin-decorators',
-      getFakeNvimClient()
-    );
+    const p = loadPlugin('@neovim/example-plugin-decorators', getFakeNvimClient());
     if (!p) {
       throw new Error();
     }
@@ -126,24 +116,19 @@ describe('Plugin Factory (decorator api)', () => {
   });
 
   it('should collect the handlers from a plugin', async () => {
-    expect(await pluginObj.handleRequest('Func', 'function', ['town'])).toEqual(
-      'Funcy town'
-    );
+    expect(await pluginObj.handleRequest('Func', 'function', ['town'])).toEqual('Funcy town');
   });
 
   it('should load the plugin a sandbox', async () => {
-    expect(
-      await pluginObj.handleRequest('Global', 'function', ['loaded'])
-    ).toEqual(true);
-    expect(
-      await pluginObj.handleRequest('Global', 'function', ['process'])
-    ).not.toContain(['chdir', 'exit']);
+    expect(await pluginObj.handleRequest('Global', 'function', ['loaded'])).toEqual(true);
+    expect(await pluginObj.handleRequest('Global', 'function', ['process'])).not.toContain([
+      'chdir',
+      'exit',
+    ]);
   });
 
   it('should load files required by the plugin in a sandbox', async () => {
-    expect(
-      await pluginObj.handleRequest('Global', 'function', ['required'])
-    ).toEqual('you bet!');
+    expect(await pluginObj.handleRequest('Global', 'function', ['required'])).toEqual('you bet!');
     // expect(
     // Object.keys(required.globals.process),
     // ).not.toContain(

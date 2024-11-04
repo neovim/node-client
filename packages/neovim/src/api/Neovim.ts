@@ -111,14 +111,7 @@ export interface OpenWindowOptions {
   style?: 'minimal';
 
   // Style of (optional) window border. This can either be a string or an array.
-  border?:
-    | 'none'
-    | 'single'
-    | 'double'
-    | 'rounded'
-    | 'solid'
-    | 'shadow'
-    | string[];
+  border?: 'none' | 'single' | 'double' | 'rounded' | 'solid' | 'shadow' | string[];
 
   // If true then no buffer-related autocommand events such as |BufEnter|, |BufLeave| or |BufWinEnter| may fire from calling this function.
   noautocmd?: boolean;
@@ -397,15 +390,9 @@ export class Neovim extends BaseApi {
    * @param isRgb Should export RGB colors
    * @return Highlight definition map
    */
-  getHighlight(
-    nameOrId: string | number,
-    isRgb = true
-  ): Promise<object> | void {
+  getHighlight(nameOrId: string | number, isRgb = true): Promise<object> | void {
     const functionName = typeof nameOrId === 'string' ? 'by_name' : 'by_id';
-    return this.request(`${this.prefix}get_hl_${functionName}`, [
-      nameOrId,
-      isRgb,
-    ]);
+    return this.request(`${this.prefix}get_hl_${functionName}`, [nameOrId, isRgb]);
   }
 
   /**
@@ -467,17 +454,9 @@ export class Neovim extends BaseApi {
    *
    * On execution error: fails with VimL error, does not update v:errmsg.
    */
-  callDictFunction(
-    dict: object,
-    fname: string,
-    args: VimValue | VimValue[] = []
-  ): object {
+  callDictFunction(dict: object, fname: string, args: VimValue | VimValue[] = []): object {
     const _args = Array.isArray(args) ? args : [args];
-    return this.request(`${this.prefix}call_dict_function`, [
-      dict,
-      fname,
-      _args,
-    ]);
+    return this.request(`${this.prefix}call_dict_function`, [dict, fname, _args]);
   }
 
   /**
@@ -624,14 +603,7 @@ export class Neovim extends BaseApi {
     row: number,
     col: number
   ) {
-    return this.request(`${this.prefix}input_mouse`, [
-      button,
-      action,
-      modifier,
-      grid,
-      row,
-      col,
-    ]);
+    return this.request(`${this.prefix}input_mouse`, [button, action, modifier, grid, row, col]);
   }
 
   /**
@@ -639,16 +611,8 @@ export class Neovim extends BaseApi {
    *
    * TODO: return type, see :help
    */
-  parseExpression(
-    expr: string,
-    flags: string,
-    highlight: boolean
-  ): Promise<object> {
-    return this.request(`${this.prefix}parse_expression`, [
-      expr,
-      flags,
-      highlight,
-    ]);
+  parseExpression(expr: string, flags: string, highlight: boolean): Promise<object> {
+    return this.request(`${this.prefix}parse_expression`, [expr, flags, highlight]);
   }
 
   /**
@@ -686,12 +650,7 @@ export class Neovim extends BaseApi {
     doIt: boolean,
     special: boolean
   ): Promise<string> {
-    return this.request(`${this.prefix}replace_termcodes`, [
-      str,
-      fromPart,
-      doIt,
-      special,
-    ]);
+    return this.request(`${this.prefix}replace_termcodes`, [str, fromPart, doIt, special]);
   }
 
   /**
@@ -739,11 +698,7 @@ export class Neovim extends BaseApi {
     return this.request(`${this.prefix}list_uis`);
   }
 
-  uiAttach(
-    width: number,
-    height: number,
-    options: UiAttachOptions
-  ): Promise<void> {
+  uiAttach(width: number, height: number, options: UiAttachOptions): Promise<void> {
     return this.request(`${this.prefix}ui_attach`, [width, height, options]);
   }
 
@@ -773,11 +728,7 @@ export class Neovim extends BaseApi {
    * @param {Number} height The new requested height
    */
   uiTryResizeGrid(grid: number, width: number, height: number): Promise<void> {
-    return this.request(`${this.prefix}ui_try_resize_grid`, [
-      grid,
-      width,
-      height,
-    ]);
+    return this.request(`${this.prefix}ui_try_resize_grid`, [grid, width, height]);
   }
 
   /**
@@ -820,13 +771,7 @@ export class Neovim extends BaseApi {
     methods: object,
     attributes: object
   ): void {
-    this.request(`${this.prefix}set_client_info`, [
-      name,
-      version,
-      type,
-      methods,
-      attributes,
-    ]);
+    this.request(`${this.prefix}set_client_info`, [name, version, type, methods, attributes]);
   }
 
   /**
@@ -878,18 +823,8 @@ export class Neovim extends BaseApi {
    *                           Implies `insert`.
    * @param {Object}  opts     Optional parameters. Reserved for future use.
    */
-  selectPopupmenuItem(
-    item: number,
-    insert: boolean,
-    finish: boolean,
-    opts: object = {}
-  ) {
-    return this.request(`${this.prefix}select_popupmenu_item`, [
-      item,
-      insert,
-      finish,
-      opts,
-    ]);
+  selectPopupmenuItem(item: number, insert: boolean, finish: boolean, opts: object = {}) {
+    return this.request(`${this.prefix}select_popupmenu_item`, [item, insert, finish, opts]);
   }
 
   /**
@@ -899,10 +834,7 @@ export class Neovim extends BaseApi {
    * @param {Boolean} scratch Creates a "throwaway" |scratch-buffer| for temporary work (always 'nomodified')
    * @return {Buffer|Number} Buffer handle, or 0 on error
    */
-  private createBuf(
-    listed: boolean,
-    scratch: boolean
-  ): Promise<Buffer | number> {
+  private createBuf(listed: boolean, scratch: boolean): Promise<Buffer | number> {
     return this.request(`${this.prefix}create_buf`, [listed, scratch]);
   }
 
@@ -940,11 +872,7 @@ export class Neovim extends BaseApi {
   /**
    * Public alias for `openWin`
    */
-  openWindow(
-    buffer: Buffer,
-    enter: boolean,
-    options: OpenWindowOptions
-  ): Promise<Window | number> {
+  openWindow(buffer: Buffer, enter: boolean, options: OpenWindowOptions): Promise<Window | number> {
     return this.openWin(buffer, enter, options);
   }
 

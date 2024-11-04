@@ -89,14 +89,8 @@ export class Buffer extends BaseApi {
   getLines(
     { start, end, strictIndexing } = { start: 0, end: -1, strictIndexing: true }
   ): Promise<string[]> {
-    const indexing =
-      typeof strictIndexing === 'undefined' ? true : strictIndexing;
-    return this.request(`${this.prefix}get_lines`, [
-      this,
-      start,
-      end,
-      indexing,
-    ]);
+    const indexing = typeof strictIndexing === 'undefined' ? true : strictIndexing;
+    return this.request(`${this.prefix}get_lines`, [this, start, end, indexing]);
   }
 
   /** Set lines of buffer given indeces */
@@ -109,18 +103,11 @@ export class Buffer extends BaseApi {
     if (_start === undefined || _end === undefined) {
       throw new Error('start and end are required');
     }
-    const indexing =
-      typeof strictIndexing === 'undefined' ? true : strictIndexing;
+    const indexing = typeof strictIndexing === 'undefined' ? true : strictIndexing;
     const lines = typeof _lines === 'string' ? [_lines] : _lines;
     const end = typeof _end !== 'undefined' ? _end : _start + 1;
 
-    return this.request(`${this.prefix}set_lines`, [
-      this,
-      _start,
-      end,
-      indexing,
-      lines,
-    ]);
+    return this.request(`${this.prefix}set_lines`, [this, _start, end, indexing, lines]);
   }
 
   /** Insert lines at `start` index */
@@ -265,9 +252,7 @@ export class Buffer extends BaseApi {
    */
   clearHighlight(args: BufferClearHighlight = {}) {
     // eslint-disable-next-line no-console
-    console.warn(
-      '`clearHighlight` is deprecated, use ``clearNamespace()` instead'
-    );
+    console.warn('`clearHighlight` is deprecated, use ``clearNamespace()` instead');
 
     const defaults = {
       srcId: -1,
@@ -277,12 +262,7 @@ export class Buffer extends BaseApi {
 
     const { srcId, lineStart, lineEnd } = { ...defaults, ...args };
 
-    return this.request(`${this.prefix}clear_highlight`, [
-      this,
-      srcId,
-      lineStart,
-      lineEnd,
-    ]);
+    return this.request(`${this.prefix}clear_highlight`, [this, srcId, lineStart, lineEnd]);
   }
 
   /**
@@ -303,12 +283,7 @@ export class Buffer extends BaseApi {
 
     const { nsId, lineStart, lineEnd } = { ...defaults, ...args };
 
-    this.request(`${this.prefix}clear_namespace`, [
-      this,
-      nsId,
-      lineStart,
-      lineEnd,
-    ]);
+    this.request(`${this.prefix}clear_namespace`, [this, nsId, lineStart, lineEnd]);
   }
 
   /**
@@ -348,13 +323,7 @@ export class Buffer extends BaseApi {
     chunks: VirtualTextChunk[],
     opts = {}
   ): Promise<number> {
-    return this.request(`${this.prefix}set_virtual_text`, [
-      this,
-      nsId,
-      line,
-      chunks,
-      opts,
-    ]);
+    return this.request(`${this.prefix}set_virtual_text`, [this, nsId, line, chunks, opts]);
   }
 
   /**
