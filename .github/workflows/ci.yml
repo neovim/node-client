@@ -92,7 +92,7 @@ jobs:
 
         npm run test-coverage --stream
 
-    - uses: codecov/codecov-action@v4
+    - uses: codecov/codecov-action@v5
       if: matrix.node == '20'
       with:
         verbose: true # optional (default = false)
