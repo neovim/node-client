@@ -39,13 +39,7 @@ export class BaseApi extends EventEmitter {
   // Node Buffer
   protected client: any;
 
-  constructor({
-    transport,
-    data,
-    logger,
-    metadata,
-    client,
-  }: BaseConstructorOptions) {
+  constructor({ transport, data, logger, metadata, client }: BaseConstructorOptions) {
     super();
 
     this.transport = transport;
@@ -75,12 +69,7 @@ export class BaseApi extends EventEmitter {
           try {
             logData =
               res && typeof res === 'object'
-                ? partialClone(
-                    res,
-                    2,
-                    ['logger', 'transport', 'client'],
-                    '[Object]'
-                  )
+                ? partialClone(res, 2, ['logger', 'transport', 'client'], '[Object]')
                 : res;
           } catch {
             logData = String(res);
@@ -108,12 +97,7 @@ export class BaseApi extends EventEmitter {
     return this[DO_REQUEST](name, args).catch(err => {
       // XXX: Get a `*.ts stacktrace. If we re-throw `err` we get a `*.js` trace. tsconfig issue?
       const newError = new Error(err.message);
-      this.logger.error(
-        `failed request to "%s": %s: %s`,
-        name,
-        newError.name,
-        newError.message
-      );
+      this.logger.error(`failed request to "%s": %s: %s`, name, newError.name, newError.message);
       throw newError;
     });
   }

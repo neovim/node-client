@@ -21,10 +21,7 @@ export interface Constructor<T> {
   new (...args: any[]): T;
 }
 
-function wrapper<T extends Constructor<{}>>(
-  cls: T,
-  options?: PluginDecoratorOptions
-) {
+function wrapper<T extends Constructor<{}>>(cls: T, options?: PluginDecoratorOptions) {
   return class extends cls {
     public nvim!: Neovim;
 
@@ -41,9 +38,7 @@ function wrapper<T extends Constructor<{}>>(
       // Search for decorated methods
       Object.getOwnPropertyNames(cls.prototype).forEach(methodName => {
         plugin.nvim.logger.info(`Method name ${methodName}`);
-        plugin.nvim.logger.info(
-          `${cls.prototype[methodName]} ${typeof cls.prototype[methodName]}`
-        );
+        plugin.nvim.logger.info(`${cls.prototype[methodName]} ${typeof cls.prototype[methodName]}`);
         plugin.nvim.logger.info(`${this} ${typeof this}`);
 
         const method = cls.prototype[methodName];
@@ -132,7 +127,5 @@ export function plugin(outter: any): any {
    *
    * Plugin(TestPlugin)
    */
-  return typeof outter !== 'function'
-    ? (cls: any) => wrapper(cls, outter)
-    : wrapper(outter);
+  return typeof outter !== 'function' ? (cls: any) => wrapper(cls, outter) : wrapper(outter);
 }

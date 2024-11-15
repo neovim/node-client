@@ -65,16 +65,12 @@ export class Window extends BaseApi {
 
   /** 0-indexed, on-screen window position(row) in display cells. */
   get row(): Promise<number> {
-    return this.request(`${this.prefix}get_position`, [this]).then(
-      position => position[0]
-    );
+    return this.request(`${this.prefix}get_position`, [this]).then(position => position[0]);
   }
 
   /** 0-indexed, on-screen window position(col) in display cells. */
   get col(): Promise<number> {
-    return this.request(`${this.prefix}get_position`, [this]).then(
-      position => position[1]
-    );
+    return this.request(`${this.prefix}get_position`, [this]).then(position => position[1]);
   }
 
   /** Is window valid */

@@ -17,22 +17,14 @@ describe('NvimPlugin', () => {
   });
 
   it('should set dev options when you call setOptions', () => {
-    const plugin = new NvimPlugin(
-      '/tmp/filename',
-      () => {},
-      getFakeNvimClient()
-    );
+    const plugin = new NvimPlugin('/tmp/filename', () => {}, getFakeNvimClient());
     plugin.setOptions({ dev: true });
     expect(plugin.dev).toBe(true);
     expect(plugin.shouldCacheModule).toBe(false);
   });
 
   it('should store registered autocmds', () => {
-    const plugin = new NvimPlugin(
-      '/tmp/filename',
-      () => {},
-      getFakeNvimClient()
-    );
+    const plugin = new NvimPlugin('/tmp/filename', () => {}, getFakeNvimClient());
     const fn = () => {};
     const opts = { pattern: '*' };
     const spec = {
@@ -47,11 +39,7 @@ describe('NvimPlugin', () => {
   });
 
   it('should store registered commands', () => {
-    const plugin = new NvimPlugin(
-      '/tmp/filename',
-      () => {},
-      getFakeNvimClient()
-    );
+    const plugin = new NvimPlugin('/tmp/filename', () => {}, getFakeNvimClient());
     const fn = () => {};
     const opts = { sync: true };
     const spec = {
@@ -66,11 +54,7 @@ describe('NvimPlugin', () => {
   });
 
   it('should store registered functions', () => {
-    const plugin = new NvimPlugin(
-      '/tmp/filename',
-      () => {},
-      getFakeNvimClient()
-    );
+    const plugin = new NvimPlugin('/tmp/filename', () => {}, getFakeNvimClient());
     const fn = () => {};
     const opts = { sync: true };
     const spec = {
@@ -85,11 +69,7 @@ describe('NvimPlugin', () => {
   });
 
   it('should not add autocmds with no pattern option', () => {
-    const plugin = new NvimPlugin(
-      '/tmp/filename',
-      () => {},
-      getFakeNvimClient()
-    );
+    const plugin = new NvimPlugin('/tmp/filename', () => {}, getFakeNvimClient());
     plugin.registerAutocmd('BufWritePre', () => {}, { pattern: '' });
     expect(Object.keys(plugin.autocmds)).toHaveLength(0);
   });
@@ -106,11 +86,7 @@ describe('NvimPlugin', () => {
     const thisObj = {};
     expect(callable([thisObj, fn])()).toBe(thisObj);
 
-    const plugin = new NvimPlugin(
-      '/tmp/filename',
-      () => {},
-      getFakeNvimClient()
-    );
+    const plugin = new NvimPlugin('/tmp/filename', () => {}, getFakeNvimClient());
     const obj = {
       func: jestMock.fn(function () {
         // @ts-expect-error intentional
@@ -126,22 +102,14 @@ describe('NvimPlugin', () => {
   });
 
   it('should not register commands with incorrect callable arguments', () => {
-    const plugin = new NvimPlugin(
-      '/tmp/filename',
-      () => {},
-      getFakeNvimClient()
-    );
+    const plugin = new NvimPlugin('/tmp/filename', () => {}, getFakeNvimClient());
     // @ts-expect-error Intentionally passing empty array for command arguments.
     plugin.registerCommand('MyCommand', [], {});
     expect(Object.keys(plugin.commands)).toHaveLength(0);
   });
 
   it('should return specs for registered commands', () => {
-    const plugin = new NvimPlugin(
-      '/tmp/filename',
-      () => {},
-      getFakeNvimClient()
-    );
+    const plugin = new NvimPlugin('/tmp/filename', () => {}, getFakeNvimClient());
     const fn = () => {};
     const aOpts = { pattern: '*' };
     const aSpec = {
@@ -174,40 +142,24 @@ describe('NvimPlugin', () => {
   });
 
   it('should handle requests for registered commands', async () => {
-    const plugin = new NvimPlugin(
-      '/tmp/filename',
-      () => {},
-      getFakeNvimClient()
-    );
+    const plugin = new NvimPlugin('/tmp/filename', () => {}, getFakeNvimClient());
     const fn = (arg: any) => arg;
 
     plugin.registerAutocmd('BufWritePre', fn, { pattern: '*', sync: true });
     plugin.registerCommand('MyCommand', fn, { sync: true });
     plugin.registerFunction('MyFunction', fn);
 
-    expect(await plugin.handleRequest('BufWritePre *', 'autocmd', [true])).toBe(
-      true
-    );
-    expect(await plugin.handleRequest('MyCommand', 'command', [false])).toBe(
-      false
-    );
-    expect(
-      await plugin.handleRequest('MyFunction', 'function', ['blue'])
-    ).toEqual('blue');
+    expect(await plugin.handleRequest('BufWritePre *', 'autocmd', [true])).toBe(true);
+    expect(await plugin.handleRequest('MyCommand', 'command', [false])).toBe(false);
+    expect(await plugin.handleRequest('MyFunction', 'function', ['blue'])).toEqual('blue');
   });
 
   it('should throw on unknown request', () => {
-    const plugin = new NvimPlugin(
-      '/tmp/filename',
-      () => {},
-      getFakeNvimClient()
-    );
+    const plugin = new NvimPlugin('/tmp/filename', () => {}, getFakeNvimClient());
     expect.assertions(1);
     plugin.handleRequest('BufWritePre *', 'autocmd', [true]).catch(err => {
       expect(err).toEqual(
-        new Error(
-          'Missing handler for autocmd: "BufWritePre *" in /tmp/filename'
-        )
+        new Error('Missing handler for autocmd: "BufWritePre *" in /tmp/filename')
       );
     });
   });

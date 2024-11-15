@@ -49,14 +49,8 @@ describe('Plugin class decorator', () => {
     }
 
     // This is how (closeish) babel applies decorators
-    FunctionDecorator('TestF', { eval: 'test', range: [1, 10] })(
-      MyClass.prototype,
-      'testF'
-    );
-    Command('TestCommand', { range: 'test', nargs: '3' })(
-      MyClass.prototype,
-      'testC'
-    );
+    FunctionDecorator('TestF', { eval: 'test', range: [1, 10] })(MyClass.prototype, 'testF');
+    Command('TestCommand', { range: 'test', nargs: '3' })(MyClass.prototype, 'testC');
     Autocmd('TestAutocmd', {
       pattern: '*.js',
       eval: 'test',
@@ -114,11 +108,7 @@ describe('Plugin class decorator', () => {
 
     const plugin = Plugin(MyClass);
 
-    const pluginObject = new NvimPlugin(
-      '/tmp/filename',
-      plugin,
-      getFakeNvimClient()
-    );
+    const pluginObject = new NvimPlugin('/tmp/filename', plugin, getFakeNvimClient());
 
     expect(pluginObject.specs).toEqual([
       {

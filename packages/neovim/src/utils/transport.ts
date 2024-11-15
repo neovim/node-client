@@ -5,12 +5,7 @@
 import { EventEmitter } from 'node:events';
 import { inspect } from 'node:util';
 
-import {
-  encode,
-  decode,
-  ExtensionCodec,
-  decodeMultiStream,
-} from '@msgpack/msgpack';
+import { encode, decode, ExtensionCodec, decodeMultiStream } from '@msgpack/msgpack';
 import { Metadata } from '../api/types';
 
 export let exportsForTesting: any; // eslint-disable-line import/no-mutable-exports
@@ -38,16 +33,9 @@ class Response {
       throw new Error(`Response to id ${this.requestId} already sent`);
     }
 
-    const encoded = encode([
-      1,
-      this.requestId,
-      isError ? resp : null,
-      !isError ? resp : null,
-    ]);
+    const encoded = encode([1, this.requestId, isError ? resp : null, !isError ? resp : null]);
 
-    this.encoder.write(
-      Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength)
-    );
+    this.encoder.write(Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength));
     this.sent = true;
   }
 }
@@ -61,8 +49,7 @@ class Transport extends EventEmitter {
 
   private writer!: NodeJS.WritableStream;
 
-  private readonly extensionCodec: ExtensionCodec =
-    this.initializeExtensionCodec();
+  private readonly extensionCodec: ExtensionCodec = this.initializeExtensionCodec();
 
   // Neovim client that holds state
   private client: any;
@@ -96,11 +83,7 @@ class Transport extends EventEmitter {
     return Buffer.from(encoded.buffer, encoded.byteOffset, encoded.byteLength);
   }
 
-  attach(
-    writer: NodeJS.WritableStream,
-    reader: NodeJS.ReadableStream,
-    client: any
-  ) {
+  attach(writer: NodeJS.WritableStream, reader: NodeJS.ReadableStream, client: any) {
     this.writer = writer;
     this.reader = reader;
     this.client = client;
@@ -157,9 +140,7 @@ class Transport extends EventEmitter {
 
   request(method: string, args: any[], cb: Function) {
     this.nextRequestId = this.nextRequestId + 1;
-    this.writer.write(
-      this.encodeToBuffer([0, this.nextRequestId, method, args])
-    );
+    this.writer.write(this.encodeToBuffer([0, this.nextRequestId, method, args]));
 
     this.pending.set(this.nextRequestId, cb);
   }
@@ -176,12 +157,7 @@ class Transport extends EventEmitter {
       //   - msg[1]: id
       //   - msg[2]: method name
       //   - msg[3]: arguments
-      this.emit(
-        'request',
-        msg[2].toString(),
-        msg[3],
-        new Response(this.writer, msg[1])
-      );
+      this.emit('request', msg[2].toString(), msg[3], new Response(this.writer, msg[1]));
     } else if (msgType === 1) {
       // response to a previous request:
       //   - msg[1]: the id
@@ -200,9 +176,7 @@ class Transport extends EventEmitter {
       //   - msg[2]: arguments
       this.emit('notification', msg[1].toString(), msg[2]);
     } else {
-      this.writer.write(
-        this.encodeToBuffer([1, 0, 'Invalid message type', null])
-      );
+      this.writer.write(this.encodeToBuffer([1, 0, 'Invalid message type', null]));
     }
   }
 }

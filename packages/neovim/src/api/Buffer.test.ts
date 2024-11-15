@@ -17,10 +17,7 @@ describe('Buffer API', () => {
 
   // utility to allow each test to be run in its
   // own buffer
-  function withBuffer(
-    lines: string[],
-    test: (buffer: Buffer) => Promise<void>
-  ) {
+  function withBuffer(lines: string[], test: (buffer: Buffer) => Promise<void>) {
     return async () => {
       await nvim.command('new!');
 
@@ -118,38 +115,18 @@ describe('Buffer API', () => {
 
     it(
       'replaces the right lines',
-      withBuffer(
-        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
-        async buffer => {
-          await buffer.replace(['a', 'b', 'c'], 2);
+      withBuffer(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], async buffer => {
+        await buffer.replace(['a', 'b', 'c'], 2);
 
-          expect(await buffer.lines).toEqual([
-            '0',
-            '1',
-            'a',
-            'b',
-            'c',
-            '5',
-            '6',
-            '7',
-            '8',
-            '9',
-          ]);
-        }
-      )
+        expect(await buffer.lines).toEqual(['0', '1', 'a', 'b', 'c', '5', '6', '7', '8', '9']);
+      })
     );
 
     it(
       'inserts line at index 2',
       withBuffer(['test', 'bar', 'bar', 'bar'], async buffer => {
         buffer.insert(['foo'], 2);
-        expect(await buffer.lines).toEqual([
-          'test',
-          'bar',
-          'foo',
-          'bar',
-          'bar',
-        ]);
+        expect(await buffer.lines).toEqual(['test', 'bar', 'foo', 'bar', 'bar']);
       })
     );
 
@@ -192,13 +169,7 @@ describe('Buffer API', () => {
       withBuffer(['test', 'bar', 'foo'], async buffer => {
         await buffer.append(['test', 'test']);
 
-        expect(await buffer.lines).toEqual([
-          'test',
-          'bar',
-          'foo',
-          'test',
-          'test',
-        ]);
+        expect(await buffer.lines).toEqual(['test', 'bar', 'foo', 'test', 'test']);
       })
     );
 
@@ -307,26 +278,12 @@ describe('Buffer API', () => {
 
     it(
       'replaces the right lines',
-      withBuffer(
-        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
-        async () => {
-          const buffer = await nvim.buffer;
-          await buffer.replace(['a', 'b', 'c'], 2);
+      withBuffer(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], async () => {
+        const buffer = await nvim.buffer;
+        await buffer.replace(['a', 'b', 'c'], 2);
 
-          expect(await buffer.lines).toEqual([
-            '0',
-            '1',
-            'a',
-            'b',
-            'c',
-            '5',
-            '6',
-            '7',
-            '8',
-            '9',
-          ]);
-        }
-      )
+        expect(await buffer.lines).toEqual(['0', '1', 'a', 'b', 'c', '5', '6', '7', '8', '9']);
+      })
     );
 
     it(
@@ -352,13 +309,7 @@ describe('Buffer API', () => {
       withBuffer(['test', 'bar', 'bar', 'bar'], async () => {
         const buffer = await nvim.buffer;
         await buffer.insert(['foo'], 2);
-        expect(await buffer.lines).toEqual([
-          'test',
-          'bar',
-          'foo',
-          'bar',
-          'bar',
-        ]);
+        expect(await buffer.lines).toEqual(['test', 'bar', 'foo', 'bar', 'bar']);
       })
     );
 
@@ -376,13 +327,7 @@ describe('Buffer API', () => {
       withBuffer(['test', 'bar', 'foo'], async () => {
         const buffer = await nvim.buffer;
         await buffer.append(['test', 'test']);
-        expect(await buffer.lines).toEqual([
-          'test',
-          'bar',
-          'foo',
-          'test',
-          'test',
-        ]);
+        expect(await buffer.lines).toEqual(['test', 'bar', 'foo', 'test', 'test']);
       })
     );
 
@@ -477,13 +422,7 @@ describe('Buffer event updates', () => {
     const promise = new Promise<void>(resolve => {
       const unlisten = buffer.listen(
         'lines',
-        async (
-          currentBuffer: Buffer,
-          tick: number,
-          start: number,
-          end: number,
-          data: string[]
-        ) => {
+        async (currentBuffer: Buffer, tick: number, start: number, end: number, data: string[]) => {
           expect(await currentBuffer.name).toBe(bufferName);
           expect(start).toBe(1);
           expect(end).toBe(1);
