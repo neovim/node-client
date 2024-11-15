@@ -20,8 +20,7 @@ export class Host {
 
   getPlugin(filename: string, options: LoadPluginOptions = {}) {
     let plugin: (typeof this.loaded)[0] | null = this.loaded[filename];
-    const shouldUseCachedPlugin =
-      plugin && plugin.shouldCacheModule && !plugin.alwaysInit;
+    const shouldUseCachedPlugin = plugin && plugin.shouldCacheModule && !plugin.alwaysInit;
 
     if (shouldUseCachedPlugin) {
       this.nvim?.logger.debug('getPlugin.useCachedPlugin');
@@ -36,10 +35,7 @@ export class Host {
       cache: plugin && plugin.shouldCacheModule,
     });
 
-    this.nvim.logger.debug(
-      'getPlugin.alwaysInit',
-      plugin && !plugin.alwaysInit
-    );
+    this.nvim.logger.debug('getPlugin.alwaysInit', plugin && !plugin.alwaysInit);
     if (plugin) {
       this.loaded[filename] = plugin;
     }
@@ -105,9 +101,7 @@ export class Host {
     } else {
       try {
         const plugResult = await this.handlePlugin(method, args);
-        res.send(
-          !plugResult || typeof plugResult === 'undefined' ? null : plugResult
-        );
+        res.send(!plugResult || typeof plugResult === 'undefined' ? null : plugResult);
       } catch (e) {
         const err = e as Error;
         res.send(err.toString(), true);

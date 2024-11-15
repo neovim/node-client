@@ -42,9 +42,7 @@ describe('Nvim API', () => {
 
   it('failure modes', async () => {
     const c = new NeovimClient();
-    await expect(c.channelId).rejects.toThrow(
-      'channelId requested before _isReady'
-    );
+    await expect(c.channelId).rejects.toThrow('channelId requested before _isReady');
   });
 
   it('console.log is monkey-patched to logger.info #329', async () => {
@@ -107,11 +105,7 @@ describe('Nvim API', () => {
   it('noisy RPC traffic', async () => {
     let requestCount = 0;
     const oldRequest = nvim.request;
-    nvim.request = function (
-      this: any,
-      name: string,
-      args: any[] = []
-    ): Promise<any> {
+    nvim.request = function (this: any, name: string, args: any[] = []): Promise<any> {
       requestCount = requestCount + 1;
       return oldRequest.call(this, name, args);
     };

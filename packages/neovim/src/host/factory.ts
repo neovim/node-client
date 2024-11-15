@@ -16,9 +16,7 @@ function createPlugin(
   options: LoadPluginOptions = {}
 ): NvimPlugin | null {
   try {
-    nvim.logger.debug(
-      `createPlugin.${filename}.clearCache: ${options && !options.cache}`
-    );
+    nvim.logger.debug(`createPlugin.${filename}.clearCache: ${options && !options.cache}`);
 
     // Clear module from cache
     if (options && !options.cache) {

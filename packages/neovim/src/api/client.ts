@@ -32,13 +32,7 @@ export class NeovimClient extends Neovim {
   }
 
   /** Attaches msgpack to read/write streams * */
-  attach({
-    reader,
-    writer,
-  }: {
-    reader: NodeJS.ReadableStream;
-    writer: NodeJS.WritableStream;
-  }) {
+  attach({ reader, writer }: { reader: NodeJS.ReadableStream; writer: NodeJS.WritableStream }) {
     this.transport.attach(writer, reader, this);
     this.transportAttached = true;
     this.setupTransport();
@@ -64,12 +58,7 @@ export class NeovimClient extends Neovim {
   }
 
   /** Handles incoming request (from the peer). */
-  handleRequest(
-    method: string,
-    args: VimValue[],
-    resp: any,
-    ...restArgs: any[]
-  ) {
+  handleRequest(method: string, args: VimValue[], resp: any, ...restArgs: any[]) {
     // If neovim API is not generated yet and we are not handle a 'specs' request
     // then queue up requests
     //
@@ -152,17 +141,13 @@ export class NeovimClient extends Neovim {
 
   requestApi(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.transport.request(
-        'nvim_get_api_info',
-        [],
-        (err: Error, res: any[]) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(res);
-          }
+      this.transport.request('nvim_get_api_info', [], (err: Error, res: any[]) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res);
         }
-      );
+      });
     });
   }
 
@@ -205,13 +190,9 @@ export class NeovimClient extends Neovim {
         return true;
       } catch (e) {
         const err = e as Error;
-        this.logger.error(
-          `Could not dynamically generate neovim API: %s: %O`,
-          err.name,
-          {
-            error: err,
-          }
-        );
+        this.logger.error(`Could not dynamically generate neovim API: %s: %O`, err.name, {
+          error: err,
+        });
         this.logger.error(err.stack);
         return false;
       }
@@ -252,9 +233,7 @@ export class NeovimClient extends Neovim {
     const bufferMap = this.attachedBuffers.get(bufferKey);
     if (!bufferMap) return false;
 
-    const handlers = (bufferMap.get(eventName) || []).filter(
-      handler => handler !== cb
-    );
+    const handlers = (bufferMap.get(eventName) || []).filter(handler => handler !== cb);
 
     // Remove eventName listener from bufferMap if no more handlers
     if (!handlers.length) {

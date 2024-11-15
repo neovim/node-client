@@ -12,11 +12,7 @@ export function createChainableApi(
   const that = this as any;
 
   // re-use current promise if not resolved yet
-  if (
-    that[`${name}Promise`] &&
-    that[`${name}Promise`].status === 0 &&
-    that[`${name}Proxy`]
-  ) {
+  if (that[`${name}Promise`] && that[`${name}Promise`].status === 0 && that[`${name}Proxy`]) {
     return that[`${name}Proxy`];
   }
 
@@ -24,15 +20,13 @@ export function createChainableApi(
 
   // TODO: Optimize this
   // Define properties on the promise for devtools
-  [...baseProperties, ...Object.getOwnPropertyNames(Type.prototype)].forEach(
-    key => {
-      Object.defineProperty(that[`${name}Promise`], key, {
-        enumerable: true,
-        writable: true,
-        configurable: true,
-      });
-    }
-  );
+  [...baseProperties, ...Object.getOwnPropertyNames(Type.prototype)].forEach(key => {
+    Object.defineProperty(that[`${name}Promise`], key, {
+      enumerable: true,
+      writable: true,
+      configurable: true,
+    });
+  });
 
   const proxyHandler = {
     get: (target: any, prop: string) => {
@@ -52,8 +46,7 @@ export function createChainableApi(
         Object.getOwnPropertyDescriptor(BaseApi.prototype, prop);
       const isGetter =
         descriptor &&
-        (typeof descriptor.get !== 'undefined' ||
-          typeof descriptor.set !== 'undefined');
+        (typeof descriptor.get !== 'undefined' || typeof descriptor.set !== 'undefined');
 
       // XXX: the promise can potentially be stale
       // Check if resolved, else do a refresh request for current buffer?
@@ -61,16 +54,12 @@ export function createChainableApi(
         if (
           isOnPrototype &&
           !isGetter &&
-          ((prop in Type.prototype &&
-            typeof Type.prototype[prop] === 'function') ||
-            (prop in BaseApi.prototype &&
-              typeof (BaseApi.prototype as any)[prop] === 'function'))
+          ((prop in Type.prototype && typeof Type.prototype[prop] === 'function') ||
+            (prop in BaseApi.prototype && typeof (BaseApi.prototype as any)[prop] === 'function'))
         ) {
           // If property is a method on Type, we need to invoke it with captured args
           return (...args: any[]) =>
-            that[`${name}Promise`].then((res: any) =>
-              res[prop].call(res, ...args)
-            );
+            that[`${name}Promise`].then((res: any) => res[prop].call(res, ...args));
         }
 
         // Otherwise return the property requested after promise is resolved

@@ -2,12 +2,7 @@
 
 import { Neovim, NvimPlugin } from 'neovim';
 import { NVIM_SPEC } from './properties';
-import {
-  PluginOptions,
-  AutocmdOptions,
-  CommandOptions,
-  FunctionOptions,
-} from './types';
+import { PluginOptions, AutocmdOptions, CommandOptions, FunctionOptions } from './types';
 
 interface Spec {
   type: 'function' | 'autocmd' | 'command';
@@ -57,11 +52,7 @@ function wrapper(cls: PluginWrapperConstructor, options?: PluginOptions): any {
                 autoCmdOpts.eval = spec.opts.eval;
               }
 
-              plugin.registerAutocmd(
-                spec.name,
-                [this, method],
-                autoCmdOpts as any
-              );
+              plugin.registerAutocmd(spec.name, [this, method], autoCmdOpts as any);
               break;
             case 'command':
               const cmdOpts: CommandOptions = {
@@ -134,7 +125,5 @@ export function Plugin(outter: any): any {
    *
    * Plugin(TestPlugin)
    */
-  return typeof outter !== 'function'
-    ? (cls: any) => wrapper(cls, outter)
-    : wrapper(outter);
+  return typeof outter !== 'function' ? (cls: any) => wrapper(cls, outter) : wrapper(outter);
 }

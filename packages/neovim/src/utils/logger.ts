@@ -22,8 +22,7 @@ function getFormat(colorize: boolean) {
       } catch {
         msg = info.message;
       }
-      const lvl =
-        info.level === 'debug' ? 'DBG' : info.level.slice(0, 3).toUpperCase();
+      const lvl = info.level === 'debug' ? 'DBG' : info.level.slice(0, 3).toUpperCase();
       return `${info.timestamp} ${lvl} ${msg}`;
     })
   );
@@ -63,10 +62,7 @@ function setupWinstonLogger(): Logger {
     if (k === 'assert') {
       // XXX: support console.assert() even though our logger doesn't define it.
       // eslint-disable-next-line no-console
-      console.assert = function (
-        condition?: boolean | undefined,
-        ...data: any[]
-      ) {
+      console.assert = function (condition?: boolean | undefined, ...data: any[]) {
         if (!condition) {
           logger.error('assertion failed', ...data);
         }

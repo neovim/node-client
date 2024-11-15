@@ -86,22 +86,13 @@ describe('Neovim API', () => {
     });
 
     it('can run lua', async () => {
-      expect(
-        await nvim.lua('function test(a) return a end return test(...)', [1])
-      ).toBe(1);
+      expect(await nvim.lua('function test(a) return a end return test(...)', [1])).toBe(1);
 
-      expect(
-        await nvim.lua('function test(a) return a end return test(...)', [
-          'foo',
-        ])
-      ).toBe('foo');
+      expect(await nvim.lua('function test(a) return a end return test(...)', ['foo'])).toBe('foo');
 
-      expect(
-        await nvim.executeLua(
-          'function test(a) return a end return test(...)',
-          ['foo']
-        )
-      ).toBe('foo');
+      expect(await nvim.executeLua('function test(a) return a end return test(...)', ['foo'])).toBe(
+        'foo'
+      );
     });
 
     it('get/set/delete current line', async () => {
@@ -143,9 +134,7 @@ describe('Neovim API', () => {
     });
 
     it('parse expression', async () => {
-      expect(await nvim.parseExpression('@', 'm', true)).toEqual(
-        expect.objectContaining({})
-      );
+      expect(await nvim.parseExpression('@', 'm', true)).toEqual(expect.objectContaining({}));
     });
 
     it('gets api info', async () => {

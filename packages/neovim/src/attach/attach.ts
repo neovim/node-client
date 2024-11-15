@@ -14,13 +14,7 @@ export interface Attach {
   };
 }
 
-export function attach({
-  reader: _reader,
-  writer: _writer,
-  proc,
-  socket,
-  options = {},
-}: Attach) {
+export function attach({ reader: _reader, writer: _writer, proc, socket, options = {} }: Attach) {
   let writer;
   let reader;
 
