@@ -18,4 +18,3 @@ export default MyPlugin;
 
 export default (plugin) => new MyPlugin(plugin);
 ```
-

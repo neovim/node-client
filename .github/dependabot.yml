@@ -6,44 +6,44 @@
 
 version: 2
 updates:
-    - package-ecosystem: 'npm'
-      directory: '/' # Location of package manifests.
-      commit-message:
-          prefix: 'deps'
-      schedule:
-          interval: 'weekly'
-      ignore:
-          # @types/node should match our minimum supported node.js version ("engine").
-          - dependency-name: '@types/node'
-      groups:
-          eslint:
-              patterns:
-                  - '@typescript-eslint/*'
-                  - 'eslint*'
-          babel:
-              patterns:
-                  - '@babel/*'
-                  - 'babel*'
-          types:
-              patterns:
-                  - '@types/*'
-              exclude-patterns:
-                  - '@types/node'
-          test:
-              patterns:
-                  - 'mocha*'
-                  - '@types/mocha'
-                  - 'jest*'
-                  - 'c8'
-                  - 'expect'
-    # Check for updates to GitHub Actions every week
-    - package-ecosystem: 'github-actions'
-      directory: '/'
-      commit-message:
-          prefix: 'deps'
-      schedule:
-          interval: 'daily'
-      groups:
-          github-actions:
-              patterns:
-                  - '*'
+  - package-ecosystem: 'npm'
+    directory: '/' # Location of package manifests.
+    commit-message:
+      prefix: 'deps'
+    schedule:
+      interval: 'weekly'
+    ignore:
+      # @types/node should match our minimum supported node.js version ("engine").
+      - dependency-name: '@types/node'
+    groups:
+      eslint:
+        patterns:
+          - '@typescript-eslint/*'
+          - 'eslint*'
+      babel:
+        patterns:
+          - '@babel/*'
+          - 'babel*'
+      types:
+        patterns:
+          - '@types/*'
+        exclude-patterns:
+          - '@types/node'
+      test:
+        patterns:
+          - 'mocha*'
+          - '@types/mocha'
+          - 'jest*'
+          - 'c8'
+          - 'expect'
+  # Check for updates to GitHub Actions every week
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    commit-message:
+      prefix: 'deps'
+    schedule:
+      interval: 'daily'
+    groups:
+      github-actions:
+        patterns:
+          - '*'

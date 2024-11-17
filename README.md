@@ -1,7 +1,7 @@
 # Neovim node.js client
 
-| CI (node >= 14, Linux/macOS/Windows) | Coverage | npm |
-|----------------------------|----------|-----|
+| CI (node >= 14, Linux/macOS/Windows)                                                                                                              | Coverage                               | npm                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------- |
 | [![ci](https://github.com/neovim/node-client/actions/workflows/ci.yml/badge.svg)](https://github.com/neovim/node-client/actions/workflows/ci.yml) | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] |
 
 ## Install
@@ -29,9 +29,9 @@ The `neovim` package provides these functions:
 - At load-time, the `neovim` module replaces ("monkey patches") `console` with its `logger`
   interface, so `console.log` will call `logger.info` instead of writing to stdout (which would
   break the stdio RPC channel).
-    - To skip this patching of `console.log`, pass a custom `logger` to `attach()`.
-    - Best practice in any case is to use the `logger` available from the `NeovimClient` returned by
-      `attach()`, instead of `console` logging functions.
+  - To skip this patching of `console.log`, pass a custom `logger` to `attach()`.
+  - Best practice in any case is to use the `logger` available from the `NeovimClient` returned by
+    `attach()`, instead of `console` logging functions.
 - Set the `$NVIM_NODE_LOG_FILE` env var to (also) write logs to a file.
 - Set the `$ALLOW_CONSOLE` env var to (also) write logs to stdout. **This will break any (stdio) RPC
   channel** because logs written to stdout are invalid RPC messages.
@@ -45,57 +45,60 @@ Following is a complete, working example.
    npm install neovim
    ```
 2. Paste the script below into a `demo.mjs` file and run it!
+
    ```
    ALLOW_CONSOLE=1 node demo.mjs
    ```
-    - `$ALLOW_CONSOLE` env var must be set, because logs are normally not printed to stdout.
-        - Note: `$ALLOW_CONSOLE` is only for demo purposes. It cannot be used for remote plugins or
-          whenever stdio is an RPC channel, because writing logs to stdout would break the RPC
-          channel.
-    - Script:
-     ```js
-     import * as child_process from 'node:child_process'
-     import * as assert from 'node:assert'
-     import { attach, findNvim } from 'neovim'
 
-     // Find `nvim` on the system and open a channel to it.
-     (async function() {
-       const found = findNvim({ orderBy: 'desc', minVersion: '0.9.0' })
-       console.log(found);
-       const nvim_proc = child_process.spawn(found.matches[0].path, ['--clean', '--embed'], {});
-       const nvim = attach({ proc: nvim_proc });
+   - `$ALLOW_CONSOLE` env var must be set, because logs are normally not printed to stdout.
+     - Note: `$ALLOW_CONSOLE` is only for demo purposes. It cannot be used for remote plugins or
+       whenever stdio is an RPC channel, because writing logs to stdout would break the RPC
+       channel.
+   - Script:
 
-       nvim.command('vsp | vsp | vsp');
+   ```js
+   import * as child_process from 'node:child_process';
+   import * as assert from 'node:assert';
+   import { attach, findNvim } from 'neovim';
 
-       const windows = await nvim.windows;
-       assert.deepStrictEqual(windows.length, 4);
-       assert.ok(windows[0] instanceof nvim.Window);
+   // Find `nvim` on the system and open a channel to it.
+   (async function () {
+     const found = findNvim({ orderBy: 'desc', minVersion: '0.9.0' });
+     console.log(found);
+     const nvim_proc = child_process.spawn(found.matches[0].path, ['--clean', '--embed'], {});
+     const nvim = attach({ proc: nvim_proc });
 
-       nvim.window = windows[2];
-       const win = await nvim.window;
-       assert.ok(win.id !== windows[0].id);
-       assert.deepStrictEqual(win.id, windows[2].id);
+     nvim.command('vsp | vsp | vsp');
 
-       const buf = await nvim.buffer;
-       assert.ok(buf instanceof nvim.Buffer);
-       const lines = await buf.lines;
-       assert.deepStrictEqual(lines, []);
+     const windows = await nvim.windows;
+     assert.deepStrictEqual(windows.length, 4);
+     assert.ok(windows[0] instanceof nvim.Window);
 
-       await buf.replace(['line1', 'line2'], 0);
-       const newLines = await buf.lines;
-       assert.deepStrictEqual(newLines, ['line1', 'line2']);
+     nvim.window = windows[2];
+     const win = await nvim.window;
+     assert.ok(win.id !== windows[0].id);
+     assert.deepStrictEqual(win.id, windows[2].id);
 
-       if (nvim_proc.disconnect) {
-         nvim_proc.disconnect();
-       }
-       nvim.quit();
-       while (nvim_proc.exitCode === null) {
-         await new Promise(resolve => setTimeout(resolve, 100))
-         console.log('waiting for Nvim (pid %d) to exit', nvim_proc.pid);
-       }
-       console.log('Nvim exit code: %d', nvim_proc.exitCode);
-     })();
-     ```
+     const buf = await nvim.buffer;
+     assert.ok(buf instanceof nvim.Buffer);
+     const lines = await buf.lines;
+     assert.deepStrictEqual(lines, []);
+
+     await buf.replace(['line1', 'line2'], 0);
+     const newLines = await buf.lines;
+     assert.deepStrictEqual(newLines, ['line1', 'line2']);
+
+     if (nvim_proc.disconnect) {
+       nvim_proc.disconnect();
+     }
+     nvim.quit();
+     while (nvim_proc.exitCode === null) {
+       await new Promise(resolve => setTimeout(resolve, 100));
+       console.log('waiting for Nvim (pid %d) to exit', nvim_proc.pid);
+     }
+     console.log('Nvim exit code: %d', nvim_proc.exitCode);
+   })();
+   ```
 
 ### Create a remote plugin
 
@@ -116,7 +119,7 @@ See [`examples/`](https://github.com/neovim/node-client/tree/master/examples) fo
 ### Remote plugin API
 
 ```ts
-  NvimPlugin.nvim
+NvimPlugin.nvim;
 ```
 
 This is the nvim api object you can use to send commands from your plugin to nvim.
@@ -133,7 +136,6 @@ This is the nvim api object you can use to send commands from your plugin to nvi
 Set your plugin to dev mode, which will cause the module to be reloaded on each invocation.
 `alwaysInit` will always attempt to attempt to re-instantiate the plugin. e.g. your plugin class will
 always get called on each invocation of your plugin's command.
-
 
 ```ts
   NvimPlugin.registerAutocmd(name: string, fn: Function, options: AutocmdOptions): void;
@@ -183,23 +185,23 @@ For debugging and configuring logging, you can set the following environment var
 - `NVIM_NODE_HOST_DEBUG`: Spawns the node process that calls `neovim-client-host` with `--inspect-brk` so you can have a debugger.
   Pair that with this [Node Inspector Manager Chrome plugin](https://chrome.google.com/webstore/detail/nodejs-v8-inspector-manag/gnhhdgbaldcilmgcpfddgdbkhjohddkj?hl=en)
 - Logging: Logging is done using `winston` through the `logger` module. This package replaces `console` with this interface.
-    - `NVIM_NODE_LOG_LEVEL`: Sets the logging level for winston. Default is `debug`.
-      Available levels: `{ error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }`
-    - `NVIM_NODE_LOG_FILE`: Sets the log file path.
+  - `NVIM_NODE_LOG_LEVEL`: Sets the logging level for winston. Default is `debug`.
+    Available levels: `{ error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }`
+  - `NVIM_NODE_LOG_FILE`: Sets the log file path.
 - Usage through node REPL
-    - `NVIM_LISTEN_ADDRESS`:
-        1. Start Nvim with a known address (or use the $NVIM_LISTEN_ADDRESS of a running instance):
-           ```
-           $ NVIM_LISTEN_ADDRESS=/tmp/nvim nvim
-           ```
-        2. In another terminal, connect a node REPL to Nvim
-           ```javascript
-           // `scripts/nvim` will detect if `NVIM_LISTEN_ADDRESS` is set and use that unix socket
-           // Otherwise will create an embedded `nvim` instance
-           require('neovim/scripts/nvim').then((nvim) => {
-             nvim.command('vsp');
-           });
-           ```
+  - `NVIM_LISTEN_ADDRESS`:
+    1. Start Nvim with a known address (or use the $NVIM_LISTEN_ADDRESS of a running instance):
+       ```
+       $ NVIM_LISTEN_ADDRESS=/tmp/nvim nvim
+       ```
+    2. In another terminal, connect a node REPL to Nvim
+       ```javascript
+       // `scripts/nvim` will detect if `NVIM_LISTEN_ADDRESS` is set and use that unix socket
+       // Otherwise will create an embedded `nvim` instance
+       require('neovim/scripts/nvim').then(nvim => {
+         nvim.command('vsp');
+       });
+       ```
 
 See the tests and [`scripts`](https://github.com/neovim/node-client/tree/master/packages/neovim/scripts) for more examples.
 
@@ -261,11 +263,11 @@ git push origin HEAD:gh-pages
 
 ## Contributors
 
-* [@billyvg](https://github.com/billyvg) for rewrite
-* [@mhartington](https://github.com/mhartington) for TypeScript rewrite
-* [@fritzy](https://github.com/fritzy) for transferring over the npm package repo `neovim`!
-* [@rhysd](https://github.com/rhysd), [@tarruda](https://github.com/tarruda), [@nhynes](https://github.com/nhynes) on work for the original `node-client`
-* [@justinmk](https://github.com/justinmk) Neovim maintainer
+- [@billyvg](https://github.com/billyvg) for rewrite
+- [@mhartington](https://github.com/mhartington) for TypeScript rewrite
+- [@fritzy](https://github.com/fritzy) for transferring over the npm package repo `neovim`!
+- [@rhysd](https://github.com/rhysd), [@tarruda](https://github.com/tarruda), [@nhynes](https://github.com/nhynes) on work for the original `node-client`
+- [@justinmk](https://github.com/justinmk) Neovim maintainer
 
 [Coverage Badge]: https://codecov.io/gh/neovim/node-client/branch/master/graph/badge.svg
 [Coverage Report]: https://codecov.io/gh/neovim/node-client

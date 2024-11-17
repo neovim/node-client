@@ -14,8 +14,8 @@ if (args[0] === '--version') {
 }
 
 // "21.6.1" => "21"
-const nodeMajorVersionStr = process.versions.node.replace(/\..*/, '')
-const nodeMajorVersion = Number.parseInt(nodeMajorVersionStr ? nodeMajorVersionStr : '0')
+const nodeMajorVersionStr = process.versions.node.replace(/\..*/, '');
+const nodeMajorVersion = Number.parseInt(nodeMajorVersionStr ? nodeMajorVersionStr : '0');
 
 if (
   process.env.NVIM_NODE_HOST_DEBUG &&

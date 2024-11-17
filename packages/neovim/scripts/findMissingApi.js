@@ -49,24 +49,14 @@ const hasApiMethod = name => {
     .replace(/_([a-z])/g, g => g[1].toUpperCase())
     .replace(/buf/g, 'buffer')
     .replace(/win/g, 'window');
-  const titleMethodName = `${methodName[0].toUpperCase()}${methodName.slice(
-    1
-  )}`;
+  const titleMethodName = `${methodName[0].toUpperCase()}${methodName.slice(1)}`;
 
-  const Constructor =
-    (mappedConstructor && mappedConstructor.constructor) || Neovim;
+  const Constructor = (mappedConstructor && mappedConstructor.constructor) || Neovim;
 
-  const descriptor = Object.getOwnPropertyDescriptor(
-    Constructor.prototype,
-    methodName
-  );
+  const descriptor = Object.getOwnPropertyDescriptor(Constructor.prototype, methodName);
 
   // check property descriptors
-  if (
-    descriptor &&
-    ((isSetter && descriptor.set) || (isGetter && descriptor.get))
-  )
-    return true;
+  if (descriptor && ((isSetter && descriptor.set) || (isGetter && descriptor.get))) return true;
 
   // check methods
   if (
@@ -79,8 +69,7 @@ const hasApiMethod = name => {
       .filter(v => !!v)
       .find(
         variation =>
-          variation in Constructor.prototype ||
-          Constructor.prototype.hasOwnProperty(variation)
+          variation in Constructor.prototype || Constructor.prototype.hasOwnProperty(variation)
       )
   ) {
     return true;

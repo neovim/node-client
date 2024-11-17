@@ -55,9 +55,7 @@ async function main() {
   process.stdout.write('  proc?: NodeJS.ChildProcess,\n');
   process.stdout.write('  socket?: String,\n');
   process.stdout.write('}\n');
-  process.stdout.write(
-    'export default function attach(options: AttachOptions): Neovim;\n\n'
-  );
+  process.stdout.write('export default function attach(options: AttachOptions): Neovim;\n\n');
 
   Object.keys(interfaces).forEach(key => {
     let name = key;
