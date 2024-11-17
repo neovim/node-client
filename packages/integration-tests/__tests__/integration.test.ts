@@ -16,17 +16,7 @@ describe('Node host', () => {
   before(async () => {
     const plugdir = path.resolve(__dirname);
     const nvimrc = path.join(plugdir, 'nvimrc');
-    args = [
-      '-u',
-      nvimrc,
-      '--headless',
-      '-i',
-      'NONE',
-      '-c',
-      'UpdateRemotePlugins',
-      '-c',
-      'q!',
-    ];
+    args = ['-u', nvimrc, '--headless', '-i', 'NONE', '-c', 'UpdateRemotePlugins', '-c', 'q!'];
 
     const integrationDir = path.resolve(plugdir, '..', '..', 'example-plugin');
     process.chdir(plugdir);
@@ -47,11 +37,7 @@ describe('Node host', () => {
 
     cp.spawnSync(nvimPath, args);
 
-    proc = cp.spawn(
-      nvimPath,
-      ['-u', nvimrc, '-i', 'NONE', '--headless', '--embed', '-n'],
-      {}
-    );
+    proc = cp.spawn(nvimPath, ['-u', nvimrc, '-i', 'NONE', '--headless', '--embed', '-n'], {});
     nvim = attach({ proc });
   });
 
@@ -130,9 +116,7 @@ describe('Node host', () => {
             const debugData = JSON.parse(rawData);
             childHost.kill();
             expect(Array.isArray(debugData) && debugData.length).toBeTruthy();
-            expect(debugData[0].webSocketDebuggerUrl).toMatch(
-              'ws://127.0.0.1:9229'
-            );
+            expect(debugData[0].webSocketDebuggerUrl).toMatch('ws://127.0.0.1:9229');
             done();
           } catch (e: any) {
             // eslint-disable-next-line no-console

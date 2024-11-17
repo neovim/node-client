@@ -4,5 +4,5 @@ module.exports = {
   require: ['ts-node/register', 'src/testSetup.ts'],
   extension: ['ts'],
   spec: ['src/**/*.test.ts'],
-  exit: true
-}
+  exit: true,
+};

@@ -13,10 +13,9 @@ class MyPlugin {
   }
 }
 
-module.exports = (plugin) => new MyPlugin(plugin);
+module.exports = plugin => new MyPlugin(plugin);
 
 // Or for convenience, exporting the class itself is equivalent to the above
 
 module.exports = MyPlugin;
 ```
-

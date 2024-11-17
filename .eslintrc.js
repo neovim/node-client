@@ -1,9 +1,5 @@
 module.exports = {
-  extends: [
-    'airbnb-base',
-    'plugin:@typescript-eslint/recommended',
-    'prettier',
-  ],
+  extends: ['airbnb-base', 'plugin:@typescript-eslint/recommended', 'prettier'],
   plugins: ['unicorn', 'import', 'prettier', '@typescript-eslint'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -29,7 +25,10 @@ module.exports = {
         // `jest` against the compiled .js results (would require compiling
         // the test files as well)?
         'unicorn/prefer-at': 'off',
-        'import/no-extraneous-dependencies': ['error', {'devDependencies': true, 'optionalDependencies': false, 'peerDependencies': false}],
+        'import/no-extraneous-dependencies': [
+          'error',
+          { devDependencies: true, optionalDependencies: false, peerDependencies: false },
+        ],
       },
     },
   ],
@@ -65,7 +64,7 @@ module.exports = {
 
     // Causes issues with enums
     'no-shadow': 'off',
-    'prefer-destructuring': 'off',  // Intentionally disabled trash.
+    'prefer-destructuring': 'off', // Intentionally disabled trash.
 
     // prettier things
     'prettier/prettier': 'error',

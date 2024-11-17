@@ -7,8 +7,7 @@ function onBufWrite() {
   console.log('Buffer written!');
 }
 
-module.exports = (plugin) => {
+module.exports = plugin => {
   plugin.registerAutocmd('BufWritePre', onBufWrite, { pattern: '*' });
 };
 ```
-

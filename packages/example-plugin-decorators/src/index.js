@@ -4,12 +4,7 @@ required = require('./fixture');
 // Hack to get global object
 const global = Function('return this')();
 
-const {
-  Plugin,
-  Function: NvimFunction,
-  Autocmd,
-  Command,
-} = require('@neovim/decorators');
+const { Plugin, Function: NvimFunction, Autocmd, Command } = require('@neovim/decorators');
 
 @Plugin
 class Test {

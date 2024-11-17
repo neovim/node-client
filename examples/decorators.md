@@ -8,7 +8,6 @@ import { Plugin, Function, Autocmd, Command } from 'neovim';
 // If `Plugin` decorator can be called with options
 @Plugin({ dev: true })
 export default class TestPlugin {
-
   constructor(nvim, plugin) {}
 
   @Function('Vsplit', { sync: true })
@@ -25,11 +24,9 @@ export default class TestPlugin {
 
   @Command('UsePromises')
   promiseExample() {
-    return this.nvim.buffer.name.then((name) => {
+    return this.nvim.buffer.name.then(name => {
       console.log(`Current buffer name is ${name}`);
     });
   }
 }
 ```
-
-
