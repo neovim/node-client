@@ -1,0 +1,2 @@
+# some tests seem to create these files in CI
+nvim-win64

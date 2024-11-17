@@ -9,23 +9,23 @@ import { ApiInfo } from '../types/ApiInfo';
 export interface UiAttachOptions {
   rgb?: boolean;
   override?: boolean;
-  // eslint-disable-next-line camelcase
+
   ext_cmdline?: boolean;
-  // eslint-disable-next-line camelcase
+
   ext_hlstate?: boolean;
-  // eslint-disable-next-line camelcase
+
   ext_linegrid?: boolean;
-  // eslint-disable-next-line camelcase
+
   ext_messages?: boolean;
-  // eslint-disable-next-line camelcase
+
   ext_multigrid?: boolean;
-  // eslint-disable-next-line camelcase
+
   ext_popupmenu?: boolean;
-  // eslint-disable-next-line camelcase
+
   ext_tabline?: boolean;
-  // eslint-disable-next-line camelcase
+
   ext_wildmenu?: boolean;
-  // eslint-disable-next-line camelcase
+
   ext_termcolors?: boolean;
 }
 
@@ -56,7 +56,7 @@ export interface Command {
   nargs: string;
   range: string;
   name: string;
-  // eslint-disable-next-line camelcase
+
   script_id: number;
   bar: boolean;
   register: boolean;
@@ -65,7 +65,7 @@ export interface Command {
   complete?: null;
   addr?: any;
   count?: any;
-  // eslint-disable-next-line camelcase
+
   complete_arg?: any;
 }
 

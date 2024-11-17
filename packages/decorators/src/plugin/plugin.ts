@@ -96,15 +96,13 @@ function wrapper(cls: PluginWrapperConstructor, options?: PluginOptions): any {
 }
 
 // Can decorate a class with options object
-// eslint-disable-next-line import/export
+
 export function Plugin(
   outter: any
 ): (cls: PluginWrapperConstructor, options?: PluginOptions) => any;
 
-// eslint-disable-next-line import/export
 export function Plugin(outter: any): any;
 
-// eslint-disable-next-line import/export
 export function Plugin(outter: any): any {
   /**
    * Decorator should support

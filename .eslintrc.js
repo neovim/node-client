@@ -10,6 +10,7 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
+  reportUnusedDisableDirectives: true,
   ignorePatterns: [
     '.eslintrc.js',
     'packages/*/lib/',

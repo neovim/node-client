@@ -9,7 +9,7 @@ export interface NvimPluginOptions {
 
 export interface AutocmdOptions {
   pattern?: string;
-  // eslint-disable-next-line no-eval
+
   eval?: string;
   sync?: boolean;
 }
@@ -24,7 +24,7 @@ export interface CommandOptions {
 export interface NvimFunctionOptions {
   sync?: boolean;
   range?: string;
-  // eslint-disable-next-line no-eval
+
   eval?: string;
 }
 
