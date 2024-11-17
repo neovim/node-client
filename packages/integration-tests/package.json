@@ -54,7 +54,7 @@
     "c8": "^10.1.2",
     "expect": "^29.7.0",
     "jest-mock": "^29.7.0",
-    "mocha": "^10.7.3",
+    "mocha": "^10.8.2",
     "neovim": "file:../neovim"
   }
 }
