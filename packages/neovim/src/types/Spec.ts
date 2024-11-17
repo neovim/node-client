@@ -5,7 +5,7 @@ export interface Spec {
   opts: {
     range?: string;
     nargs?: string;
-    // eslint-disable-next-line no-eval
+
     eval?: string;
     pattern?: string;
     complete?: string;

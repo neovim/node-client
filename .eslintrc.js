@@ -1,12 +1,26 @@
+/**
+ * @type {import('eslint').Linter.LegacyConfig}
+ */
 module.exports = {
   extends: ['airbnb-base', 'plugin:@typescript-eslint/recommended', 'prettier'],
-  plugins: ['unicorn', 'import', 'prettier', '@typescript-eslint'],
+  plugins: ['unicorn', 'import', '@typescript-eslint'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: './tsconfig.json',
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
+  reportUnusedDisableDirectives: true,
+  ignorePatterns: [
+    '.eslintrc.js',
+    'packages/*/lib/',
+    'packages/*/bin/',
+    'packages/neovim/scripts/',
+    'packages/integration-tests/__tests__/',
+    'examples/rplugin/node/',
+    'packages/example-plugin/',
+    'packages/example-plugin-decorators/',
+  ],
   env: {
     node: true,
     es2024: true,
@@ -65,9 +79,6 @@ module.exports = {
     // Causes issues with enums
     'no-shadow': 'off',
     'prefer-destructuring': 'off', // Intentionally disabled trash.
-
-    // prettier things
-    'prettier/prettier': 'error',
 
     'import/extensions': 'off',
     'import/prefer-default-export': 'off',

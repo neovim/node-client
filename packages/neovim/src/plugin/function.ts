@@ -3,7 +3,7 @@ import { NVIM_SYNC, NVIM_SPEC, NVIM_METHOD_NAME } from './properties';
 export interface NvimFunctionOptions {
   sync?: boolean;
   range?: [number, number];
-  // eslint-disable-next-line no-eval
+
   eval?: string;
 }
 
