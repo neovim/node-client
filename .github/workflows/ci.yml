@@ -32,8 +32,8 @@ jobs:
             node: '16'
         include:
           - os: ubuntu-latest
-            NIGHTLY: nvim-linux64.tar.gz
-            NVIM_BIN_PATH: nvim-linux64/bin
+            NIGHTLY: nvim-linux-x86_64.tar.gz
+            NVIM_BIN_PATH: nvim-linux-x86_64/bin
             EXTRACT: tar xzf
           - os: macos-latest
             NIGHTLY: nvim-macos-x86_64.tar.gz
