@@ -1,2 +1,3 @@
-# some tests seem to create these files in CI
-nvim-win64
+nvim-win64/
+nvim-macos-x86_64/
+nvim-linux-x86_64/
