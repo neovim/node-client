@@ -65,7 +65,7 @@
     "jest-mock": "^29.7.0",
     "mocha": "^10.8.2",
     "ts-node": "^10.9.2",
-    "typedoc": "^0.26.11",
+    "typedoc": "^0.27.7",
     "typescript": "^5.6.3"
   },
   "scripts": {
