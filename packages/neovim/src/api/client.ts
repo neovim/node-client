@@ -6,6 +6,7 @@ import { Transport } from '../utils/transport';
 import { VimValue } from '../types/VimValue';
 import { Neovim } from './Neovim';
 import { Buffer } from './Buffer';
+import { ASYNC_DISPOSE_SYMBOL } from '../utils/util';
 
 const REGEX_BUF_EVENT = /nvim_buf_(.*)_event/;
 
@@ -248,5 +249,16 @@ export class NeovimClient extends Neovim {
     }
 
     return false;
+  }
+
+  async close(): Promise<void> {
+    await this.transport.close();
+  }
+
+  /**
+   * @see close
+   */
+  async [ASYNC_DISPOSE_SYMBOL](): Promise<void> {
+    await this.close();
   }
 }

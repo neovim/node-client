@@ -7,6 +7,7 @@ import { inspect } from 'node:util';
 
 import { encode, decode, ExtensionCodec, decodeMultiStream } from '@msgpack/msgpack';
 import { Metadata } from '../api/types';
+import { ASYNC_DISPOSE_SYMBOL } from './util';
 
 export let exportsForTesting: any; // eslint-disable-line import/no-mutable-exports
 // .mocharc.js sets NODE_ENV=test.
@@ -88,7 +89,7 @@ class Transport extends EventEmitter {
     this.reader = reader;
     this.client = client;
 
-    this.reader.on('end', () => {
+    this.reader.once('end', () => {
       this.emit('detach');
     });
 
@@ -178,6 +179,25 @@ class Transport extends EventEmitter {
     } else {
       this.writer.write(this.encodeToBuffer([1, 0, 'Invalid message type', null]));
     }
+  }
+
+  /**
+   * Close the transport.
+   *
+   * Ends the writer, the other end of the connection should close our reader which cleans up
+   * remaining resources.
+   */
+  async close(): Promise<void> {
+    return new Promise(resolve => {
+      this.writer.end(resolve);
+    });
+  }
+
+  /**
+   * @see close
+   */
+  async [ASYNC_DISPOSE_SYMBOL](): Promise<void> {
+    await this.close();
   }
 }
 
