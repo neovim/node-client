@@ -20,7 +20,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-unicorn": "^50.0.1",
     "husky": "^9.1.7",
-    "lint-staged": "^15.2.10",
+    "lint-staged": "^16.1.5",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2"
   },
