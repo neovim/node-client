@@ -2,6 +2,8 @@
 
 ## [5.4.0](https://github.com/neovim/node-client/compare/v5.3.0...v5.4.0)
 
+- feat: add `NeovimClient.close()`, `Transport.close()` #482
+- fix(findNvim): handle invalid versions
 - feat(findNvim): version parsing robustness
 
 ## [5.3.0](https://github.com/neovim/node-client/compare/v5.2.1...v5.3.0)
