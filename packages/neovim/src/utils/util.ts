@@ -41,3 +41,9 @@ export function partialClone(
 
   return clonedObj;
 }
+
+/**
+ * Polyfill for Symbol.asyncDispose if not available in the runtime.
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/asyncDispose
+ */
+export const ASYNC_DISPOSE_SYMBOL = Symbol.asyncDispose ?? Symbol.for('Symbol.asyncDispose');
