@@ -253,8 +253,11 @@ export class Neovim extends BaseApi {
    * @param win Window handle
    */
   set window(win: AsyncWindow | Window) {
-    if (win instanceof Window) this.setWindow(win);
-    else win.then(win => this.setWindow(win));
+    if (win instanceof Window) {
+      this.setWindow(win);
+    } else {
+      win.then(win => this.setWindow(win));
+    }
   }
 
   /**

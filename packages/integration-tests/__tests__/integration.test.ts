@@ -62,6 +62,7 @@ describe('Node host', () => {
 
   it('console.log is monkey-patched to logger.info #329', async () => {
     const spy = jestMock.spyOn(nvim.logger, 'info');
+    // eslint-disable-next-line no-console
     console.log('log message');
     expect(spy).toHaveBeenCalledWith('log message');
     // Still alive?

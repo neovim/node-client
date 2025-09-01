@@ -23,14 +23,14 @@ function createPlugin(
       try {
         // `as any` to access hidden API
         delete (Module as any)._cache[require.resolve(filename)];
-      } catch (err) {
+      } catch {
         // possible this doesn't exist in cache, ignore
       }
     }
 
     // attempt to import plugin
     // Require plugin to export a class
-    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires, import/no-dynamic-require
+    // eslint-disable-next-line global-require
     const defaultImport = require(filename);
     const plugin = (defaultImport && defaultImport.default) || defaultImport;
 
@@ -55,7 +55,7 @@ export function loadPlugin(
 ): NvimPlugin | null {
   try {
     return createPlugin(filename, nvim, options);
-  } catch (err) {
+  } catch {
     // logger.error(`Could not load plugin "${filename}":`, err, err.stack);
     return null;
   }

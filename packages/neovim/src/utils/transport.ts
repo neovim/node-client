@@ -113,7 +113,7 @@ class Transport extends EventEmitter {
                 compact: true,
                 breakLength: 500,
               });
-            } catch (error) {
+            } catch {
               // Do nothing.
             }
 

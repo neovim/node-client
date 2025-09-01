@@ -46,7 +46,9 @@ export class Buffer extends BaseApi {
    *        a `nvim_buf_changedtick_event`
    */
   [ATTACH] = async (sendBuffer = false, options: {} = {}): Promise<boolean> => {
-    if (this.client.isAttached(this)) return true;
+    if (this.client.isAttached(this)) {
+      return true;
+    }
     return this.request(`${this.prefix}attach`, [this, sendBuffer, options]);
   };
 
@@ -345,9 +347,13 @@ export class Buffer extends BaseApi {
   }
 
   unlisten(eventName: string, cb: Function): void {
-    if (!this.isAttached) return;
+    if (!this.isAttached) {
+      return;
+    }
     const shouldDetach = this.client.detachBuffer(this, eventName, cb);
-    if (!shouldDetach) return;
+    if (!shouldDetach) {
+      return;
+    }
     this[DETACH]();
   }
 }

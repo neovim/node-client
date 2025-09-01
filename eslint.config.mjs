@@ -1,27 +1,23 @@
-import js from '@eslint/js';
 import globals from 'globals';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 import unicorn from 'eslint-plugin-unicorn';
 import importPlugin from 'eslint-plugin-import';
-import prettierConfig from 'eslint-config-prettier/flat';
 
 export default [
-  js.configs.recommended,
-  typescriptEslint.configs.recommended,
-  unicorn.configs.recommended,
-  prettierConfig,
   {
-    files: ['**/*.ts', '**/*.js'],
+    files: ['packages/neovim/bin/cli.js', '**/*.ts'],
     ignores: [
+      '**/*.d.ts',
       '.eslintrc.js',
-      'packages/*/lib/',
-      'packages/*/bin/',
+      'packages/*/lib/**',
+      'packages/*/bin/**',
       'packages/neovim/scripts/',
       'packages/integration-tests/__tests__/',
-      'examples/rplugin/node/',
-      'packages/example-plugin/',
-      'packages/example-plugin-decorators/',
+      '__tests__/integration/rplugin/node/',
+      'examples/rplugin/node/**',
+      'packages/example-plugin/**',
+      'packages/example-plugin-decorators/**',
     ],
     languageOptions: {
       parser: typescriptParser,
@@ -37,15 +33,16 @@ export default [
       },
     },
     plugins: {
+      '@typescript-eslint': typescriptEslint,
+      unicorn,
       import: importPlugin,
     },
-    settings: {
-      'import/resolver': { node: { extensions: ['.js', '.jsx', '.ts'] } },
+    linterOptions: {
+      reportUnusedDisableDirectives: true,
     },
-    reportUnusedDisableDirectives: true,
     rules: {
-    curly: 'error', // Enforce braces on "if"/"for"/etc.
-    // Avoid accidental use of "==" instead of "===".
+      curly: 'error', // Enforce braces on "if"/"for"/etc.
+      // Avoid accidental use of "==" instead of "===".
       eqeqeq: 'error',
       camelcase: ['error', { properties: 'never' }],
       'class-methods-use-this': 'off',
@@ -68,21 +65,30 @@ export default [
       'max-classes-per-file': 'off',
       'operator-assignment': ['error', 'never'],
 
-    // For overloading (and typescript throws when dupe members anyway)
+      // For overloading (and typescript throws when dupe members anyway)
       'no-dupe-class-members': 'off',
 
-    // Causes issues with enums
+      // Causes issues with enums
       'no-shadow': 'off',
-    'prefer-destructuring': 'off', // Intentionally disabled trash.
+      'prefer-destructuring': 'off', // Intentionally disabled trash.
 
       'import/extensions': 'off',
       'import/prefer-default-export': 'off',
 
+      'global-require': 'error',
+      'import/no-extraneous-dependencies': 'error',
+      'import/no-mutable-exports': 'error',
+      'new-cap': 'error',
+      'no-console': 'error',
+      'no-param-reassign': ['error', { props: true }],
+      'no-void': 'error',
+
+      '@typescript-eslint/no-misused-new': 'error',
       '@typescript-eslint/no-namespace': 'error',
-    // TODO: '@typescript-eslint/no-floating-promises': 'error', // Promises must catch errors or be awaited.
-    // TODO? '@typescript-eslint/no-unsafe-assignment': 'error',
-    // TODO? '@typescript-eslint/no-unsafe-return': 'error',
-    // TODO? '@typescript-eslint/no-unsafe-call': 'error',
+      // TODO: '@typescript-eslint/no-floating-promises': 'error', // Promises must catch errors or be awaited.
+      // TODO? '@typescript-eslint/no-unsafe-assignment': 'error',
+      // TODO? '@typescript-eslint/no-unsafe-return': 'error',
+      // TODO? '@typescript-eslint/no-unsafe-call': 'error',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/explicit-member-accessibility': 'off',
       '@typescript-eslint/no-unused-vars': 'error',
@@ -91,15 +97,15 @@ export default [
       '@typescript-eslint/ban-types': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
 
-    // Rules from https://github.com/sindresorhus/eslint-plugin-unicorn
-    // TODO: 'unicorn/no-useless-promise-resolve-reject': 'error',
-    // TODO: 'unicorn/prefer-event-target': 'error',
-    // TODO: 'unicorn/prefer-string-slice': 'error',
-    // TODO? 'unicorn/custom-error-definition': 'error',
-    // TODO? 'unicorn/prefer-json-parse-buffer': 'error',
-    // TODO? ESM modules https://github.com/sindresorhus/eslint-plugin-unicorn/blob/main/docs/rules/prefer-module.md
-    // 'unicorn/prefer-module': 'error',
-    // 'unicorn/no-null': 'error',
+      // Rules from https://github.com/sindresorhus/eslint-plugin-unicorn
+      // TODO: 'unicorn/no-useless-promise-resolve-reject': 'error',
+      // TODO: 'unicorn/prefer-event-target': 'error',
+      // TODO: 'unicorn/prefer-string-slice': 'error',
+      // TODO? 'unicorn/custom-error-definition': 'error',
+      // TODO? 'unicorn/prefer-json-parse-buffer': 'error',
+      // TODO? ESM modules https://github.com/sindresorhus/eslint-plugin-unicorn/blob/main/docs/rules/prefer-module.md
+      // 'unicorn/prefer-module': 'error',
+      // 'unicorn/no-null': 'error',
       'unicorn/no-abusive-eslint-disable': 'error',
       'unicorn/prefer-at': 'error',
       'unicorn/prefer-negative-index': 'error',
@@ -134,6 +140,7 @@ export default [
       // `jest` against the compiled .js results (would require compiling
       // the test files as well)?
       'unicorn/prefer-at': 'off',
+      'new-cap': 'off',
       'import/no-extraneous-dependencies': [
         'error',
         { devDependencies: true, optionalDependencies: false, peerDependencies: false },

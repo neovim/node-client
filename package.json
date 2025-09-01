@@ -32,8 +32,8 @@
     "test-staged": "npm run test-staged --workspaces --if-present -- --",
     "test-missing-apis": "npm run test-missing-apis --workspaces --if-present",
     "test-lint": "npm run lint",
-    "lint": "prettier --check . && eslint --format=unix .",
-    "fixlint": "prettier --write . && eslint --fix --format=unix ."
+    "lint": "prettier --check . && eslint --format=unix --ignore-pattern 'packages/example*/**' --ignore-pattern 'packages/neovim/lib/**/*.js' .",
+    "fixlint": "prettier --write . && eslint --fix --format=unix --ignore-pattern 'packages/example*/**' --ignore-pattern 'packages/neovim/lib/**/*.js' ."
   },
   "husky": {
     "hooks": {
