@@ -1,5 +1,9 @@
 # Changes
 
+## [5.5.0](https://github.com/neovim/node-client/compare/v5.4.0...v5.5.0)
+
+- TODO
+
 ## [5.4.0](https://github.com/neovim/node-client/compare/v5.3.0...v5.4.0)
 
 - feat: add `NeovimClient.close()`, `Transport.close()` #482
