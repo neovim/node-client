@@ -2,7 +2,7 @@
  * @type {import('eslint').Linter.LegacyConfig}
  */
 module.exports = {
-  extends: ['airbnb-base', 'plugin:@typescript-eslint/recommended', 'prettier'],
+  extends: ['plugin:@typescript-eslint/recommended', 'prettier'],
   plugins: ['unicorn', 'import', '@typescript-eslint'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
