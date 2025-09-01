@@ -218,7 +218,9 @@ export class NeovimClient extends Neovim {
     }
 
     const cbs = bufferMap.get(eventName) ?? [];
-    if (cbs.includes(cb)) return cb;
+    if (cbs.includes(cb)) {
+      return cb;
+    }
     cbs.push(cb);
     bufferMap.set(eventName, cbs);
     this.attachedBuffers.set(bufferKey, bufferMap);
@@ -232,7 +234,9 @@ export class NeovimClient extends Neovim {
   detachBuffer(buffer: Buffer, eventName: string, cb: Function) {
     const bufferKey = `${buffer.data}`;
     const bufferMap = this.attachedBuffers.get(bufferKey);
-    if (!bufferMap) return false;
+    if (!bufferMap) {
+      return false;
+    }
 
     const handlers = (bufferMap.get(eventName) || []).filter(handler => handler !== cb);
 

@@ -1,4 +1,4 @@
-const cp = require('child_process');
+const cp = require('node:child_process');
 const { attach } = require('../lib/attach');
 
 const proc = cp.spawn('nvim', ['-u', 'NONE', '--embed', '-n'], {
@@ -14,11 +14,15 @@ const typeMap = {
 };
 
 function convertType(type) {
-  if (typeMap[type]) return typeMap[type];
+  if (typeMap[type]) {
+    return typeMap[type];
+  }
   const genericMatch = /Of\((\w+)[^)]*\)/.exec(type);
   if (genericMatch) {
     const t = convertType(genericMatch[1]);
-    if (/^Array/.test(type)) return `Array<${t}>`;
+    if (/^Array/.test(type)) {
+      return `Array<${t}>`;
+    }
     return `{ [key: string]: ${t}; }`;
   }
   return type;
@@ -34,7 +38,7 @@ function metadataToSignature(method) {
     params.push(`${method.parameters[i]}: ${type}`);
   });
   const rtype = convertType(method.returnType);
-  // eslint-disable-next-line
+
   const returnTypeString = rtype === 'void' ? rtype : `Promise<${rtype}>`;
   return `  ${method.name}(${params.join(', ')}): ${returnTypeString};\n`;
 }
@@ -85,7 +89,6 @@ async function main() {
 try {
   main();
 } catch (err) {
-  // eslint-disable-next-line no-console
   console.error(err);
   process.exit(1);
 }

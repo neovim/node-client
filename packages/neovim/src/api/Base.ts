@@ -55,7 +55,7 @@ export class BaseApi extends EventEmitter {
   equals(other: BaseApi): boolean {
     try {
       return String(this.data) === String(other.data);
-    } catch (e) {
+    } catch {
       return false;
     }
   }

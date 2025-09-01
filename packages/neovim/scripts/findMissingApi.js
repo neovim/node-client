@@ -56,7 +56,9 @@ const hasApiMethod = name => {
   const descriptor = Object.getOwnPropertyDescriptor(Constructor.prototype, methodName);
 
   // check property descriptors
-  if (descriptor && ((isSetter && descriptor.set) || (isGetter && descriptor.get))) return true;
+  if (descriptor && ((isSetter && descriptor.set) || (isGetter && descriptor.get))) {
+    return true;
+  }
 
   // check methods
   if (
@@ -82,7 +84,7 @@ async function main() {
   const nvim = await require('./nvim');
   const results = await nvim.requestApi();
   const { functions } = results[1];
-  const lines = functions.filter(({ name }) => name.indexOf(search) > -1);
+  const lines = functions.filter(({ name }) => name.includes(search));
   const missing = lines
     .filter(metadata => typeof metadata.deprecated_since === 'undefined')
     .filter(metadata => !hasApiMethod(metadata.name));

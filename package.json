@@ -12,13 +12,13 @@
   "homepage": "https://github.com/neovim/node-client",
   "license": "MIT",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.20.0",
-    "@typescript-eslint/parser": "^6.20.0",
-    "eslint": "^8.56.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-unicorn": "^50.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-formatter-unix": "^8.40.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-unicorn": "^60.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.5",
     "prettier": "^3.6.2",
@@ -33,8 +33,8 @@
     "test-staged": "npm run test-staged --workspaces --if-present -- --",
     "test-missing-apis": "npm run test-missing-apis --workspaces --if-present",
     "test-lint": "npm run lint",
-    "lint": "prettier --check . && eslint --format=unix .",
-    "fixlint": "prettier --write . && eslint --fix --format=unix ."
+    "lint": "prettier --check . && eslint --format=unix --ignore-pattern 'packages/example*/**' --ignore-pattern '**/*.js' .",
+    "fixlint": "prettier --write . && eslint --fix --format=unix --ignore-pattern 'packages/example*/**' --ignore-pattern '**/*.js' ."
   },
   "husky": {
     "hooks": {

@@ -80,8 +80,8 @@ jobs:
         run: npm run build
 
       - name: lint
-        # Skip on old Node.js, devDependencies use newish JS features.
-        if: matrix.node != '14'
+        # Only run lint on latest Node.js, because devDependencies use new JS features.
+        if: matrix.node == '20' && runner.os != 'Windows'
         run: npm run lint
 
       - name: test

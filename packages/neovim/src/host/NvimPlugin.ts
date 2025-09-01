@@ -126,7 +126,7 @@ export class NvimPlugin {
         fn: callable(fn),
         spec,
       };
-    } catch (err) {
+    } catch {
       this.nvim.logger.error(`registerAutocmd expected callable argument for ${name}`);
     }
   }
@@ -155,7 +155,7 @@ export class NvimPlugin {
         fn: callable(fn),
         spec,
       };
-    } catch (err) {
+    } catch {
       this.nvim.logger.error(`registerCommand expected callable argument for ${name}`);
     }
   }
@@ -184,7 +184,7 @@ export class NvimPlugin {
         fn: callable(fn),
         spec,
       };
-    } catch (err) {
+    } catch {
       this.nvim.logger.error(`registerFunction expected callable argument for ${name}`);
     }
   }

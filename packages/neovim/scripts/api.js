@@ -5,7 +5,7 @@ async function main() {
   const nvim = await require('./nvim');
   const results = await nvim.requestApi();
   const { functions } = results[1];
-  const lines = functions.filter(({ name }) => name.indexOf(search) > -1);
+  const lines = functions.filter(({ name }) => name.includes(search));
   lines
     .filter(metadata => typeof metadata.deprecated_since === 'undefined')
     .forEach(metadata => {

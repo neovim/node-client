@@ -4,7 +4,7 @@
  * Spawns an embedded neovim instance and returns Neovim API
  */
 
-const cp = require('child_process');
+const cp = require('node:child_process');
 const { attach } = require('../');
 // const inspect = require('util').inspect;
 
