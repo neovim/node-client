@@ -1,22 +1,30 @@
+import js from '@eslint/js';
 import globals from 'globals';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 import unicorn from 'eslint-plugin-unicorn';
 import importPlugin from 'eslint-plugin-import';
+import prettierConfig from 'eslint-config-prettier/flat';
 
 export default [
+  // TODO: enable these
+  // js.configs.recommended,
+  // typescriptEslint.configs.recommended,
+  // unicorn.configs.recommended,
+  // prettierConfig,
   {
     files: ['packages/neovim/bin/cli.js', '**/*.ts'],
     ignores: [
       '**/*.d.ts',
-      'packages/*/lib/**/*.js',
-      'packages/*/bin/**/*.js',
+      // TODO: these are probably broken because they don't end with "**"?
+      // irrelevant for now because --ignore-pattern is specified in the "lint" task directly.
+      'packages/*/lib/',
+      'packages/*/bin/',
       'packages/neovim/scripts/',
-      'packages/integration-tests/__tests__/**',
-      '__tests__/integration/rplugin/node/**',
-      'examples/rplugin/node/**',
-      'packages/example-plugin/**',
-      'packages/example-plugin-decorators/**',
+      'packages/integration-tests/__tests__/',
+      'examples/rplugin/node/',
+      'packages/example-plugin/',
+      'packages/example-plugin-decorators/',
     ],
     languageOptions: {
       parser: typescriptParser,
@@ -35,6 +43,9 @@ export default [
       '@typescript-eslint': typescriptEslint,
       unicorn,
       import: importPlugin,
+    },
+    settings: {
+      'import/resolver': { node: { extensions: ['.js', '.jsx', '.ts'] } },
     },
     linterOptions: {
       reportUnusedDisableDirectives: true,
