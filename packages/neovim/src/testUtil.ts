@@ -9,7 +9,7 @@ import { getLogger } from './utils/logger';
 
 export function findNvimOrFail() {
   const minVersion = '0.9.5';
-  const found = findNvim({ minVersion });
+  const found = findNvim({ minVersion, firstMatch: true });
   if (found.matches.length === 0) {
     throw new Error(`nvim ${minVersion} not found`);
   }
