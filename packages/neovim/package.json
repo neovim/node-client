@@ -50,7 +50,7 @@
     "node": ">=10"
   },
   "dependencies": {
-    "@msgpack/msgpack": "^2.8.0",
+    "@msgpack/msgpack": "^3.1.2",
     "winston": "3.15.0"
   },
   "devDependencies": {
