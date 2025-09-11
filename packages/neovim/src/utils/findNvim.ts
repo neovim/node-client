@@ -3,8 +3,13 @@ import { join, delimiter, normalize } from 'node:path';
 import { constants, existsSync, accessSync } from 'node:fs';
 
 export type NvimVersion = {
-  /** Path to `nvim` executable. */
+  /**
+   * @deprecated
+   * Path to `nvim` executable.
+   */
   readonly path: string;
+  /** Nvim location or invocation command. */
+  readonly cmd: string[];
   /** Nvim version, or undefined if there was an error. */
   readonly nvimVersion?: string;
   /** Nvim build type, or undefined if there was an error. */
@@ -36,16 +41,22 @@ export type FindNvimOptions = {
    */
   readonly firstMatch?: boolean;
   /**
-   * (Optional) Additional specific file paths to check for Nvim executables.
-   * These paths will be checked before searching `dirs`.
-   * Useful for allowing users to specify exact Nvim executable locations.
+   * (Optional) Specific commands that (potentially) invoke Nvim and can receive arbitrary args.
+   * Checked before searching `dirs`. Useful for checking a user-configured Nvim location or
+   * unconventional wrappers such as Windows WSL.
    *
-   * Example: ['/usr/local/bin/nvim', '/opt/homebrew/bin/nvim']
+   * Example:
+   * ```
+   * cmds: [
+   *   ['/usr/bin/env', 'nvim'],
+   *   ['/opt/homebrew/bin/nvim'],
+   * ],
+   * ```
    */
-  readonly paths?: string[];
+  readonly cmds?: string[][];
   /**
    * (Optional) Additional directories to search for Nvim executables.
-   * These directories will be searched after checking `paths`
+   * These directories will be searched after checking `cmds`
    * but before searching `$PATH` and other default locations.
    * Useful for including non-standard installation directories.
    *
@@ -144,48 +155,47 @@ function normalizePath(path: string): string {
 }
 
 function getPlatformSearchDirs(): Set<string> {
-  const paths = new Set<string>();
+  const dirs = new Set<string>();
   const { PATH, USERPROFILE, LOCALAPPDATA, PROGRAMFILES, HOME } = process.env;
 
-  PATH?.split(delimiter).forEach(p => paths.add(normalizePath(p)));
+  PATH?.split(delimiter).forEach(p => dirs.add(normalizePath(p)));
 
-  // Add common Neovim installation paths not always in the system's PATH.
+  // Add common Nvim locations which may not be in the system $PATH.
   if (windows) {
-    // Scoop common install location
+    // Scoop install location.
     if (USERPROFILE) {
-      paths.add(normalizePath(`${USERPROFILE}/scoop/shims`));
+      dirs.add(normalizePath(`${USERPROFILE}/scoop/shims`));
     }
-    paths.add(normalizePath('C:/ProgramData/scoop/shims'));
+    dirs.add(normalizePath('C:/ProgramData/scoop/shims'));
 
-    // Winget common install location
-    // See https://github.com/microsoft/winget-cli/blob/master/doc/specs/%23182%20-%20Support%20for%20installation%20of%20portable%20standalone%20apps.md
+    // Winget install location. https://github.com/microsoft/winget-cli/blob/master/doc/specs/%23182%20-%20Support%20for%20installation%20of%20portable%20standalone%20apps.md
     if (LOCALAPPDATA) {
-      paths.add(normalizePath(`${LOCALAPPDATA}/Microsoft/WindowsApps`));
-      paths.add(normalizePath(`${LOCALAPPDATA}/Microsoft/WinGet/Packages`));
+      dirs.add(normalizePath(`${LOCALAPPDATA}/Microsoft/WindowsApps`));
+      dirs.add(normalizePath(`${LOCALAPPDATA}/Microsoft/WinGet/Packages`));
     }
     if (PROGRAMFILES) {
-      paths.add(normalizePath(`${PROGRAMFILES}/Neovim/bin`));
-      paths.add(normalizePath(`${PROGRAMFILES} (x86)/Neovim/bin`));
-      paths.add(normalizePath(`${PROGRAMFILES}/WinGet/Packages`));
-      paths.add(normalizePath(`${PROGRAMFILES} (x86)/WinGet/Packages`));
+      dirs.add(normalizePath(`${PROGRAMFILES}/Neovim/bin`));
+      dirs.add(normalizePath(`${PROGRAMFILES} (x86)/Neovim/bin`));
+      dirs.add(normalizePath(`${PROGRAMFILES}/WinGet/Packages`));
+      dirs.add(normalizePath(`${PROGRAMFILES} (x86)/WinGet/Packages`));
     }
   } else {
-    // Common paths for Unix-like systems
+    // Common locations for Unix-like systems.
     [
       '/usr/local/bin',
       '/usr/bin',
       '/opt/homebrew/bin',
       '/home/linuxbrew/.linuxbrew/bin',
       '/snap/nvim/current/usr/bin',
-    ].forEach(p => paths.add(p));
+    ].forEach(p => dirs.add(p));
 
     if (HOME) {
-      paths.add(normalizePath(`${HOME}/bin`));
-      paths.add(normalizePath(`${HOME}/.linuxbrew/bin`));
+      dirs.add(normalizePath(`${HOME}/bin`));
+      dirs.add(normalizePath(`${HOME}/.linuxbrew/bin`));
     }
   }
 
-  return paths;
+  return dirs;
 }
 
 /**
@@ -194,13 +204,13 @@ function getPlatformSearchDirs(): Set<string> {
  * @param opt.minVersion See {@link FindNvimOptions.minVersion}
  * @param opt.orderBy See {@link FindNvimOptions.orderBy}
  * @param opt.firstMatch See {@link FindNvimOptions.firstMatch}
- * @param opt.paths See {@link FindNvimOptions.paths}
+ * @param opt.cmds See {@link FindNvimOptions.cmds}
  * @param opt.dirs See {@link FindNvimOptions.dirs}
  */
 export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
   const platformDirs = getPlatformSearchDirs();
   const nvimExecutable = windows ? 'nvim.exe' : 'nvim';
-  const normalizedPathsFromUser = (opt.paths ?? []).map(normalizePath);
+  const normalizedPathsFromUser = (opt.cmds ?? []).map(a => normalizePath);
 
   const allPaths = new Set<string>([
     ...normalizedPathsFromUser,
