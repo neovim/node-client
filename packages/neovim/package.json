@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@msgpack/msgpack": "^3.1.2",
-    "winston": "3.15.0"
+    "winston": "3.18.3"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
