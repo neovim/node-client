@@ -49,7 +49,7 @@ describe('Nvim API', () => {
     const spy = jestMock.spyOn(nvim.logger, 'info');
     // eslint-disable-next-line no-console
     console.log('log message');
-    expect(spy).toHaveBeenCalledWith('log message');
+    expect(spy).toHaveBeenCalledWith('log message' as any);
     // Still alive?
     expect(await nvim.eval('1+1')).toEqual(2);
   });
@@ -58,6 +58,7 @@ describe('Nvim API', () => {
     const spy = jestMock.spyOn(nvim.logger, 'error');
     // eslint-disable-next-line no-console
     console.assert(false, 'foo', 42, { x: [1, 2] });
+    // @ts-expect-error Logger.error() accepts multiple args.
     expect(spy).toHaveBeenCalledWith('assertion failed', 'foo', 42, {
       x: [1, 2],
     });

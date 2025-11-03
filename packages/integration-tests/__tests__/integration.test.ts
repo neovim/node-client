@@ -64,7 +64,7 @@ describe('Node host', () => {
     const spy = jestMock.spyOn(nvim.logger, 'info');
     // eslint-disable-next-line no-console
     console.log('log message');
-    expect(spy).toHaveBeenCalledWith('log message');
+    expect(spy).toHaveBeenCalledWith('log message' as any);
     // Still alive?
     expect(await nvim.eval('1+1')).toEqual(2);
   });
