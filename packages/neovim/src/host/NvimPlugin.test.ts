@@ -88,7 +88,9 @@ describe('NvimPlugin', () => {
 
     const plugin = new NvimPlugin('/tmp/filename', () => {}, getFakeNvimClient());
     const obj = {
-      func: jestMock.fn(function () {
+      func: jestMock.fn(function (arg1: string, arg2: string) {
+        void arg1; // eslint-disable-line no-void
+        void arg2; // eslint-disable-line no-void
         // @ts-expect-error intentional
         return this;
       }),
