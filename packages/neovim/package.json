@@ -47,7 +47,7 @@
   "main": "./lib/index",
   "typings": "./lib/index",
   "engines": {
-    "node": ">=10"
+    "node": ">=14"
   },
   "dependencies": {
     "@msgpack/msgpack": "^3.1.2",

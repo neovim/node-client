@@ -1,6 +1,6 @@
 # Neovim node.js client
 
-| CI (node >= 14, Linux/macOS/Windows)                                                                                                              | Coverage                               | npm                             |
+| CI (node >= 16, Linux/macOS/Windows)                                                                                                              | Coverage                               | npm                             |
 | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------- |
 | [![ci](https://github.com/neovim/node-client/actions/workflows/ci.yml/badge.svg)](https://github.com/neovim/node-client/actions/workflows/ci.yml) | [![Coverage Badge][]][Coverage Report] | [![npm version][]][npm package] |
 
@@ -13,7 +13,11 @@ npm install -g neovim
 ```
 
 Or for non-plugin purposes, `neovim` works like any other NPM package.
-See below for a quickstart example that you can copy and run immediately.
+See [below](#quickstart-connect-to-nvim) for a quickstart example that you can copy and run immediately.
+
+### Requirements
+
+Node.js 16 and later is tested. Older versions of Node.js may work but are not tested.
 
 ## Usage
 
