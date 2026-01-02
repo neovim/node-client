@@ -1,0 +1,9 @@
+{
+  "name": "@neovim/example-plugin2",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Test fixture for new rplugin design",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {}
+}
