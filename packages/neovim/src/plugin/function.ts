@@ -13,6 +13,10 @@ export function nvimFunction(name: string, options: NvimFunctionOptions = {}) {
     // sync,
     // ...opts,
     // } = options;
+    // Validate that function name starts with a capital letter
+    if (!/^[A-Z]/.test(name)) {
+      throw new Error(`nvimFunction: function name '${name}' must start with a capital letter`);
+    }
     const sync = options && !!options.sync;
     const isMethod = typeof methodName === 'string';
     const f = isMethod ? cls[methodName] : cls;

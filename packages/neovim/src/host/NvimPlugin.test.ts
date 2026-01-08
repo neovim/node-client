@@ -68,6 +68,12 @@ describe('NvimPlugin', () => {
     expect(plugin.functions.MyFunction).toEqual({ fn, spec });
   });
 
+  it('should not register functions with lowercase names', () => {
+    const plugin = new NvimPlugin('/tmp/filename', () => {}, getFakeNvimClient());
+    plugin.registerFunction('myLowercaseFunction', () => {}, {});
+    expect(Object.keys(plugin.functions)).toHaveLength(0);
+  });
+
   it('should not add autocmds with no pattern option', () => {
     const plugin = new NvimPlugin('/tmp/filename', () => {}, getFakeNvimClient());
     plugin.registerAutocmd('BufWritePre', () => {}, { pattern: '' });
