@@ -165,6 +165,13 @@ export class NvimPlugin {
   registerFunction(name: string, fn: [any, Function], options?: NvimFunctionOptions): void;
 
   registerFunction(name: string, fn: any, options?: NvimFunctionOptions): void {
+    if (!/^[A-Z]/.test(name)) {
+      this.nvim.logger.error(
+        `registerFunction: function name '${name}' must start with a capital letter`
+      );
+      return;
+    }
+
     const spec: Spec = {
       type: 'function',
       name,

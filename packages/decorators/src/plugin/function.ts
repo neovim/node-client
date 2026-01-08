@@ -3,6 +3,10 @@ import { FunctionOptions } from './types';
 
 export function Function(name: string, options: FunctionOptions = {}) {
   return function (cls: any, methodName: string | null) {
+    // Validate that function name starts with a capital letter
+    if (!/^[A-Z]/.test(name)) {
+      throw new Error(`Function: function name '${name}' must start with a capital letter`);
+    }
     const sync = options && !!options.sync;
     const isMethod = typeof methodName === 'string';
     const f = isMethod ? cls[methodName] : cls;
