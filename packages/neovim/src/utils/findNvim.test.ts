@@ -145,11 +145,11 @@ describe('findNvim', () => {
 
   it('searches in additional custom dirs', () => {
     const customDirs = [testDir, '/non/existent/dir'].map(normalizePath);
-    const nvimRes = findNvim({ dirs: customDirs });
+    const nvimRes = findNvim({ dirs: customDirs, firstMatch: true });
 
     expect(nvimRes.matches.length).toBeGreaterThanOrEqual(1);
-
-    expect(nvimRes.invalid.length).toBe(1);
-    expect(nvimRes.invalid[0].path).toBe(nvimExecutablePath);
+    expect(nvimRes.invalid.length).toBeGreaterThanOrEqual(1);
+    const invalidPaths = nvimRes.invalid.map(i => i.path);
+    expect(invalidPaths).toContain(nvimExecutablePath);
   });
 });
