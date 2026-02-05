@@ -189,7 +189,7 @@ For debugging and configuring logging, you can set the following environment var
 - `NVIM_NODE_HOST_DEBUG`: Spawns the node process that calls `neovim-client-host` with `--inspect-brk` so you can have a debugger.
   Pair that with this [Node Inspector Manager Chrome plugin](https://chrome.google.com/webstore/detail/nodejs-v8-inspector-manag/gnhhdgbaldcilmgcpfddgdbkhjohddkj?hl=en)
 - Logging: Logging is done using `winston` through the `logger` module. This package replaces `console` with this interface.
-  - `NVIM_NODE_LOG_LEVEL`: Sets the logging level for winston. Default is `debug`.
+  - `NVIM_NODE_LOG_LEVEL`: Sets the logging level for winston. Default is `error`.
     Available levels: `{ error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 }`
   - `NVIM_NODE_LOG_FILE`: Sets the log file path.
 - Usage through node REPL
