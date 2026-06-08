@@ -61,7 +61,7 @@ jobs:
 
       - name: install neovim
         run: |
-          curl -LO 'https://github.com/neovim/neovim/releases/download/nightly/${{ matrix.NIGHTLY }}'
+          curl -LO --fail --retry 5 --retry-delay 5 --retry-all-errors 'https://github.com/neovim/neovim/releases/download/nightly/${{ matrix.NIGHTLY }}'
           ${{ matrix.EXTRACT }} ${{ matrix.NIGHTLY }}
           echo '${{ runner.os }}'
 
