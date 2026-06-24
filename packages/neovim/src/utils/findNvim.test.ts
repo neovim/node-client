@@ -127,13 +127,13 @@ describe('findNvim', () => {
     });
   });
 
-  it('searches in additional custom paths', () => {
+  it('tries locations or commands given by `cmds`', () => {
     const customPaths = [
       join(process.cwd(), 'package.json'),
       '/custom/path/to/nvim',
       '/another/custom/path',
-    ].map(normalizePath);
-    const nvimRes = findNvim({ paths: customPaths });
+    ].map(s => [ normalizePath(s) ]);
+    const nvimRes = findNvim({ cmds: customPaths });
 
     expect(nvimRes.matches.length).toBeGreaterThanOrEqual(1);
 
