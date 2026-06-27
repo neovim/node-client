@@ -6,6 +6,9 @@ export interface Response {
   send(resp: any, isError?: boolean): void;
 }
 
+/**
+ * @deprecated Eliminate the "host" concept. https://github.com/neovim/neovim/issues/27949
+ */
 export class Host {
   public loaded: { [index: string]: NvimPlugin };
 

@@ -5,9 +5,16 @@ import * as http from 'node:http';
 import expect from 'expect';
 import * as jestMock from 'jest-mock';
 
+//
+//
+// TODO: The old rplugin design is deprecated and NOT supported.
+//       This file will be deleted.
+//
+//
+
 import { NeovimClient, attach, findNvim } from 'neovim';
 
-describe('Node host', () => {
+describe.skip('Node host (OLD, DELETE ME)', () => {
   const testdir = process.cwd();
   let proc: cp.ChildProcessWithoutNullStreams;
   let args;

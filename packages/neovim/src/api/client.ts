@@ -2,7 +2,7 @@
  * Handles attaching transport
  */
 import { Logger } from '../utils/logger';
-import { Transport } from '../utils/transport';
+import { Response, Transport } from '../utils/transport';
 import { VimValue } from '../types/VimValue';
 import { Neovim } from './Neovim';
 import { Buffer } from './Buffer';
@@ -13,11 +13,29 @@ const REGEX_BUF_EVENT = /nvim_buf_(.*)_event/;
 export class NeovimClient extends Neovim {
   protected requestQueue: any[];
 
+  /**
+   * Handlers for custom (non "nvim_") methods registered by the remote module.
+   * These handle requests from the Nvim peer.
+   */
+  public handlers: {
+    [index: string]: (args: any[], event: { name: string }) => any;
+  } = {};
+
   private transportAttached: boolean;
 
   private _channelId?: number;
 
   private attachedBuffers: Map<string, Map<string, Function[]>> = new Map();
+
+  /**
+   * Defines a handler for incoming RPC request method/notification.
+   */
+  setHandler(
+    method: string,
+    fn: (args: any[], event: { name: string }) => any
+  ) {
+    this.handlers[method] = fn;
+  }
 
   constructor(options: { transport?: Transport; logger?: Logger } = {}) {
     // Neovim has no `data` or `metadata`
@@ -59,7 +77,7 @@ export class NeovimClient extends Neovim {
   }
 
   /** Handles incoming request (from the peer). */
-  handleRequest(method: string, args: VimValue[], resp: any, ...restArgs: any[]) {
+  handleRequest(method: string, args: VimValue[], resp: Response, ...restArgs: any[]) {
     // If neovim API is not generated yet and we are not handle a 'specs' request
     // then queue up requests
     //
