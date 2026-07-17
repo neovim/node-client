@@ -1,7 +1,7 @@
 import * as winston from 'winston';
 import { inspect } from 'node:util';
 
-const level = process.env.NVIM_NODE_LOG_LEVEL || 'debug';
+const level = process.env.NVIM_NODE_LOG_LEVEL || 'error';
 
 const loggerKeys = ['info', 'warn', 'error', 'debug', 'level'] as const;
 export type Logger = Pick<winston.Logger, (typeof loggerKeys)[number]>;
@@ -81,6 +81,11 @@ function setupWinstonLogger(): Logger {
 let _logger: Logger; // singleton
 export function getLogger() {
   if (!_logger) {
+    if (!process.env.NVIM_NODE_LOG_LEVEL) {
+      process.stderr.write(
+        "Note: Default log level changed from 'debug' to 'error'. Set NVIM_NODE_LOG_LEVEL=debug for verbose logging.\n"
+      );
+    }
     _logger = setupWinstonLogger();
   }
   return _logger;
