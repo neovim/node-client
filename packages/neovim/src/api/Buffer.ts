@@ -95,7 +95,7 @@ export class Buffer extends BaseApi {
     return this.request(`${this.prefix}get_lines`, [this, start, end, indexing]);
   }
 
-  /** Set lines of buffer given indeces */
+  /** Set lines of buffer given indices */
   setLines(
     _lines: string | string[],
     { start: _start, end: _end, strictIndexing }: BufferSetLines = {

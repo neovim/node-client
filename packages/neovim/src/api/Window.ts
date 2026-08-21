@@ -98,7 +98,7 @@ export class Window extends BaseApi {
    * split window to these types).
    *
    * See documentation at |nvim_open_win()|, for the meaning of
-   * parameters. Pass in -1 for 'witdh' and 'height' to keep
+   * parameters. Pass in -1 for 'width' and 'height' to keep
    * exiting size.
    *
    * When reconfiguring a floating window, absent option keys will
