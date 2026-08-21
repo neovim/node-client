@@ -584,7 +584,7 @@ export class Neovim extends BaseApi {
    * intermediate mouse positions will be ignored. It should be
    * used to implement real-time mouse input in a GUI. The
    * deprecated pseudokey form ("<LeftMouse><col,row>") of
-   * |nvim_input()| has the same limitiation.
+   * |nvim_input()| has the same limitation.
    *
    * @param {String} button    Mouse button: one of "left", "right", "middle", "wheel".
    * @param {String} action    For ordinary buttons, one of "press", "drag", "release".
