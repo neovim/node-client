@@ -2,7 +2,8 @@
 
 ## [5.5.0](https://github.com/neovim/node-client/compare/v5.4.0...v5.5.0)
 
-- TODO
+- fix: "Right-hand side of 'instanceof' is not an object" if `api/Buffer` is required before the
+  rest of the package. https://github.com/vscode-neovim/vscode-neovim/issues/2671
 
 ## [5.4.0](https://github.com/neovim/node-client/compare/v5.3.0...v5.4.0)
 
