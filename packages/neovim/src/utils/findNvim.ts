@@ -38,8 +38,8 @@ export type FindNvimOptions = {
    */
   readonly firstMatch?: boolean;
   /**
-   * (Optional) Other commands that (potentially) invoke Nvim and can receive arbitrary args.
-   * Checked before searching `dirs`. Useful for checking a user-configured Nvim location or
+   * (Optional) Other commands that (potentially) invoke Nvim.  Not allowed with `dirs`; skips
+   * searching the default locations. Useful for checking a user-configured Nvim location or
    * arbitrary wrappers such as Windows WSL.
    *
    * Example:
@@ -54,10 +54,8 @@ export type FindNvimOptions = {
   /** @deprecated */
   readonly paths?: string[];
   /**
-   * (Optional) Additional directories to search for Nvim executables.
-   * These directories will be searched after checking `cmds`
-   * but before searching `$PATH` and other default locations.
-   * Useful for including non-standard installation directories.
+   * (Optional) Additional directories to search for Nvim executables, before `$PATH` and other
+   * default locations. Not allowed with `cmds`.
    *
    * Example: ['/opt/neovim/bin', '/home/user/custom/bin']
    */
@@ -198,21 +196,26 @@ function getPlatformSearchDirs(): Set<string> {
 }
 
 /**
- * Tries to find a usable `nvim` binary on the current system.
+ * Tries to find a usable `nvim` binary on the current system. Searches common locations by default.
  *
  * @param opt.minVersion See {@link FindNvimOptions.minVersion}
  * @param opt.orderBy See {@link FindNvimOptions.orderBy}
  * @param opt.firstMatch See {@link FindNvimOptions.firstMatch}
  * @param opt.cmds See {@link FindNvimOptions.cmds}
  * @param opt.dirs See {@link FindNvimOptions.dirs}
+ * @throws {TypeError} If `cmds` and `dirs` are both given.
  */
 export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
+  if (opt.cmds?.length && opt.dirs?.length) {
+    throw new TypeError('Invalid params: cannot combine `cmds` and `dirs`');
+  }
   const nvimExecutable = windows ? 'nvim.exe' : 'nvim';
   const userCmds = [...(opt.cmds ?? []), ...(opt.paths ?? []).map(p => [p])].map(
     ([arg0, ...args]) => [normalizePath(arg0), ...args]
   );
+  const searchDirs = opt.cmds?.length ? [] : [...(opt.dirs ?? []), ...getPlatformSearchDirs()];
   // Unlike `cmds` (always tried, so failures are reported in `invalid`), skip dirs without Nvim.
-  const dirCmds = [...(opt.dirs ?? []), ...getPlatformSearchDirs()]
+  const dirCmds = searchDirs
     .map(dir => [normalizePath(join(dir, nvimExecutable))])
     .filter(([nvimPath]) => existsSync(nvimPath));
   // Dedupe, e.g. if a dir is in both $PATH and the platform defaults.
