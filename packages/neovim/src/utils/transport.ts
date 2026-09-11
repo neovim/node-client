@@ -6,7 +6,8 @@ import { EventEmitter } from 'node:events';
 import { inspect } from 'node:util';
 
 import { encode, decode, ExtensionCodec, decodeMultiStream } from '@msgpack/msgpack';
-import { Metadata } from '../api/types';
+import * as nvimTypes from '../api/extTypes';
+import { ExtType, ExtTypeConstructor } from '../api/types';
 import { ASYNC_DISPOSE_SYMBOL } from './util';
 
 export let exportsForTesting: any; // eslint-disable-line import/no-mutable-exports
@@ -58,9 +59,17 @@ class Transport extends EventEmitter {
   private initializeExtensionCodec() {
     const codec = new ExtensionCodec();
 
-    Metadata.forEach(({ constructor }, id: number): void => {
+    const extTypes: [
+      ExtType,
+      ExtTypeConstructor<nvimTypes.Buffer | nvimTypes.Window | nvimTypes.Tabpage>,
+    ][] = [
+      [ExtType.Buffer, nvimTypes.Buffer],
+      [ExtType.Window, nvimTypes.Window],
+      [ExtType.Tabpage, nvimTypes.Tabpage],
+    ];
+    extTypes.forEach(([type, constructor]): void => {
       codec.register({
-        type: id,
+        type,
         encode: (input: any) => {
           if (input instanceof constructor) {
             return encode(input.data);

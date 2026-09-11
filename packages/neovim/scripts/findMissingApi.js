@@ -1,6 +1,11 @@
 /* eslint no-console:0  global-require:0 */
 const { Metadata } = require('../lib/api/types');
 const { Neovim } = require('../lib/api/Neovim');
+const extTypeClasses = {
+  Buffer: require('../lib/api/Buffer').Buffer,
+  Window: require('../lib/api/Window').Window,
+  Tabpage: require('../lib/api/Tabpage').Tabpage,
+};
 
 const search = process.argv[2] || '';
 
@@ -51,7 +56,7 @@ const hasApiMethod = name => {
     .replace(/win/g, 'window');
   const titleMethodName = `${methodName[0].toUpperCase()}${methodName.slice(1)}`;
 
-  const Constructor = (mappedConstructor && mappedConstructor.constructor) || Neovim;
+  const Constructor = (mappedConstructor && extTypeClasses[mappedConstructor.name]) || Neovim;
 
   const descriptor = Object.getOwnPropertyDescriptor(Constructor.prototype, methodName);
 
