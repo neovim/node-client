@@ -1,5 +1,9 @@
 # Changes
 
+## [5.6.0](https://github.com/neovim/node-client/compare/v5.5.0...v5.6.0)
+
+- TODO
+
 ## [5.5.0](https://github.com/neovim/node-client/compare/v5.4.0...v5.5.0)
 
 - fix: "Right-hand side of 'instanceof' is not an object" if `api/Buffer` is required before the
