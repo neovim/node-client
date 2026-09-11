@@ -148,7 +148,9 @@ describe('findNvim', () => {
     expect(findNvim({ paths: cmds[2] }).invalid.map(i => i.cmd)).toEqual([cmds[2]]);
   });
 
-  it('searches in additional custom dirs', () => {
+  it('searches in additional custom dirs', function () {
+    // Windows: running the fresh fake nvim.exe can be slow (antivirus scan). #426
+    this.timeout(10000);
     const customDirs = [testDir, '/non/existent/dir'].map(normalizePath);
     const nvimRes = findNvim({ dirs: customDirs });
 
