@@ -236,7 +236,7 @@ Only maintainers of the [neovim NPM package](https://www.npmjs.com/package/neovi
    git commit -m 'release'
    # Note: this copies the top-level README.md/CHANGELOG.md to packages/neovim/.
    npm run publish:neovim
-   export _VERSION=$(grep -o 'version": "[^"]\+' packages/neovim/package.json | sed 's/.*"//')
+   export _VERSION=$(grep -o 'version": "[^"]\+' packages/neovim/package.json | sed 's/.*"//') && echo $_VERSION
    git tag "v${_VERSION}"
    git push --tags
    git push
