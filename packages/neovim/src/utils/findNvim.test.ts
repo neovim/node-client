@@ -75,6 +75,7 @@ describe('findNvim', () => {
     });
     expect(nvimRes.matches.length).toBeGreaterThan(0);
     expect(nvimRes.matches[0]).toEqual({
+      cmd: [expect.any(String)],
       nvimVersion: expect.any(String),
       path: expect.any(String),
       buildType: expect.any(String),
@@ -103,6 +104,7 @@ describe('findNvim', () => {
     expect(nvimRes.matches.length).toEqual(0);
     expect(nvimRes.invalid.length).toBeGreaterThan(0);
     expect(nvimRes.invalid[0]).toEqual({
+      cmd: [expect.any(String)],
       nvimVersion: expect.any(String),
       path: expect.any(String),
       buildType: expect.any(String),
@@ -119,6 +121,7 @@ describe('findNvim', () => {
     });
     expect(nvimRes.matches.length).toEqual(1);
     expect(nvimRes.matches[0]).toEqual({
+      cmd: [expect.any(String)],
       nvimVersion: expect.any(String),
       path: expect.any(String),
       buildType: expect.any(String),
@@ -127,29 +130,33 @@ describe('findNvim', () => {
     });
   });
 
-  it('searches in additional custom paths', () => {
-    const customPaths = [
-      join(process.cwd(), 'package.json'),
-      '/custom/path/to/nvim',
-      '/another/custom/path',
-    ].map(normalizePath);
-    const nvimRes = findNvim({ paths: customPaths });
+  it('tries commands given by `cmds`', () => {
+    const nvim = findNvim({ firstMatch: true }).matches[0].cmd[0];
+    const cmds = [
+      [nvim, '--clean'],
+      [nvim, '--bogus'],
+      [join(process.cwd(), 'package.json')],
+      ['/custom/path/to/nvim'],
+      ['/another/custom/path'],
+    ].map(([arg0, ...args]) => [normalizePath(arg0), ...args]);
+    const nvimRes = findNvim({ cmds, orderBy: 'none' });
 
-    expect(nvimRes.matches.length).toBeGreaterThanOrEqual(1);
-
-    expect(nvimRes.invalid.length).toBe(3);
-
-    const invalidPaths = nvimRes.invalid.map(i => i.path);
-    expect(invalidPaths).toEqual(customPaths);
+    // Args are passed to the command: `--clean` works, `--bogus` fails.
+    expect(nvimRes.matches[0].cmd).toEqual(cmds[0]);
+    expect(nvimRes.invalid.map(i => i.cmd)).toEqual(cmds.slice(1));
+    // Deprecated `paths`.
+    expect(findNvim({ paths: cmds[2] }).invalid.map(i => i.cmd)).toEqual([cmds[2]]);
   });
 
-  it('searches in additional custom dirs', () => {
+  it('searches in additional custom dirs', function () {
+    // Windows: running the fresh fake nvim.exe can be slow (antivirus scan). #426
+    this.timeout(10000);
     const customDirs = [testDir, '/non/existent/dir'].map(normalizePath);
     const nvimRes = findNvim({ dirs: customDirs });
 
     expect(nvimRes.matches.length).toBeGreaterThanOrEqual(1);
 
     expect(nvimRes.invalid.length).toBe(1);
-    expect(nvimRes.invalid[0].path).toBe(nvimExecutablePath);
+    expect(nvimRes.invalid[0].cmd).toEqual([nvimExecutablePath]);
   });
 });
