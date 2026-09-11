@@ -130,7 +130,7 @@ describe('findNvim', () => {
     });
   });
 
-  it('tries commands given by `cmds`', () => {
+  it('tries only the commands given by `cmds`', () => {
     const nvim = findNvim({ firstMatch: true }).matches[0].cmd[0];
     const cmds = [
       [nvim, '--clean'],
@@ -139,13 +139,18 @@ describe('findNvim', () => {
       ['/custom/path/to/nvim'],
       ['/another/custom/path'],
     ].map(([arg0, ...args]) => [normalizePath(arg0), ...args]);
-    const nvimRes = findNvim({ cmds, orderBy: 'none' });
+    const nvimRes = findNvim({ cmds });
 
-    // Args are passed to the command: `--clean` works, `--bogus` fails.
-    expect(nvimRes.matches[0].cmd).toEqual(cmds[0]);
+    // No search. Args are passed to the command: `--clean` works, `--bogus` fails.
+    expect(nvimRes.matches.map(m => m.cmd)).toEqual([cmds[0]]);
     expect(nvimRes.invalid.map(i => i.cmd)).toEqual(cmds.slice(1));
-    // Deprecated `paths`.
-    expect(findNvim({ paths: cmds[2] }).invalid.map(i => i.cmd)).toEqual([cmds[2]]);
+    // Deprecated `paths` also searches the default locations.
+    const pathsRes = findNvim({ paths: cmds[2] });
+    expect(pathsRes.matches.length).toBeGreaterThan(0);
+    expect(pathsRes.invalid.map(i => i.cmd)).toEqual([cmds[2]]);
+    // Empty `cmds` searches. `cmds` + `dirs` is an error.
+    expect(findNvim({ cmds: [] }).matches.length).toBeGreaterThan(0);
+    expect(() => findNvim({ cmds, dirs: [testDir] })).toThrow('cannot combine `cmds` and `dirs`');
   });
 
   it('searches in additional custom dirs', function () {

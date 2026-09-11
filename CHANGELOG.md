@@ -4,8 +4,9 @@
 
 - fix: "Right-hand side of 'instanceof' is not an object" if `api/Buffer` is required before the
   rest of the package. https://github.com/vscode-neovim/vscode-neovim/issues/2671
-- feat: `findNvim(…, { cmds: … })` accepts multi-part commands.
-  Example: `['wsl.exe', '-d', 'Ubuntu', 'nvim']`. Results have `cmd`; `path` is deprecated. #432
+- feat: `findNvim(…, { cmds: … })` checks multi-part commands (and skips
+  searching the default locations). Example: `['wsl.exe', '-d', 'Ubuntu', 'nvim']`.
+  Results have `cmd`; `path` is deprecated. #432
 
 ## [5.4.0](https://github.com/neovim/node-client/compare/v5.3.0...v5.4.0)
 
