@@ -251,14 +251,16 @@ describe('Neovim API', () => {
       const id = await nvim.createNamespace();
       expect(typeof id).toBe('number');
 
-      expect(await nvim.getNamespaces()).toEqual({});
+      // Anonymous namespaces are not listed by `nvim_get_namespaces`.
+      expect(Object.values(await nvim.getNamespaces())).not.toContain(id);
     });
 
     it('creates and gets named namespaces', async () => {
       const foo = await nvim.createNamespace('foo');
       const bar = await nvim.createNamespace('bar');
 
-      expect(await nvim.getNamespaces()).toEqual({ foo, bar });
+      // Nvim itself owns "nvim.*" namespaces, so only check ours.
+      expect(await nvim.getNamespaces()).toMatchObject({ foo, bar });
     });
   });
 });
