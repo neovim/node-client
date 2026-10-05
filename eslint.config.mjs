@@ -1,9 +1,6 @@
-import js from '@eslint/js';
-import globals from 'globals';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 import unicorn from 'eslint-plugin-unicorn';
-import importPlugin from 'eslint-plugin-import';
 import prettierConfig from 'eslint-config-prettier/flat';
 
 export default [
@@ -33,19 +30,10 @@ export default [
         ecmaVersion: 'latest',
         sourceType: 'module',
       },
-      globals: {
-        ...globals.node,
-        ...globals.es2020,
-        ...globals.mocha,
-      },
     },
     plugins: {
       '@typescript-eslint': typescriptEslint,
       unicorn,
-      import: importPlugin,
-    },
-    settings: {
-      'import/resolver': { node: { extensions: ['.js', '.jsx', '.ts'] } },
     },
     linterOptions: {
       reportUnusedDisableDirectives: true,
@@ -82,12 +70,7 @@ export default [
       'no-shadow': 'off',
       'prefer-destructuring': 'off', // Intentionally disabled trash.
 
-      'import/extensions': 'off',
-      'import/prefer-default-export': 'off',
-
       'global-require': 'error',
-      'import/no-extraneous-dependencies': 'error',
-      'import/no-mutable-exports': 'error',
       'new-cap': 'error',
       'no-console': 'error',
       'no-param-reassign': ['error', { props: true }],
@@ -151,10 +134,6 @@ export default [
       // the test files as well)?
       'unicorn/prefer-at': 'off',
       'new-cap': 'off',
-      'import/no-extraneous-dependencies': [
-        'error',
-        { devDependencies: true, optionalDependencies: false, peerDependencies: false },
-      ],
     },
   },
 ];

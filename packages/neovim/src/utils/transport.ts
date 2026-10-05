@@ -10,7 +10,7 @@ import * as nvimTypes from '../api/extTypes';
 import { ExtType, ExtTypeConstructor } from '../api/types';
 import { ASYNC_DISPOSE_SYMBOL } from './util';
 
-export let exportsForTesting: any; // eslint-disable-line import/no-mutable-exports
+export let exportsForTesting: any;
 // .mocharc.js sets NODE_ENV=test.
 if (process.env.NODE_ENV === 'test') {
   exportsForTesting = {
@@ -67,17 +67,12 @@ class Transport extends EventEmitter {
       [ExtType.Window, nvimTypes.Window],
       [ExtType.Tabpage, nvimTypes.Tabpage],
     ];
-    extTypes.forEach(([type, constructor]): void => {
+    extTypes.forEach(([type, Constructor]): void => {
       codec.register({
         type,
-        encode: (input: any) => {
-          if (input instanceof constructor) {
-            return encode(input.data);
-          }
-          return null;
-        },
+        encode: (input: any) => (input instanceof Constructor ? encode(input.data) : null),
         decode: data =>
-          new constructor({
+          new Constructor({
             transport: this,
             client: this.client,
             data: decode(data),

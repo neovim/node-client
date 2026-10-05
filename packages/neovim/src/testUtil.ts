@@ -18,9 +18,7 @@ export function findNvimOrFail() {
 
 const nvimCmd = findNvimOrFail();
 
-// eslint-disable-next-line import/no-mutable-exports
 export let proc: cp.ChildProcessWithoutNullStreams;
-// eslint-disable-next-line import/no-mutable-exports
 export let nvim: NeovimClient;
 
 export function startNvim(): [cp.ChildProcessWithoutNullStreams, NeovimClient];

@@ -140,11 +140,7 @@ function compareVersions(a: string, b: string): number {
     }
   }
 
-  if (versionB.length > versionA.length) {
-    return -1;
-  }
-
-  return 0;
+  return versionB.length > versionA.length ? -1 : 0;
 }
 
 function normalizePath(path: string): string {
@@ -269,7 +265,6 @@ export function findNvim(opt: FindNvimOptions = {}): Readonly<FindNvimResult> {
   } as const;
 }
 
-// eslint-disable-next-line import/no-mutable-exports
 export let exportsForTesting: any;
 // .mocharc.js sets NODE_ENV=test.
 if (process.env.NODE_ENV === 'test') {

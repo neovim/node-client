@@ -1,4 +1,4 @@
-/* eslint no-shadow:0, import/export:0 */
+/* eslint no-shadow:0 */
 // Plugin decorator
 
 import { NVIM_SPEC } from './properties';
