@@ -98,12 +98,18 @@ jobs:
         run: npm run build
 
       - name: test
+        # Test tooling (mocha) requires newer Node.js.
+        if: matrix.node != '16' && matrix.node != '18'
         run: |
           echo $PATH
           which nvim
           nvim --version
 
           npm run test-coverage --stream
+
+      - name: test (old Node.js)
+        if: matrix.node == '16' || matrix.node == '18'
+        run: node packages/neovim/scripts/test-old.js
 
       - uses: codecov/codecov-action@v7
         if: matrix.node == '20'
