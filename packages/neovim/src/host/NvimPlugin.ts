@@ -1,4 +1,3 @@
-/* eslint import/export:0 */
 import { Neovim } from '../api/Neovim';
 import { Spec } from '../types/Spec';
 

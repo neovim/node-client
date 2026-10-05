@@ -71,10 +71,7 @@ export function createChainableApi(
 
       if (prop in target) {
         // Forward rest of requests to Promise
-        if (typeof target[prop] === 'function') {
-          return target[prop].bind(target);
-        }
-        return target[prop];
+        return typeof target[prop] === 'function' ? target[prop].bind(target) : target[prop];
       }
 
       return null;

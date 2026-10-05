@@ -15,6 +15,24 @@ env:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          cache: npm
+          # devDependencies use new JS features: eslint-plugin-unicorn needs
+          # Set.prototype.union (Node 22+).
+          node-version: '24'
+
+      - name: install dependencies
+        run: npm ci
+
+      - name: lint
+        run: npm run lint
+
   test:
     strategy:
       fail-fast: false
@@ -78,11 +96,6 @@ jobs:
 
       - name: build
         run: npm run build
-
-      - name: lint
-        # Only run lint on latest Node.js, because devDependencies use new JS features.
-        if: matrix.node == '20' && runner.os != 'Windows'
-        run: npm run lint
 
       - name: test
         run: |

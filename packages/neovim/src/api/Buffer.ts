@@ -46,10 +46,9 @@ export class Buffer extends BaseApi {
    *        a `nvim_buf_changedtick_event`
    */
   [ATTACH] = async (sendBuffer = false, options: {} = {}): Promise<boolean> => {
-    if (this.client.isAttached(this)) {
-      return true;
-    }
-    return this.request(`${this.prefix}attach`, [this, sendBuffer, options]);
+    return this.client.isAttached(this)
+      ? true
+      : this.request(`${this.prefix}attach`, [this, sendBuffer, options]);
   };
 
   /**
