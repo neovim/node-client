@@ -1,14 +1,9 @@
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 import unicorn from 'eslint-plugin-unicorn';
-import prettierConfig from 'eslint-config-prettier/flat';
 
 export default [
-  // TODO: enable these
-  // js.configs.recommended,
-  // typescriptEslint.configs.recommended,
-  // unicorn.configs.recommended,
-  // prettierConfig,
+  // TODO: enable js.configs.recommended and typescript-eslint "recommended".
   {
     files: ['packages/neovim/bin/cli.js', '**/*.ts'],
     ignores: [
