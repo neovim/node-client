@@ -63,7 +63,7 @@
     "c8": "^11.0.0",
     "expect": "^30.3.0",
     "jest-mock": "^30.2.0",
-    "mocha": "^11.7.5",
+    "mocha": "^12.0.3",
     "ts-node": "^10.9.2",
     "typedoc": "^0.28.11",
     "typescript": "^5.9.3"
@@ -75,6 +75,7 @@
     "test-coverage": "c8 --reporter=json --reporter=html npm test",
     "test-staged": "npm test --bail",
     "test-missing-apis": "npm run build && node scripts/findMissingApi",
+    "test-old": "npm run build && node scripts/test-old",
     "precommit": "lint-staged",
     "build": "tsc --pretty",
     "dev": "npm run build --watch true"
