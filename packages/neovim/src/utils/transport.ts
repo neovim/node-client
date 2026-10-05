@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'test') {
   };
 }
 
-class Response {
+export class Response {
   private requestId: number;
 
   private sent!: boolean;
