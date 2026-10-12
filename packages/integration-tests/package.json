@@ -51,8 +51,8 @@
   ],
   "devDependencies": {
     "@types/mocha": "^10.0.10",
-    "c8": "^11.0.0",
-    "expect": "^30.3.0",
+    "c8": "^12.0.0",
+    "expect": "^30.5.2",
     "jest-mock": "^30.2.0",
     "mocha": "^12.0.3",
     "neovim": "file:../neovim"
