@@ -47,6 +47,8 @@ function setupWinstonLogger(): Logger {
     logger.add(
       new winston.transports.Console({
         format: getFormat(true),
+        // Write all levels to stderr: stdout may be the (stdio) RPC channel.
+        stderrLevels: Object.keys(winston.config.npm.levels),
       })
     );
   }

@@ -2,7 +2,8 @@
 
 ## [5.6.0](https://github.com/neovim/node-client/compare/v5.5.0...v5.6.0)
 
-- TODO
+- fix(logger): `$ALLOW_CONSOLE` writes logs to stderr instead of stdout, so it no longer breaks the
+  stdio RPC channel. #343
 
 ## [5.5.0](https://github.com/neovim/node-client/compare/v5.4.0...v5.5.0)
 
