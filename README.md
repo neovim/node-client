@@ -37,8 +37,8 @@ The `neovim` package provides these functions:
   - Best practice in any case is to use the `logger` available from the `NeovimClient` returned by
     `attach()`, instead of `console` logging functions.
 - Set the `$NVIM_NODE_LOG_FILE` env var to (also) write logs to a file.
-- Set the `$ALLOW_CONSOLE` env var to (also) write logs to stdout. **This will break any (stdio) RPC
-  channel** because logs written to stdout are invalid RPC messages.
+- Set the `$ALLOW_CONSOLE` env var to (also) write logs to stderr (not stdout, because that would
+  break the stdio RPC channel).
 
 ### Quickstart: connect to Nvim
 
@@ -56,10 +56,7 @@ Following is a complete, working example.
    ALLOW_CONSOLE=1 node demo.mjs
    ```
 
-   - `$ALLOW_CONSOLE` env var must be set, because logs are normally not printed to stdout.
-     - Note: `$ALLOW_CONSOLE` is only for demo purposes. It cannot be used for remote plugins or
-       whenever stdio is an RPC channel, because writing logs to stdout would break the RPC
-       channel.
+   - `$ALLOW_CONSOLE` env var must be set, because logs are normally not printed to the terminal.
    - Script:
 
    ```js
